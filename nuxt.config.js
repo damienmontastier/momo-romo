@@ -63,5 +63,8 @@ module.exports = {
     //     })
     //   }
     // }
+    // build: {
+    //   vendor: ['three-orbit-controls']
+    // }
   }
 }
