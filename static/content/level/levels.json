@@ -2,10 +2,7 @@
     "kintsugi": {
         "id": 1,
         "props": [{
-            "textureAtlas": {
-                "png": "",
-                "json": ""
-            },
+            "textureAtlas": "kintsugi",
             "fixed": {
 
             },
@@ -20,10 +17,7 @@
     "kanso": {
         "id": 0,
         "props": [{
-            "textureAtlas": {
-                "png": "",
-                "json": ""
-            },
+            "textureAtlas": "kanso",
             "fixed": {
 
             },
