@@ -1,31 +1,40 @@
 <template>
   <section class="container">
-    <div>
-      <h1 class="title">momo-romo</h1>
-      <h1 class="title">{{ counter }}</h1>
-    </div>
+    <h1 class="title">momo-romo</h1>
+
+    <nuxt-link
+      v-for="(level, index) in levels"
+      :key="index"
+      :to="{ name: 'level', params: {level: index}}"
+    >{{index}}</nuxt-link>
   </section>
 </template>
 
 <script>
 import { mapMutations, mapState } from "vuex";
-import Level1 from "../assets/three/level/testLevel.js";
+import levelTest from "../assets/three/level/level.js";
 
 export default {
   components: {},
   computed: {
     ...mapState({
-      counter: state => state.global.counter
-    }),
+      counter: state => state.global.counter,
+      levels: state => state.global.levels
+    })
   },
   mounted() {
-    const level = new Level1();
+    const level = new levelTest();
     console.log(level);
   },
-  methods:{
+  created() {
+    console.log(this.levels);
+    // this.kintsugi = this.levels[Object.keys(this.levels)[0]];
+    // console.log(this.kintsugi);
+  },
+  methods: {
     ...mapMutations({
       add: "global/increment"
-    }),
+    })
   }
 };
 </script>
