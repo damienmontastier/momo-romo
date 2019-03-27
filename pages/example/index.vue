@@ -11,16 +11,19 @@
 </template>
 
 <script>
-import { mapMutations } from "vuex";
+import { mapMutations, mapState } from "vuex";
 
 export default {
-  created() {
-    console.log(this);
+  mounted() {
+    console.log(this.list);
   },
   computed: {
     todos() {
       return this.$store.state.todos.list;
-    }
+    },
+    ...mapState({
+      list: state => state.todos.list
+    })
   },
   methods: {
     addTodo(e) {
