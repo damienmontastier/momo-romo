@@ -1,23 +1,23 @@
 <template>
-  <div id="props-editor" ref="props-editor" draggable="false"></div>
+  <div id="props-editor" ref="props-editor" draggable="false">
+    <img :src="this.currentAtlas.png" alt="">
+  </div>
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { mapGetters } from "vuex";
 export default {
-  mounted() {
-    console.log(this.atlases);
-  },
   computed: {
-    ...mapState({
-      atlases: state => state.editor.atlases
+    ...mapGetters({
+      currentAtlas: 'editor/currentAtlas'
     })
-  }
+  },
 };
 </script>
 
 <style lang="scss" scoped>
 #props-editor {
+  overflow-x: auto;
   position: absolute;
   left: 0px;
   top: 0px;
@@ -25,5 +25,9 @@ export default {
   height: 100vh;
   background: white;
   z-index: 2;
+  img{
+    height: 100%;
+    max-width: unset;
+  }
 }
 </style>
