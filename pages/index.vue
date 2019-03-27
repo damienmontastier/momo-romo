@@ -1,6 +1,6 @@
 <template>
   <section class="container">
-    <h1 class="title">momo-romo</h1>
+    <h1 class="title">momoo-romo</h1>
 
     <nuxt-link
       v-for="(level, index) in levels"
