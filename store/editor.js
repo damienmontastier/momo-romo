@@ -1,9 +1,23 @@
-import Atlases from '@/static/textures/atlases'
+import atlases from '@/static/textures/atlases'
+const stagesPressets = require("@/static/content/level/levels.json");
 
 export const state = () => ({
-    atlases: Atlases
+    atlases: atlases,
+    stages: stagesPressets,
+    currentStageId: Object.keys(stagesPressets)[0]
 })
 
-export const mutations = {
+export const getters = {
+    currentStage: state => {
+        return state.stages[state.currentStageId]
+    },
+    currentAtlas: (state,getters) => {
+        return state.atlases[getters.currentStage.atlas]
+    }
+}
 
+export const mutations = {
+    setCurrentStageId(state, id) {
+        state.currentStageId = id
+    }
 }
