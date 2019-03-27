@@ -1,7 +1,7 @@
 <template>
   <div id="editor" ref="editor">
     <div id="props-editor" ref="props-editor" draggable="false">
-      <select name id></select>
+      <select name="stages" id="stages-select"></select>
     </div>
   </div>
 </template>
@@ -34,7 +34,12 @@ export default {
     width: 300px;
     height: 100vh;
     background: white;
-    z-index: 10;
+    z-index: 2;
+    #stages-select {
+      position: absolute;
+      left: 0px;
+      top: 0px;
+    }
   }
 }
 </style>
