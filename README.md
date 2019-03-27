@@ -29,7 +29,7 @@ git push origin clement-final
 //push sur master
 github -> pull request
 
-//pull paster
+//pull master
 git stash
 git pull origin master
 git stash apply
