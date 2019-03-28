@@ -13,14 +13,14 @@ export default class Editor {
         );
         this.camera.position.z = 200;
 
-        this.controls = new OrbitControls(this.camera);
-
         this.scene = new THREE.Scene();
 
         // axes
         this.scene.add(new THREE.AxesHelper(20));
 
         this.renderer = new THREE.WebGLRenderer();
+
+        this.controls = new OrbitControls(this.camera, this.renderer.domElement);
 
         this.renderer.setSize(window.innerWidth, window.innerHeight);
 

@@ -1,36 +1,22 @@
 {
     "kintsugi": {
         "id": 1,
-        "props": [{
-            "textureAtlas": {
-                "png": "",
-                "json": ""
-            },
-            "fixed": {
-
-            },
-            "sprites": {
-
-            }
-        }],
+        "atlas": "kintsugi",
+        "props": {
+            "fixed": [],
+            "sprites": []
+        },
         "physics": [{
 
         }]
     },
     "kanso": {
         "id": 0,
-        "props": [{
-            "textureAtlas": {
-                "png": "",
-                "json": ""
-            },
-            "fixed": {
-
-            },
-            "sprites": {
-
-            }
-        }],
+        "atlas": "kanso",
+        "props": {
+            "fixed": [],
+            "sprites": []
+        },
         "physics": [{
 
         }]

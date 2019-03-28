@@ -1,7 +1,7 @@
 function importAll(r) {
   let images = {};
   r.keys().forEach((item, i) => {
-    let s = `stage${Math.floor((i/2)+1)}`;
+    let s = item.replace('./', '').replace('atlas.', '').replace('/json', '').replace('/png', '');
     (!images[s]) ? images[s] = {}: null;
     images[s][item.replace('./', '').replace(`${s}/`, '').replace('atlas.', '')] = r(item);
 
