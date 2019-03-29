@@ -1,10 +1,10 @@
 import * as THREE from "three";
 
 export default class TextureAtlas {
-  constructor(json, image) {
+  constructor(opts) {
     this.textures = {};
-    this.json = json;
-    this.image = image;
+    this.json = opts.json;
+    this.image = opts.png;
   }
 
   get isLoaded() {
