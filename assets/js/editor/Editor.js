@@ -2,7 +2,8 @@ import * as THREE from 'THREE';
 import OrbitControls from 'orbit-controls-es6';
 import Stage from '../editor/Stage';
 import TextureAtlas from '../utils/TextureAtlas';
-import ArrowHelper from '../objects/ArrowHelper'
+import ArrowHelper from '../objects/ArrowHelper';
+import Raycaster from './Raycaster'
 
 export default class Editor {
     constructor(opts) {
@@ -17,10 +18,20 @@ export default class Editor {
             this.group.add(this.stages[key].group)
         });
 
-        this.raycaster = new THREE.Raycaster();
+        this.init()
+
     }
 
     init() {
+        //renderer
+        this.renderer = new THREE.WebGLRenderer();
+        this.renderer.setSize(window.innerWidth, window.innerHeight);
+        this.renderer.setPixelRatio(window.devicePixelRatio);
+
+        //scene
+        this.scene = new THREE.Scene();
+
+        //camera
         this.camera = new THREE.PerspectiveCamera(
             40,
             window.innerWidth / window.innerHeight,
@@ -29,8 +40,7 @@ export default class Editor {
         );
         // this.camera.position.z = 200;
         this.camera.position.set(0, 0.5, 6);
-
-        this.scene = new THREE.Scene();
+        Raycaster.camera = this.camera;
 
         // axes
         this.scene.add(new THREE.AxesHelper(20));
@@ -38,21 +48,10 @@ export default class Editor {
 
         this.scene.add(this.group)
 
-
-
-        this.renderer = new THREE.WebGLRenderer();
-
         this.controls = new OrbitControls(this.camera, this.renderer.domElement);
 
-
-
         this.addArrows()
-        // this.setupGrid()
-
-
-        this.renderer.setSize(window.innerWidth, window.innerHeight);
-
-        this.renderer.setPixelRatio(window.devicePixelRatio);
+        this.setupGrid()
 
         this.renderer.setAnimationLoop(this.render.bind(this));
 
@@ -60,12 +59,8 @@ export default class Editor {
     }
 
     addArrows() {
-        this.arrowHelper = new ArrowHelper({
-            scene: this.scene,
-            camera: this.camera,
-            controls: this.controls,
-        });
-        this.scene.add(this.arrowHelper);
+        ArrowHelper.init(this.renderer.domElement)
+        this.scene.add(ArrowHelper);
     }
 
     setupGrid() {
@@ -113,10 +108,15 @@ export default class Editor {
     }
 
     raycast(mouse) {
-        this.raycaster.setFromCamera(mouse, this.camera);
-        let intersects = this.raycaster.intersectObjects(this.stages[this.currentStageId].group.children, true);
+        // this.raycaster.setFromCamera(mouse, this.camera);
+        // let intersects = this.raycaster.intersectObjects(this.stages[this.currentStageId].group.children, true);
+
+        let intersects = Raycaster.use(mouse, this.stages[this.currentStageId].group.children)
+
         if (intersects[0]) {
-            console.log(intersects[0].object._class)
+            // console.log(intersects[0].object._class)
+            let target = intersects[0].object._class
+            ArrowHelper.setTarget(target)
         }
 
     }

@@ -26,7 +26,6 @@ export default {
       stages: this.stages,
       atlases: this.atlases
     });
-    this.editor.init();
     this.$refs.editor.appendChild(this.editor.renderer.domElement);
     Object.keys(this.stages).forEach(id => {
       let option = document.createElement("option");
