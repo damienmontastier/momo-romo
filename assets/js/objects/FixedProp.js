@@ -9,7 +9,7 @@ export default class FixedProp {
     }
 
     render() {
-        this.geometry = new THREE.PlaneBufferGeometry(
+        this.geometry = new THREE.PlaneGeometry(
             this.width,
             this.height,
             1,
@@ -18,10 +18,6 @@ export default class FixedProp {
         this.mesh = new THREE.Mesh(this.geometry, this.material);
         this.mesh._type = "FixedProp";
         this.mesh._class = this;
-    }
-
-    focus() {
-
     }
 
     highlight(value) {

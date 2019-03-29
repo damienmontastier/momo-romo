@@ -6,9 +6,10 @@ class ArrowHelper extends THREE.Object3D {
         super();
 
         this.target = null
+        this.mouse = new THREE.Vector2();
 
         this.render();
-        // this.hide();
+        this.hide();
     }
 
     render() {
@@ -17,13 +18,13 @@ class ArrowHelper extends THREE.Object3D {
         this.origin = new THREE.Vector3(0, 0, 0);
         this.length = 2;
 
-        let shadowPlaneMesh = new THREE.PlaneBufferGeometry(10, 10, 1)
+        let shadowPlaneMesh = new THREE.PlaneGeometry(100, 100, 1)
         let shadowPlaneMaterial = new THREE.MeshBasicMaterial({
             color: 0x0000ff,
             side: THREE.DoubleSide,
-            // transparent: true,
-            // opacity: 0.0,
-            // alphaTest: 0.5
+            transparent: true,
+            opacity: 0.0,
+            alphaTest: 0.5
         })
 
         //x
@@ -80,7 +81,19 @@ class ArrowHelper extends THREE.Object3D {
     }
 
     setTarget(target) {
-        console.log(target)
+        this.target = target
+        this.update()
+    }
+
+    update() {
+        if (this.target) {
+            this.targetOrigin = this.target.mesh.position.clone()
+            this.position = this.target.mesh.position
+            this.visible = true;
+        } else {
+            this.hide()
+        }
+
     }
 
     init(dom) {
@@ -94,16 +107,64 @@ class ArrowHelper extends THREE.Object3D {
         this.dom.addEventListener("mouseup", this.onMouseUp.bind(this));
     }
 
-    onMouseMove() {
-        console.log('move')
+    onMouseMove(event) {
+        if (this.targetPlane) {
+            this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+            this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+            let intersects = Raycaster.use(this.mouse, this.children);
+            this.targetPlane = intersects.filter(
+                i => i.object._type === 'PlaneHelper' && i.object._dir == this.targetArrowDir
+            );
+            if (this.targetPlane[0]) {
+                this.movePoint = this.targetPlane[0].point
+                switch (this.targetArrowDir) {
+                    case "x":
+                        this.target.mesh.position.x = this.targetOrigin.x + (this.movePoint.x - this.downPoint.x)
+                        break;
+                    case "y":
+                        this.target.mesh.position.y = this.targetOrigin.y + (this.movePoint.y - this.downPoint.y)
+                        break;
+                    case "z":
+                        this.target.mesh.position.z = Math.round(this.targetOrigin.z + (this.movePoint.z - this.downPoint.z))
+                        break;
+
+                    default:
+                        break;
+                }
+                this.position.set(
+                    this.target.mesh.position.x,
+                    this.target.mesh.position.y,
+                    this.target.mesh.position.z
+                );
+            }
+        }
     }
 
     onMouseUp() {
-        console.log('up')
+        if (this.target) {
+            this.update(this.target)
+        }
+        this.targetPlane = null
+        this.controls.enabled = true;
     }
 
-    onMouseDown() {
-        console.log('down')
+    onMouseDown(event) {
+        if (this.target != null) {
+            this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+            this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+            let intersects = Raycaster.use(this.mouse, this.children)
+            let targetArrow = intersects.filter(i => i.object.type === "Mesh" && i.object.parent._type === "ArrowHelper")
+            if (targetArrow[0]) {
+                this.targetArrowDir = targetArrow[0].object.parent._dir
+                this.targetPlane = intersects.filter(
+                    i => i.object._type === 'PlaneHelper' && i.object._dir == this.targetArrowDir
+                );
+                this.downPoint = this.targetPlane[0].point
+                this.controls.enabled = false;
+            }
+        }
     }
 }
 

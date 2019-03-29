@@ -24,7 +24,9 @@ export default class Editor {
 
     init() {
         //renderer
-        this.renderer = new THREE.WebGLRenderer();
+        this.renderer = new THREE.WebGLRenderer({
+            antialias: true
+        });
         this.renderer.setSize(window.innerWidth, window.innerHeight);
         this.renderer.setPixelRatio(window.devicePixelRatio);
 
@@ -43,15 +45,16 @@ export default class Editor {
         Raycaster.camera = this.camera;
 
         // axes
-        this.scene.add(new THREE.AxesHelper(20));
+        // this.scene.add(new THREE.AxesHelper(20));
         this.scene.background = new THREE.Color(0x808080);
 
         this.scene.add(this.group)
 
         this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+        ArrowHelper.controls = this.controls
 
         this.addArrows()
-        this.setupGrid()
+        // this.setupGrid()
 
         this.renderer.setAnimationLoop(this.render.bind(this));
 
@@ -99,6 +102,7 @@ export default class Editor {
 
     update(id) {
         this.currentStageId = id
+        ArrowHelper.setTarget(null)
         Object.keys(this.stages).forEach(key => {
             this.stages[key].group.visible = false
             if (key === id) {
@@ -108,15 +112,20 @@ export default class Editor {
     }
 
     raycast(mouse) {
-        // this.raycaster.setFromCamera(mouse, this.camera);
-        // let intersects = this.raycaster.intersectObjects(this.stages[this.currentStageId].group.children, true);
-
         let intersects = Raycaster.use(mouse, this.stages[this.currentStageId].group.children)
 
         if (intersects[0]) {
-            // console.log(intersects[0].object._class)
-            let target = intersects[0].object._class
-            ArrowHelper.setTarget(target)
+            if (this.target) {
+                this.target.highlight(false)
+            }
+            this.target = intersects[0].object._class
+            ArrowHelper.setTarget(this.target)
+            this.target.highlight(true)
+        } else {
+            // ArrowHelper.setTarget(null)
+            if (this.target) {
+                // this.target.highlight(false)
+            }
         }
 
     }
