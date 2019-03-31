@@ -2,7 +2,7 @@ import * as THREE from "three";
 import Raycaster from '../editor/Raycaster'
 
 class ArrowsHelper extends THREE.Object3D {
-    constructor(opts) {
+    constructor() {
         super();
 
         this.target = null
@@ -25,7 +25,7 @@ class ArrowsHelper extends THREE.Object3D {
             transparent: true,
             opacity: 0.0,
             alphaTest: 0.5
-        })
+        });
 
         //x
         this.xArrow = new THREE.ArrowHelper(
@@ -36,8 +36,8 @@ class ArrowsHelper extends THREE.Object3D {
         );
         this.xArrow._type = "ArrowHelper";
         this.xArrow._dir = "x";
-        this.xShadowPlane = new THREE.Mesh(shadowPlaneMesh.clone(), shadowPlaneMaterial.clone())
-        this.xShadowPlane._type = "PlaneHelper"
+        this.xShadowPlane = new THREE.Mesh(shadowPlaneMesh.clone(), shadowPlaneMaterial.clone());
+        this.xShadowPlane._type = "PlaneHelper";
         this.xShadowPlane._dir = "x";
 
         //y
@@ -49,9 +49,9 @@ class ArrowsHelper extends THREE.Object3D {
         );
         this.yArrow._type = "ArrowHelper";
         this.yArrow._dir = "y";
-        this.yShadowPlane = new THREE.Mesh(shadowPlaneMesh.clone(), shadowPlaneMaterial.clone())
-        this.yShadowPlane.rotation.y = THREE.Math.degToRad(90)
-        this.yShadowPlane._type = "PlaneHelper"
+        this.yShadowPlane = new THREE.Mesh(shadowPlaneMesh.clone(), shadowPlaneMaterial.clone());
+        this.yShadowPlane.rotation.y = THREE.Math.degToRad(90);
+        this.yShadowPlane._type = "PlaneHelper";
         this.yShadowPlane._dir = "y";
 
         //z
@@ -63,17 +63,17 @@ class ArrowsHelper extends THREE.Object3D {
         );
         this.zArrow._type = "ArrowHelper";
         this.zArrow._dir = "z";
-        this.zShadowPlane = new THREE.Mesh(shadowPlaneMesh.clone(), shadowPlaneMaterial.clone())
-        this.zShadowPlane.rotation.x = THREE.Math.degToRad(90)
-        this.zShadowPlane._type = "PlaneHelper"
+        this.zShadowPlane = new THREE.Mesh(shadowPlaneMesh.clone(), shadowPlaneMaterial.clone());
+        this.zShadowPlane.rotation.x = THREE.Math.degToRad(90);
+        this.zShadowPlane._type = "PlaneHelper";
         this.zShadowPlane._dir = "z";
 
         this.add(this.xArrow);
-        this.add(this.xShadowPlane)
+        this.add(this.xShadowPlane);
         this.add(this.yArrow);
-        this.add(this.yShadowPlane)
+        this.add(this.yShadowPlane);
         this.add(this.zArrow);
-        this.add(this.zShadowPlane)
+        this.add(this.zShadowPlane);
     }
 
     hide() {
@@ -81,14 +81,14 @@ class ArrowsHelper extends THREE.Object3D {
     }
 
     setTarget(target) {
-        this.target = target
-        this.update()
+        this.target = target;
+        this.update();
     }
 
     update() {
         if (this.target) {
-            this.targetOrigin = this.target.mesh.position.clone()
-            this.position = this.target.mesh.position
+            this.targetOrigin = this.target.position.clone()
+            this.position = this.target.position;
             this.visible = true;
         } else {
             this.hide()
@@ -97,8 +97,8 @@ class ArrowsHelper extends THREE.Object3D {
     }
 
     init(dom) {
-        this.dom = dom
-        this.eventListener()
+        this.dom = dom;
+        this.eventListener();
     }
 
     eventListener() {
@@ -120,32 +120,28 @@ class ArrowsHelper extends THREE.Object3D {
                 this.movePoint = this.targetPlane[0].point
                 switch (this.targetArrowDir) {
                     case "x":
-                        this.target.mesh.position.x = this.targetOrigin.x + (this.movePoint.x - this.downPoint.x)
+                        this.target.position.x = this.targetOrigin.x + (this.movePoint.x - this.downPoint.x);
                         break;
                     case "y":
-                        this.target.mesh.position.y = this.targetOrigin.y + (this.movePoint.y - this.downPoint.y)
+                        this.target.position.y = this.targetOrigin.y + (this.movePoint.y - this.downPoint.y);
                         break;
                     case "z":
-                        this.target.mesh.position.z = Math.round(this.targetOrigin.z + (this.movePoint.z - this.downPoint.z))
+                        this.target.position.z = Math.round(this.targetOrigin.z + (this.movePoint.z - this.downPoint.z));
                         break;
 
                     default:
                         break;
                 }
-                this.position.set(
-                    this.target.mesh.position.x,
-                    this.target.mesh.position.y,
-                    this.target.mesh.position.z
-                );
+                this.position = this.target.position;
             }
         }
     }
 
     onMouseUp() {
         if (this.target) {
-            this.update(this.target)
+            this.update(this.target);
         }
-        this.targetPlane = null
+        this.targetPlane = null;
         this.controls.enabled = true;
     }
 
@@ -154,14 +150,14 @@ class ArrowsHelper extends THREE.Object3D {
             this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
             this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
-            let intersects = Raycaster.use(this.mouse, this.children)
-            let targetArrow = intersects.filter(i => i.object.type === "Mesh" && i.object.parent._type === "ArrowHelper")
+            let intersects = Raycaster.use(this.mouse, this.children);
+            let targetArrow = intersects.filter(i => i.object.type === "Mesh" && i.object.parent._type === "ArrowHelper");
             if (targetArrow[0]) {
-                this.targetArrowDir = targetArrow[0].object.parent._dir
+                this.targetArrowDir = targetArrow[0].object.parent._dir;
                 this.targetPlane = intersects.filter(
                     i => i.object._type === 'PlaneHelper' && i.object._dir == this.targetArrowDir
                 );
-                this.downPoint = this.targetPlane[0].point
+                this.downPoint = this.targetPlane[0].point;
                 this.controls.enabled = false;
             }
         }

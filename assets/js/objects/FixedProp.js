@@ -1,11 +1,13 @@
 import * as THREE from "three";
 
-export default class FixedProp {
+export default class FixedProp extends THREE.Object3D{
     constructor(opts) {
+        super()
         this.width = opts.width;
         this.height = opts.height;
         this.material = opts.material;
-        this.render()
+        this._id = opts.id
+        this.render();
     }
 
     render() {
@@ -18,6 +20,7 @@ export default class FixedProp {
         this.mesh = new THREE.Mesh(this.geometry, this.material);
         this.mesh._type = "FixedProp";
         this.mesh._class = this;
+        this.add(this.mesh);
     }
 
     highlight(value) {
