@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import Raycaster from '../editor/Raycaster'
 
-class ArrowHelper extends THREE.Object3D {
+class ArrowsHelper extends THREE.Object3D {
     constructor(opts) {
         super();
 
@@ -168,4 +168,4 @@ class ArrowHelper extends THREE.Object3D {
     }
 }
 
-export default new ArrowHelper()
+export default new ArrowsHelper()
