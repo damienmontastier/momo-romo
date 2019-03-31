@@ -1,21 +1,23 @@
-import * as THREE from 'THREE';
+import * as THREE from 'three';
 import OrbitControls from 'orbit-controls-es6';
 import Stage from '../editor/Stage';
 import TextureAtlas from '../utils/TextureAtlas';
-import ArrowHelper from '../objects/ArrowHelper';
-import Raycaster from './Raycaster'
+import ArrowsHelper from '../objects/ArrowsHelper';
+import Raycaster from './Raycaster';
+import GridsHelper from './../objects/GridsHelper';
 
 export default class Editor {
     constructor(opts) {
-        this.stages = {}
-        this.group = new THREE.Group();
+        this.stages = {};
+        this.stagesGroup = new THREE.Group();
 
         Object.keys(opts.stages).forEach(key => {
-            let atlas = opts.atlases[opts.stages[key].atlas]
+            let atlas = opts.atlases[opts.stages[key].atlas];
             this.stages[key] = new Stage({
-                textureAtlas: new TextureAtlas(atlas)
-            })
-            this.group.add(this.stages[key].group)
+                textureAtlas: new TextureAtlas(atlas),
+                pressets: opts.stages[key]
+            });
+            this.stagesGroup.add(this.stages[key]);
         });
 
         this.init()
@@ -45,84 +47,57 @@ export default class Editor {
         Raycaster.camera = this.camera;
 
         // axes
-        // this.scene.add(new THREE.AxesHelper(20));
+        this.scene.add(new THREE.AxesHelper(20));
         this.scene.background = new THREE.Color(0x808080);
 
-        this.scene.add(this.group)
+        this.scene.add(this.stagesGroup);
 
         this.controls = new OrbitControls(this.camera, this.renderer.domElement);
-        ArrowHelper.controls = this.controls
+        ArrowsHelper.controls = this.controls;
 
-        this.addArrows()
-        // this.setupGrid()
+        this.addArrows();
+        this.setupGrid();
 
         this.renderer.setAnimationLoop(this.render.bind(this));
 
         window.addEventListener("resize", this.onWindowResize.bind(this));
+
+        console.log(this.scene);
     }
 
     addArrows() {
-        ArrowHelper.init(this.renderer.domElement)
-        this.scene.add(ArrowHelper);
+        ArrowsHelper.init(this.renderer.domElement)
+        this.scene.add(ArrowsHelper);
     }
 
     setupGrid() {
-        this.grid = new THREE.Group()
-        let size = 6;
-        let divisions = size;
-        let gridHelper = new THREE.GridHelper(
-            size,
-            divisions,
-            0x0ffffff,
-            0x000000
-        );
-        gridHelper.position.x = size / 2;
-        gridHelper.position.z = size / 2;
-
-        // gridHelper.name = "Floor GridHelper";
-
-        this.grid.add(gridHelper);
-        for (let i = 0; i < 100; ++i) {
-            let gridHelperCloneXZ = gridHelper.clone();
-            gridHelperCloneXZ.position.x = size * i + size / 2;
-            gridHelperCloneXZ.position.z = size / 2;
-            gridHelperCloneXZ.position.y = 0;
-            this.grid.add(gridHelperCloneXZ);
-
-            let gridHelperCloneXY = gridHelper.clone();
-            gridHelperCloneXY.position.z = 0;
-            gridHelperCloneXY.position.y = size / 2;
-            gridHelperCloneXY.position.x = size * i + size / 2;
-            gridHelperCloneXY.rotation.x = THREE.Math.degToRad(90);
-            this.grid.add(gridHelperCloneXY);
-        }
-
-        this.scene.add(this.grid)
+        this.gridsHelper = new GridsHelper({size: 6});
+        this.scene.add(this.gridsHelper);
     }
 
     update(id) {
-        this.currentStageId = id
-        ArrowHelper.setTarget(null)
+        this.currentStageId = id;
+        ArrowsHelper.setTarget(null);
         Object.keys(this.stages).forEach(key => {
-            this.stages[key].group.visible = false
+            this.stages[key].visible = false;
             if (key === id) {
-                this.stages[key].group.visible = true
+                this.stages[key].visible = true;
             }
         })
     }
 
     raycast(mouse) {
-        let intersects = Raycaster.use(mouse, this.stages[this.currentStageId].group.children)
+        let intersects = Raycaster.use(mouse, this.stages[this.currentStageId].children);
 
         if (intersects[0]) {
             if (this.target) {
-                this.target.highlight(false)
+                this.target.highlight(false);
             }
-            this.target = intersects[0].object._class
-            ArrowHelper.setTarget(this.target)
-            this.target.highlight(true)
+            this.target = intersects[0].object._class;
+            ArrowsHelper.setTarget(this.target);
+            this.target.highlight(true);
         } else {
-            // ArrowHelper.setTarget(null)
+            // ArrowsHelper.setTarget(null)
             if (this.target) {
                 // this.target.highlight(false)
             }

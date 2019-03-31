@@ -1,9 +1,19 @@
 {
     "kintsugi": {
-        "id": 1,
+        "id": "kintsugi",
+        "index": 0,
         "atlas": "kintsugi",
         "props": {
-            "fixed": [],
+            "fixed": [
+                {
+                    "_id": "cactus",
+                    "position": {
+                        "x" : 1,
+                        "y": 1,
+                        "z": 3
+                    }
+                }
+            ],
             "sprites": []
         },
         "physics": [{
@@ -11,7 +21,8 @@
         }]
     },
     "kanso": {
-        "id": 0,
+        "id":"kanso",
+        "index": 1,
         "atlas": "kanso",
         "props": {
             "fixed": [],

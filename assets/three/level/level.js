@@ -1,4 +1,4 @@
-import * as THREE from 'THREE';
+import * as THREE from 'three';
 import OrbitControls from 'orbit-controls-es6';
 
 
