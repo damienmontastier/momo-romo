@@ -12,28 +12,19 @@
 
 <script>
 import { mapMutations, mapState } from "vuex";
-import levelTest from "../assets/three/level/level.js";
 
 export default {
   components: {},
   computed: {
     ...mapState({
-      counter: state => state.global.counter,
-      levels: state => state.global.levels
+      // counter: state => state.global.counter,
+      levels: state => state.levels
     })
   },
-  mounted() {
-    const level = new levelTest();
-    console.log(level);
-  },
-  created() {
-    console.log(this.levels);
-    // this.kintsugi = this.levels[Object.keys(this.levels)[0]];
-    // console.log(this.kintsugi);
-  },
+  created() {},
   methods: {
     ...mapMutations({
-      add: "global/increment"
+      add: "increment"
     })
   }
 };

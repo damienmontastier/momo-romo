@@ -1,5 +1,5 @@
 import atlases from '@/static/textures/atlases'
-const stagesPressets = require("@/static/content/level/levels.json");
+const stagesPressets = require("@/static/content/levels/levels.json");
 
 export const state = () => ({
     atlases: atlases,
