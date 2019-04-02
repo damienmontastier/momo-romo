@@ -1,4 +1,4 @@
-const levels = require('../static/content/level/levels.json');
+const levels = require('@/static/content/levels/levels.json');
 
 export const state = () => ({
     counter: "10",
