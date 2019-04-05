@@ -5,6 +5,7 @@ import TextureAtlas from '../utils/TextureAtlas';
 import ArrowsHelper from '../objects/ArrowsHelper';
 import Raycaster from './Raycaster';
 import GridsHelper from './../objects/GridsHelper';
+import KeyboardManager from '../utils/KeyboardManager';
 
 export default class Editor {
     constructor(opts) {
@@ -25,6 +26,7 @@ export default class Editor {
     }
 
     init() {
+        this.KeyboardManager = new KeyboardManager(this.onInput.bind(this))
         //renderer
         this.renderer = new THREE.WebGLRenderer({
             antialias: true
@@ -115,4 +117,19 @@ export default class Editor {
     render() {
         this.renderer.render(this.scene, this.camera);
     }
+
+    onInput(key) {
+        console.log(key)
+        switch (key) {
+            case 'Delete':
+                console.log(this.target)
+                // if target -> delete
+                break;
+            case 'CTRL+Z':
+                // Undo
+                break;
+            default:
+                break;
+        }
+    }   
 }
