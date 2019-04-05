@@ -17,24 +17,23 @@ export default class Stage  extends THREE.Object3D{
         // }
         
 
-        window.addEventListener('click',()=>{
-            this.exportPressets()
-        })
+        // window.addEventListener('click',()=>{
+        //     this.exportPressets()
+        // })
     }
 
     exportPressets() {
         let fixedprops = [];
         this.fixedProps.forEach((prop)=>{
-            fixedprops.push({_id: prop._id, position: {x:prop.position.x,y:prop.position.y,z:prop.position.z}})
+            fixedprops.push({_id: prop._id, position: prop.position})
         });
         this.pressets.props.fixedProps = fixedprops;
-        console.log(this.pressets.id,this.pressets);
+        // console.log(this.pressets.id,this.pressets);
     }
 
     init() {
         this.fixedProps.forEach(prop => {
-            console.log(prop)
-            this.addFixedProp(prop._id)
+            this.addFixedProp(prop)
         });
     }
 
@@ -49,8 +48,9 @@ export default class Stage  extends THREE.Object3D{
         }
     }
 
-    addFixedProp(id) {
-        console.log(id)
+    addFixedProp({_id,position,rotation}) {
+        let id = _id
+        console.log(id, 'prop added')
         let t = this.textureAtlas.get(id);
         let prop = new FixedProp({
             id: id,
@@ -64,9 +64,9 @@ export default class Stage  extends THREE.Object3D{
                 alphaTest: 0.5,
             })
         });
-        prop.position.set(t._data.ratio * 0.5, 0.5, 0);
+        prop.position.set((t._data.ratio * 0.5) + position.x, 0.5 + position.y, 0 + position.z);
+        prop.rotation.set(rotation.x,rotation.y,rotation.z);
         this.fixedProps.push(prop);
         this.add(prop);
-        console.log(this.fixedProps)
     }
 }
