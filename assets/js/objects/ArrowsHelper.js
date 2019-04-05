@@ -95,7 +95,8 @@ export default class ArrowsHelper extends THREE.Object3D {
 
     update() {
         if (this.target) {
-            this.targetOrigin = this.target.position.clone()
+            this.targetOriginPosition = this.target.position.clone()
+            this.targetOriginRotation = this.target.rotation.clone()
             this.position = this.target.position;
             this.visible = true;
         } else {
@@ -129,13 +130,13 @@ export default class ArrowsHelper extends THREE.Object3D {
                     this.movePoint = this.targetPlane[0].point
                     switch (this.targetArrowDir) {
                         case "x":
-                            this.target.position.x = this.targetOrigin.x + (this.movePoint.x - this.downPoint.x);
+                            this.target.position.x = this.targetOriginPosition.x + (this.movePoint.x - this.downPoint.x);
                             break;
                         case "y":
-                            this.target.position.y = this.targetOrigin.y + (this.movePoint.y - this.downPoint.y);
+                            this.target.position.y = this.targetOriginPosition.y + (this.movePoint.y - this.downPoint.y);
                             break;
                         case "z":
-                            this.target.position.z = Math.round(this.targetOrigin.z + (this.movePoint.z - this.downPoint.z));
+                            this.target.position.z = Math.round(this.targetOriginPosition.z + (this.movePoint.z - this.downPoint.z));
                             break;
 
                         default:
@@ -151,7 +152,7 @@ export default class ArrowsHelper extends THREE.Object3D {
                     
                     this.movePoint = this.targetPlane[0].point
                     let r = this.movePoint.x - this.downPoint.x
-                    this.target.rotation.z = r
+                    this.target.rotation.z = this.targetOriginRotation.z + r
                 }
                 
             }
