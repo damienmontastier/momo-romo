@@ -53,7 +53,8 @@ export default class Editor {
         this.scene.add(this.stagesGroup);
 
         this.controls = new OrbitControls(this.camera, this.renderer.domElement);
-        ArrowsHelper.controls = this.controls;
+        this.arrowsHelper = new ArrowsHelper()
+        this.arrowsHelper.controls = this.controls;
 
         this.addArrows();
         this.setupGrid();
@@ -66,8 +67,8 @@ export default class Editor {
     }
 
     addArrows() {
-        ArrowsHelper.init(this.renderer.domElement)
-        this.scene.add(ArrowsHelper);
+        this.arrowsHelper.init(this.renderer.domElement)
+        this.scene.add(this.arrowsHelper);
     }
 
     setupGrid() {
@@ -77,7 +78,7 @@ export default class Editor {
 
     update(id) {
         this.currentStageId = id;
-        ArrowsHelper.setTarget(null);
+        this.arrowsHelper.setTarget(null);
         Object.keys(this.stages).forEach(key => {
             this.stages[key].visible = false;
             if (key === id) {
@@ -94,10 +95,10 @@ export default class Editor {
                 this.target.highlight(false);
             }
             this.target = intersects[0].object._class;
-            ArrowsHelper.setTarget(this.target);
+            this.arrowsHelper.setTarget(this.target);
             this.target.highlight(true);
         } else {
-            // ArrowsHelper.setTarget(null)
+            // this.arrowsHelper.setTarget(null)
             if (this.target) {
                 // this.target.highlight(false)
             }
