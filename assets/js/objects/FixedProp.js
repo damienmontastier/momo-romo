@@ -3,6 +3,7 @@ import * as THREE from "three";
 export default class FixedProp extends THREE.Object3D{
     constructor(opts) {
         super()
+        //index (pour le supprimer)
         this.width = opts.width;
         this.height = opts.height;
         this.material = opts.material;
