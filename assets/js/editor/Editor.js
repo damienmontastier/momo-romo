@@ -6,6 +6,7 @@ import ArrowsHelper from '../objects/ArrowsHelper';
 import Raycaster from './Raycaster';
 import GridsHelper from './../objects/GridsHelper';
 import KeyboardManager from '../utils/KeyboardManager';
+import History from './History';
 
 export default class Editor {
     constructor(opts) {
@@ -26,7 +27,13 @@ export default class Editor {
     }
 
     init() {
+        //historique
+        this.history = History
+        console.log(this.history)
+
+        //keyboard manager
         this.KeyboardManager = new KeyboardManager(this.onInput.bind(this))
+
         //renderer
         this.renderer = new THREE.WebGLRenderer({
             antialias: true
@@ -55,7 +62,7 @@ export default class Editor {
         this.scene.add(this.stagesGroup);
 
         this.controls = new OrbitControls(this.camera, this.renderer.domElement);
-        this.arrowsHelper = new ArrowsHelper()
+        this.arrowsHelper = ArrowsHelper;
         this.arrowsHelper.controls = this.controls;
 
         this.addArrows();
@@ -122,11 +129,18 @@ export default class Editor {
         console.log(key)
         switch (key) {
             case 'Delete':
-                console.log(this.target)
-                // if target -> delete
+                if(this.target){
+                    this.stages[this.currentStageId].removeElement(this.target)
+                    this.arrowsHelper.setTarget(null);
+                }
                 break;
             case 'CTRL+Z':
                 // Undo
+                this.history.undo()
+                break;
+            case 'CTRL+Shift+Z':
+                //Redo
+                this.history.redo()
                 break;
             default:
                 break;
