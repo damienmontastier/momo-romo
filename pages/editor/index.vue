@@ -37,7 +37,7 @@ export default {
     this.editor.renderer.domElement.addEventListener("mouseup", () => {
       if (this.isDragging) {
         this.editor.stages[this.currentStageId].addFixedProp(
-          this.draggingPropId
+          {_id:this.draggingPropId}
         );
         this.setDraggingPropId(null);
       }

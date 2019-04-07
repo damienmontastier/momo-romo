@@ -1,11 +1,13 @@
 import * as THREE from "three";
-import Raycaster from '../editor/Raycaster'
+import Raycaster from '../editor/Raycaster';
+import History from '../editor/History';
 
-export default class ArrowsHelper extends THREE.Object3D {
+class ArrowsHelper extends THREE.Object3D {
     constructor() {
         super();
 
-        this.target = null
+        this.history = History;
+        this.target = null;
         this.mouse = new THREE.Vector2();
 
         this.render();
@@ -73,7 +75,7 @@ export default class ArrowsHelper extends THREE.Object3D {
             color: 0xff0000
         }) );
         this.xCircle.position.z = 0.1;
-        this.xCircle._type = "CircleHelper"
+        this.xCircle._type = "CircleHelper";
         this.add(this.xCircle)
 
         this.add(this.xArrow);
@@ -95,12 +97,25 @@ export default class ArrowsHelper extends THREE.Object3D {
 
     update() {
         if (this.target) {
-            this.targetOriginPosition = this.target.position.clone()
-            this.targetOriginRotation = this.target.rotation.clone()
+            if(this.edited) {
+                console.log(this.history)
+                this.history.push(
+                {
+                    name:'moved',
+                    copy:{
+                        position: this.targetOriginPosition,
+                        rotation: this.targetOriginRotation
+                    },
+                    target: this.target
+                })
+            }
+            
+            this.targetOriginPosition = this.target.position.clone();
+            this.targetOriginRotation = this.target.rotation.clone();
             this.position = this.target.position;
             this.visible = true;
         } else {
-            this.hide()
+            this.hide();
         }
 
     }
@@ -121,13 +136,15 @@ export default class ArrowsHelper extends THREE.Object3D {
             this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
             this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
+            this.edited = true;
+
             let intersects = Raycaster.use(this.mouse, this.children);
             if(this.mode == 'position'){
                 this.targetPlane = intersects.filter(
                     i => i.object._type === 'PlaneHelper' && i.object._dir == this.targetArrowDir
                 );
                 if (this.targetPlane[0]) {
-                    this.movePoint = this.targetPlane[0].point
+                    this.movePoint = this.targetPlane[0].point;
                     switch (this.targetArrowDir) {
                         case "x":
                             this.target.position.x = this.targetOriginPosition.x + (this.movePoint.x - this.downPoint.x);
@@ -150,9 +167,9 @@ export default class ArrowsHelper extends THREE.Object3D {
                 );
                 if(this.targetPlane[0]) {
                     
-                    this.movePoint = this.targetPlane[0].point
-                    let r = this.movePoint.x - this.downPoint.x
-                    this.target.rotation.z = this.targetOriginRotation.z + r
+                    this.movePoint = this.targetPlane[0].point;
+                    let r = this.movePoint.x - this.downPoint.x;
+                    this.target.rotation.z = this.targetOriginRotation.z + r;
                 }
                 
             }
@@ -160,7 +177,7 @@ export default class ArrowsHelper extends THREE.Object3D {
     }
 
     onMouseUp() {
-        this.mode = null
+        this.mode = null;
         if (this.target) {
             this.update(this.target);
         }
@@ -172,6 +189,8 @@ export default class ArrowsHelper extends THREE.Object3D {
         if (this.target != null) {
             this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
             this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+            this.edited = false;
 
             let intersects = Raycaster.use(this.mouse, this.children);
             // console.log(intersects.filter(i => i.object._type === "CircleHelper"))
@@ -197,3 +216,5 @@ export default class ArrowsHelper extends THREE.Object3D {
         }
     }
 }
+
+export default new ArrowsHelper()
