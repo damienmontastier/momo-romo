@@ -12,10 +12,11 @@ if (process.client) {
         }
 
         remove() {
-            if(this.position){
+            if(this.position && this.rotation && this.scale){
                 this.removeFolder(this.position);
                 this.removeFolder(this.rotation);
                 this.removeFolder(this.scale);
+                this.position = this.rotation = this.scale = null
             }
         }
 
