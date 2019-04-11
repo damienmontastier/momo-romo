@@ -1,5 +1,6 @@
 import * as THREE from 'three'
 import FixedProp from '../objects/FixedProp'
+import History from '../editor/History'
 
 export default class Stage  extends THREE.Object3D{
     constructor(opts) {
@@ -7,6 +8,7 @@ export default class Stage  extends THREE.Object3D{
         this.textureAtlas = opts.textureAtlas;
         // this.fixedProps = [ ...opts.pressets.props.fixed ];
         this.fixedProps = []
+        this.platforms = []
         this.pressets = { ...opts.pressets };
         // console.log(this.pressets)
         //     let store
@@ -18,24 +20,38 @@ export default class Stage  extends THREE.Object3D{
         // }
         
 
-        window.addEventListener('click',()=>{
-            this.exportPressets()
-        })
+        // window.addEventListener('click',()=>{
+        //     this.export()
+        // })
     }
 
-    exportPressets() {
+    export() {
+        //export fixed props
         let fixedprops = [];
-        this.fixedProps.filter(prop => prop !== undefined).forEach((prop)=>{
+        this.fixedProps.filter(prop => prop.visible).forEach((prop)=>{
             fixedprops.push({_id: prop._id, position: prop.position, rotation: prop.rotation, scale: prop.scale})
         });
         this.pressets.props.fixedProps = fixedprops;
+
+        //TODO : Export platforms
+        // let platforms = [];
+        // this.platforms.filter(platform => platform.visible).forEach((platform)=>{
+        //     platforms.push({position: platform.position, rotation: platform.rotation, scale: platform.scale})
+        // });
+
         console.log(this.pressets.id,this.pressets);
     }
 
     init() {
+        //init fixed Props
         this.pressets.props.fixed.forEach(prop => {
             this.addFixedProp(prop)
         });
+
+        //TODO: init Platforms
+        // this.pressets.props.platforms.forEach(platform => {
+        //     this.addPlatform(platform)
+        // });
     }
 
     loadTextureAtlas() {
@@ -53,15 +69,21 @@ export default class Stage  extends THREE.Object3D{
         // console.log(this.fixedProps)
         switch (target._type) {
             case "fixedProp":
-                // console.log(this.fixedProp)
-                this.fixedProps[target.index] = undefined
-                this.remove(target)
-                console.log(this.fixedProps)
+                target.visible = false
+                History.push({name: 'deleted',target: target,copy:{}})
                 break;
         
             default:
                 break;
         }
+    }
+
+    //TODO : Add platforms
+    addPlatform() {
+        //ici pour ajouter une platform
+
+        // let platform = new Platform()
+        // this.platforms.push(platform)
     }
 
     addFixedProp({_id,position,rotation}) {

@@ -1,0 +1,6 @@
+#ArrowHelper
+-selectionner un element: ArrowHelper.setTarget( target )
+permet mouvement/rotation/scale (Arrows + GUI)
+
+#History
+-ajouter à l'historique: History.push( {name:'moved'||'deleted', target:FixedProp||Platform||AnimatedProp, copy: { position:{},rotation:{},scale{}}} )

@@ -27,10 +27,6 @@ export default class Editor {
     }
 
     init() {
-        //historique
-        this.history = History
-        console.log(this.history)
-
         //keyboard manager
         this.KeyboardManager = new KeyboardManager(this.onInput.bind(this))
 
@@ -62,8 +58,8 @@ export default class Editor {
         this.scene.add(this.stagesGroup);
 
         this.controls = new OrbitControls(this.camera, this.renderer.domElement);
-        this.arrowsHelper = ArrowsHelper;
-        this.arrowsHelper.controls = this.controls;
+
+        ArrowsHelper.controls = this.controls;
 
         this.addArrows();
         this.setupGrid();
@@ -76,8 +72,8 @@ export default class Editor {
     }
 
     addArrows() {
-        this.arrowsHelper.init(this.renderer.domElement)
-        this.scene.add(this.arrowsHelper);
+        ArrowsHelper.init(this.renderer.domElement)
+        this.scene.add(ArrowsHelper);
     }
 
     setupGrid() {
@@ -87,7 +83,7 @@ export default class Editor {
 
     update(id) {
         this.currentStageId = id;
-        this.arrowsHelper.setTarget(null);
+        ArrowsHelper.setTarget(null);
         Object.keys(this.stages).forEach(key => {
             this.stages[key].visible = false;
             if (key === id) {
@@ -104,7 +100,7 @@ export default class Editor {
                 this.target.highlight(false);
             }
             this.target = intersects[0].object._class;
-            this.arrowsHelper.setTarget(this.target);
+            ArrowsHelper.setTarget(this.target);
             this.target.highlight(true);
         } else {
             // this.arrowsHelper.setTarget(null)
@@ -126,26 +122,31 @@ export default class Editor {
     }
 
     onInput(key) {
-        console.log(key)
+        // console.log(key)
         switch (key) {
             case 'Delete':
             case 'DELETE':
                 if(this.target){
                     this.stages[this.currentStageId].removeElement(this.target)
-                    this.arrowsHelper.setTarget(null);
+                    ArrowsHelper.setTarget(null);
                 }
-                console.warn('//TODO : undo la suppression')
                 break;
             case 'CTRL+Z':
                 // Undo
-                this.history.undo()
+                History.undo()
                 break;
             case 'CTRL+Shift+Z':
                 //Redo
-                this.history.redo()
+                History.redo()
                 break;
             default:
                 break;
         }
-    }   
+    }
+
+    export() {
+        Object.entries(this.stages).forEach((stage)=>{
+            stage[1].export()
+        })
+    }
 }

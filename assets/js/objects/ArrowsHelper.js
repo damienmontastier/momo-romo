@@ -6,7 +6,6 @@ import GUI from '../editor/GUI';
 class ArrowsHelper extends THREE.Object3D {
     constructor() {
         super();
-        this.history = History;
         this.target = null;
         this.mouse = new THREE.Vector2();
 
@@ -96,7 +95,7 @@ class ArrowsHelper extends THREE.Object3D {
         }
 
         if(!target){
-            GUI.remove(target)   
+            GUI.remove(target)
         }       
 
         this.target = target;
@@ -108,8 +107,7 @@ class ArrowsHelper extends THREE.Object3D {
         if (this.target) {
             
             if(this.edited) {
-                console.log(this.history)
-                this.history.push(
+                History.push(
                 {
                     name:'moved',
                     copy:{

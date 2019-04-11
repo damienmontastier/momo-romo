@@ -71,6 +71,7 @@ export default {
   height: 100vh;
   background: white;
   z-index: 2;
+
   img {
     height: 100%;
     max-width: unset;

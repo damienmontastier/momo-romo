@@ -2,6 +2,7 @@
   <div id="editor" ref="editor">
     <select name="stages" id="stages-select" ref="stages-select" v-on:change="onChange"></select>
     <props-editor></props-editor>
+    <export-btn v-on:exprt="exprt"></export-btn>
   </div>
 </template>
 
@@ -9,10 +10,10 @@
 import { mapMutations, mapState, mapGetters } from "vuex";
 
 import PropsEditor from "@/components/PropsEditor";
+import ExportBtn from '@/components/ExportBtn';
+
 import Editor from "@/assets/js/editor/Editor";
-// if (process.client) {
-//   var dat = require('dat.gui');
-// }
+
 
 export default {
   data() {
@@ -26,17 +27,15 @@ export default {
     };
   },
   mounted() {
-    // console.log(dat)
-    // this.gui = new dat.GUI();
     this.editor = new Editor({
       stages: this.stages,
       atlases: this.atlases
     });
     this.$refs.editor.appendChild(this.editor.renderer.domElement);
-    Object.keys(this.stages).forEach(id => {
+    Object.keys(this.stages).forEach((id,index) => {
       let option = document.createElement("option");
       option.value = id;
-      option.textContent = id;
+      option.textContent = index+1 +'-'+ id;
       this.$refs["stages-select"].appendChild(option);
     });
     this.onChange();
@@ -49,7 +48,7 @@ export default {
       }
     });
     this.editor.renderer.domElement.addEventListener("click", event => {
-      console.log("click");
+      console.log("click",event);
       this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
       this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
       this.editor.raycast(this.mouse);
@@ -72,13 +71,17 @@ export default {
       this.editor.stages[this.currentStageId].loadTextureAtlas();
       this.editor.update(this.currentStageId);
     },
+    exprt() {
+      this.editor.export()
+    },
     ...mapMutations({
       setCurrentStageId: "editor/setCurrentStageId",
       setDraggingPropId: "editor/setDraggingPropId"
     })
   },
   components: {
-    PropsEditor
+    PropsEditor,
+    ExportBtn
   }
 };
 </script>
@@ -91,5 +94,6 @@ export default {
     top: 0px;
     z-index: 3;
   }
+
 }
 </style>

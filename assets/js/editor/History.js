@@ -16,11 +16,23 @@ class History{
 
             this.current+= 1
             let command = this.command
-            command.target.position.copy(command.copy.position)
-            command.target.rotation.copy(command.copy.rotation)
+            switch (this.command.name) {
+                case 'moved':
+                    command.target.position.copy(command.copy.position)
+                    command.target.rotation.copy(command.copy.rotation)
 
-            ArrowsHelper.edited = false;
-            ArrowsHelper.update()
+                    ArrowsHelper.edited = false;
+                    ArrowsHelper.update()
+                    break;
+                case 'deleted':
+                    console.log('restore')
+                    command.target.visible = true
+                    ArrowsHelper.setTarget(command.target)
+                    break;
+                default:
+                    break;
+            }
+            
         }
     }
 
