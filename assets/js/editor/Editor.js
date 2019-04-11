@@ -129,10 +129,12 @@ export default class Editor {
         console.log(key)
         switch (key) {
             case 'Delete':
+            case 'DELETE':
                 if(this.target){
                     this.stages[this.currentStageId].removeElement(this.target)
                     this.arrowsHelper.setTarget(null);
                 }
+                console.warn('//TODO : undo la suppression')
                 break;
             case 'CTRL+Z':
                 // Undo

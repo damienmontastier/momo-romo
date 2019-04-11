@@ -10,6 +10,9 @@ import { mapMutations, mapState, mapGetters } from "vuex";
 
 import PropsEditor from "@/components/PropsEditor";
 import Editor from "@/assets/js/editor/Editor";
+// if (process.client) {
+//   var dat = require('dat.gui');
+// }
 
 export default {
   data() {
@@ -18,10 +21,13 @@ export default {
       mouse: {
         x: 0,
         y: 0
-      }
+      },
+      gui: null
     };
   },
   mounted() {
+    // console.log(dat)
+    // this.gui = new dat.GUI();
     this.editor = new Editor({
       stages: this.stages,
       atlases: this.atlases
