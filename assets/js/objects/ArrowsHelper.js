@@ -1,11 +1,11 @@
 import * as THREE from "three";
 import Raycaster from '../editor/Raycaster';
 import History from '../editor/History';
+import GUI from '../editor/GUI';
 
 class ArrowsHelper extends THREE.Object3D {
     constructor() {
         super();
-
         this.history = History;
         this.target = null;
         this.mouse = new THREE.Vector2();
@@ -91,12 +91,22 @@ class ArrowsHelper extends THREE.Object3D {
     }
 
     setTarget(target) {
+        if((target && !this.target) || (target && this.target && target.uuid !== this.target.uuid)) {
+            GUI.update(target)
+        }
+
+        if(!target){
+            GUI.remove(target)   
+        }       
+
         this.target = target;
+        
         this.update();
     }
 
     update() {
         if (this.target) {
+            
             if(this.edited) {
                 console.log(this.history)
                 this.history.push(
@@ -180,6 +190,7 @@ class ArrowsHelper extends THREE.Object3D {
         this.mode = null;
         if (this.target) {
             this.update(this.target);
+            GUI.update(this.target)
         }
         this.targetPlane = null;
         this.controls.enabled = true;

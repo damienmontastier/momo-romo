@@ -7,13 +7,11 @@ class History{
     }
 
     push(o) {
-        console.log('push')
         this.list.push(o)
         this.current = 0
     }
 
     undo() {
-        console.log('undo')
         if(this.current<this.list.length){
 
             this.current+= 1

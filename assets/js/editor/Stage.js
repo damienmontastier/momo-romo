@@ -18,15 +18,15 @@ export default class Stage  extends THREE.Object3D{
         // }
         
 
-        // window.addEventListener('click',()=>{
-        //     this.exportPressets()
-        // })
+        window.addEventListener('click',()=>{
+            this.exportPressets()
+        })
     }
 
     exportPressets() {
         let fixedprops = [];
         this.fixedProps.filter(prop => prop !== undefined).forEach((prop)=>{
-            fixedprops.push({_id: prop._id, position: prop.position})
+            fixedprops.push({_id: prop._id, position: prop.position, rotation: prop.rotation, scale: prop.scale})
         });
         this.pressets.props.fixedProps = fixedprops;
         console.log(this.pressets.id,this.pressets);
