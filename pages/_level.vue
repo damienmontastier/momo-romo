@@ -10,7 +10,7 @@
 <script>
 import { mapState, mapGetters, mapMutations } from "vuex";
 import TextureAtlas from "@/assets/js/utils/TextureAtlas";
-import Game from "@/assets/js/game/game.js";
+import Game from "@/assets/js/game/Game";
 
 export default {
   validate({ params, store }) {

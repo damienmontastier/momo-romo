@@ -5,6 +5,9 @@ import TextureAtlas from '../utils/TextureAtlas';
 import ArrowsHelper from '../objects/ArrowsHelper';
 import Raycaster from './Raycaster';
 import GridsHelper from './../objects/GridsHelper';
+import KeyboardManager from '../utils/KeyboardManager';
+import History from './History';
+
 
 export default class Editor {
     constructor(opts) {
@@ -21,10 +24,12 @@ export default class Editor {
         });
 
         this.init()
-
     }
 
     init() {
+        //keyboard manager
+        this.KeyboardManager = new KeyboardManager(this.onInput.bind(this))
+
         //renderer
         this.renderer = new THREE.WebGLRenderer({
             antialias: true
@@ -53,6 +58,7 @@ export default class Editor {
         this.scene.add(this.stagesGroup);
 
         this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+
         ArrowsHelper.controls = this.controls;
 
         this.addArrows();
@@ -62,7 +68,10 @@ export default class Editor {
 
         window.addEventListener("resize", this.onWindowResize.bind(this));
 
-        console.log(this.scene);
+    }
+
+    addPlatform() {
+        this.stages[this.currentStageId].addPlatform()
     }
 
     addArrows() {
@@ -71,7 +80,9 @@ export default class Editor {
     }
 
     setupGrid() {
-        this.gridsHelper = new GridsHelper({size: 6});
+        this.gridsHelper = new GridsHelper({
+            size: 6
+        });
         this.scene.add(this.gridsHelper);
     }
 
@@ -97,7 +108,7 @@ export default class Editor {
             ArrowsHelper.setTarget(this.target);
             this.target.highlight(true);
         } else {
-            // ArrowsHelper.setTarget(null)
+            // this.arrowsHelper.setTarget(null)
             if (this.target) {
                 // this.target.highlight(false)
             }
@@ -113,5 +124,34 @@ export default class Editor {
 
     render() {
         this.renderer.render(this.scene, this.camera);
+    }
+
+    onInput(key) {
+        // console.log(key)
+        switch (key) {
+            case 'Delete':
+            case 'DELETE':
+                if (this.target) {
+                    this.stages[this.currentStageId].removeElement(this.target)
+                    ArrowsHelper.setTarget(null);
+                }
+                break;
+            case 'CTRL+Z':
+                // Undo
+                History.undo()
+                break;
+            case 'CTRL+Shift+Z':
+                //Redo
+                History.redo()
+                break;
+            default:
+                break;
+        }
+    }
+
+    export () {
+        Object.entries(this.stages).forEach((stage) => {
+            stage[1].export()
+        })
     }
 }

@@ -30,7 +30,7 @@ export default {
 };
 </script>
 
-<style>
+<style lang="scss" scoped>
 .container {
   min-height: 100vh;
   display: flex;
@@ -45,8 +45,6 @@ export default {
   display: block;
   font-weight: 300;
   font-size: 100px;
-  color: #35495e;
   letter-spacing: 1px;
 }
 </style>
-

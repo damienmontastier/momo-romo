@@ -36,18 +36,20 @@ export default {
     this.onChange();
     this.editor.renderer.domElement.addEventListener("mouseup", () => {
       if (this.isDragging) {
-        console.log(this.draggingPropId);
-        this.editor.stages[this.currentStageId].addFixedProp(
-          this.draggingPropId
-        );
+        this.editor.stages[this.currentStageId].addFixedProp({
+          _id: this.draggingPropId
+        });
         this.setDraggingPropId(null);
       }
     });
     this.editor.renderer.domElement.addEventListener("click", event => {
-      console.log("click");
       this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
       this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
       this.editor.raycast(this.mouse);
+
+      if (event.shiftKey) {
+        this.editor.addPlatform();
+      }
     });
   },
   computed: {
@@ -65,6 +67,7 @@ export default {
     onChange() {
       this.setCurrentStageId(this.$refs["stages-select"].value);
       this.editor.stages[this.currentStageId].loadTextureAtlas();
+
       this.editor.update(this.currentStageId);
     },
     ...mapMutations({

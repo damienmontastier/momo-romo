@@ -63,8 +63,8 @@ module.exports = {
     //     })
     //   }
     // }
-    // build: {
-    //   vendor: ['three-orbit-controls']
-    // }
+    build: {
+      vendor: ['three-orbit-controls','dat.gui']
+    }
   }
 }
