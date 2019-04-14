@@ -8,6 +8,7 @@ import GridsHelper from './../objects/GridsHelper';
 import KeyboardManager from '../utils/KeyboardManager';
 import History from './History';
 
+
 export default class Editor {
     constructor(opts) {
         this.stages = {};
@@ -23,7 +24,6 @@ export default class Editor {
         });
 
         this.init()
-
     }
 
     init() {
@@ -68,7 +68,10 @@ export default class Editor {
 
         window.addEventListener("resize", this.onWindowResize.bind(this));
 
-        console.log(this.scene);
+    }
+
+    addPlatform() {
+        this.stages[this.currentStageId].addPlatform()
     }
 
     addArrows() {
@@ -77,7 +80,9 @@ export default class Editor {
     }
 
     setupGrid() {
-        this.gridsHelper = new GridsHelper({size: 6});
+        this.gridsHelper = new GridsHelper({
+            size: 6
+        });
         this.scene.add(this.gridsHelper);
     }
 
@@ -126,7 +131,7 @@ export default class Editor {
         switch (key) {
             case 'Delete':
             case 'DELETE':
-                if(this.target){
+                if (this.target) {
                     this.stages[this.currentStageId].removeElement(this.target)
                     ArrowsHelper.setTarget(null);
                 }
@@ -144,8 +149,8 @@ export default class Editor {
         }
     }
 
-    export() {
-        Object.entries(this.stages).forEach((stage)=>{
+    export () {
+        Object.entries(this.stages).forEach((stage) => {
             stage[1].export()
         })
     }

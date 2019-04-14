@@ -1,6 +1,7 @@
 import * as THREE from 'three'
 import FixedProp from '../objects/FixedProp'
 import History from '../editor/History'
+import Platform from '../editor/Platform'
 
 export default class Stage  extends THREE.Object3D{
     constructor(opts) {
@@ -48,10 +49,9 @@ export default class Stage  extends THREE.Object3D{
             this.addFixedProp(prop)
         });
 
-        //TODO: init Platforms
-        // this.pressets.props.platforms.forEach(platform => {
-        //     this.addPlatform(platform)
-        // });
+        this.pressets.platforms.forEach(platform => {
+            this.addPlatform(platform)
+        });
     }
 
     loadTextureAtlas() {
@@ -66,24 +66,22 @@ export default class Stage  extends THREE.Object3D{
     }
 
     removeElement(target) {
-        // console.log(this.fixedProps)
-        switch (target._type) {
-            case "fixedProp":
-                target.visible = false
-                History.push({name: 'deleted',target: target,copy:{}})
-                break;
-        
-            default:
-                break;
-        }
+        target.visible = false
+        History.push({name: 'deleted',target: target,copy:{}})
     }
 
-    //TODO : Add platforms
-    addPlatform() {
-        //ici pour ajouter une platform
+    addPlatform(params) {
+        let platform = new Platform(params)
 
-        // let platform = new Platform()
-        // this.platforms.push(platform)
+        let position = typeof params == "undefined" || undefined ? new THREE.Vector3(0,0,0) : params.position
+        let rotation = typeof params == "undefined" || undefined ? new THREE.Vector3(0,0,0) : params.rotation
+
+        platform.position.set(position.x * .5, position.y, position.z)
+        platform.rotation.set(rotation.x, rotation.y, rotation.z)
+        
+        this.platforms.push(platform)
+
+        this.add(platform)        
     }
 
     addFixedProp({_id,position,rotation}) {

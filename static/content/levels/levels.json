@@ -7,19 +7,19 @@
             "fixed": [{
                     "_id": "cactus",
                     "position": {
-                        "x": 10,
+                        "x": 1,
+                        "y": 0,
+                        "z": 0
+                    },
+                    "rotation": {
+                        "x": 0,
                         "y": 0,
                         "z": 1
                     },
-                    "rotation": {
-                        "x":0,
-                        "y":0,
-                        "z":1
-                    },
                     "scale": {
-                        "x":1,
-                        "y":1,
-                        "z":1
+                        "x": 1,
+                        "y": 1,
+                        "z": 1
                     }
                 },
                 {
@@ -30,14 +30,14 @@
                         "z": 3
                     },
                     "rotation": {
-                        "x":0,
-                        "y":0,
-                        "z":0
+                        "x": 0,
+                        "y": 0,
+                        "z": 0
                     },
                     "scale": {
-                        "x":1,
-                        "y":1,
-                        "z":1
+                        "x": 1,
+                        "y": 1,
+                        "z": 1
                     }
                 },
                 {
@@ -48,33 +48,83 @@
                         "z": 3
                     },
                     "rotation": {
-                        "x":0,
-                        "y":0,
-                        "z":0
+                        "x": 0,
+                        "y": 0,
+                        "z": 0
                     },
                     "scale": {
-                        "x":1,
-                        "y":1,
-                        "z":1
+                        "x": 1,
+                        "y": 1,
+                        "z": 1
                     }
                 }
             ],
             "sprites": []
         },
         "platforms": [{
-
-        }]
+                "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                },
+                "position": {
+                    "x": 1,
+                    "y": 2,
+                    "z": 4
+                },
+                "rotation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0
+                }
+            },
+            {
+                "scale": {
+                    "x": 5,
+                    "y": 2,
+                    "z": 1
+                },
+                "position": {
+                    "x": 5,
+                    "y": 2,
+                    "z": 0
+                },
+                "rotation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0
+                }
+            }
+        ]
     },
     "kanso": {
         "id": "kanso",
         "index": 1,
         "atlas": "kanso",
         "props": {
-            "fixed": [],
+            "fixed": [{
+                "_id": "cactus",
+                "position": {
+                    "x": 5,
+                    "y": 2,
+                    "z": 4
+                },
+                "rotation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0
+                },
+                "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                }
+            }],
             "sprites": []
         },
         "platforms": [{
-
+            "id": 1000,
+            "value": "tesfdsfdsft"
         }]
     }
 

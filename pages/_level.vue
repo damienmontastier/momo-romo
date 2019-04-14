@@ -10,7 +10,7 @@
 <script>
 import { mapState, mapGetters, mapMutations } from "vuex";
 import TextureAtlas from "@/assets/js/utils/TextureAtlas";
-import Game from "@/assets/js/game/game.js";
+import Game from "@/assets/js/game/Game";
 
 export default {
   validate({ params, store }) {
@@ -33,11 +33,6 @@ export default {
     this.currentAltlas = this.atlases[this.currentStageId]; // Texture of the current Level
   },
   mounted() {
-    //Creation de la scène
-    // this.levelScene = new level({
-    //   textureAtlas: new TextureAtlas(this.currentAltlas),
-    //   params: this.currentLevelParams
-    // });
     this.game = new Game({
       currentLevelParams: this.currentLevelParams,
       currentAltlas: this.currentAltlas

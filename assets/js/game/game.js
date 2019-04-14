@@ -1,5 +1,4 @@
-import * as THREE from 'three';
-import levelScene from "@/assets/js/game/levelScene.js";
+import sceneLevel from "@/assets/js/game/sceneLevel.js";
 import TextureAtlas from '@/assets/js/utils/TextureAtlas.js';
 
 export default class Game {
@@ -8,7 +7,7 @@ export default class Game {
         this.currentAltlas = opts.currentAltlas
     }
     start() {
-        this.levelScene = new levelScene({
+        this.sceneLevel = new sceneLevel({
             levelParams: this.currentLevelParams,
             textureAtlas: new TextureAtlas(this.currentAltlas)
         })

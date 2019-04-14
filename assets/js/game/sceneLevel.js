@@ -1,16 +1,20 @@
 import * as THREE from 'three';
 import OrbitControls from 'orbit-controls-es6';
+import FixedProp from '../objects/FixedProp'
+import CANNON from 'cannon'
+import physicParams from '../physics/physicParams';
+import '../physics/CannonDebugRenderer'
+
 
 export default class Level {
     constructor(opts) {
-
         this.canvas = document.getElementById("canvas")
-
         this.textureAtlas = opts.textureAtlas; // textureAtlas
         this.fixedProps = [...opts.levelParams.props.fixed]; // Fixed Props
         this.levelParams = {
             ...opts.levelParams
         };
+        this.platforms = this.levelParams.platforms
 
         //Setup Camera
         this.camera = new THREE.PerspectiveCamera(
@@ -30,6 +34,8 @@ export default class Level {
 
         this.loaderTexture()
 
+        this.worldPhysic();
+
         this.renderer = new THREE.WebGLRenderer();
 
         this.renderer.setSize(window.innerWidth, window.innerHeight);
@@ -43,6 +49,16 @@ export default class Level {
         window.addEventListener("resize", this.onWindowResize.bind(this));
     }
 
+    worldPhysic() {
+        this.physicParams = new physicParams()
+        this.world = this.physicParams.world
+
+        this.cannonDebugRenderer = new THREE.CannonDebugRenderer(
+            this.scene,
+            this.world
+        )
+    }
+
     loaderTexture() {
         this.textureAtlas.load().then(textures => {
             this.textures = textures;
@@ -54,34 +70,42 @@ export default class Level {
         this.fixedProps.forEach(prop => {
             this.addFixedProp(prop)
         });
+        this.platforms.forEach(platform => {
+            this.addPlatforms(platform)
+        });
     }
 
     addFixedProp(props) {
         let t = this.textureAtlas.get(props._id);
-        let prop = new Props({
+        let prop = new FixedProp({
             id: props._id,
             width: t._data.ratio,
             position: props.position,
             height: 1,
             material: new THREE.MeshBasicMaterial({
-                // color: 0xff0000,
                 map: t,
-                // side: THREE.FaceSide,
                 transparent: true,
                 alphaTest: 0.5,
             })
         });
-        prop.position.set(t._data.ratio * 0.5, 0.5, 0);
+        prop.position.set(props.position.x, props.position.y, props.position.z);
         this.fixedProps.push(prop);
         this.scene.add(prop)
     }
 
-    addProps() {
-        this.propsMesh = new Props({
-            props: this.props
-        })
+    addPlatforms(platform) {
+        // TODO add class for sphere, plane, box
+        let size = platform.scale
+        let position = platform.position
 
-        this.scene.add(this.propsMesh)
+        let body = new CANNON.Body({
+            mass: 0,
+            shape: new CANNON.Box(new CANNON.Vec3(size.x, size.y / 10, size.z)),
+            material: new CANNON.Material(),
+            position: new CANNON.Vec3(position.x, position.y, position.z)
+        });
+
+        this.world.add(body);
     }
 
     onWindowResize() {
@@ -91,37 +115,10 @@ export default class Level {
     }
 
     render() {
+        this.cannonDebugRenderer.update()
+
+        this.physicParams.update()
+
         this.renderer.render(this.scene, this.camera);
     }
-}
-
-class Props extends THREE.Object3D {
-    constructor(opts) {
-        super()
-        this.width = opts.width;
-        this.height = opts.height;
-        this.material = opts.material;
-        this._id = opts.id
-        this.positionProps = {
-            x: opts.position.x,
-            y: opts.position.y,
-            z: opts.position.z,
-        }
-        this.render();
-    }
-
-    render() {
-        this.geometry = new THREE.PlaneGeometry(
-            this.width,
-            this.height,
-            1,
-            1
-        );
-        this.mesh = new THREE.Mesh(this.geometry, this.material);
-        this.mesh.position.set(this.positionProps.x, this.positionProps.y, this.positionProps.z)
-        this.mesh._type = "FixedProp";
-        this.mesh._class = this;
-        this.add(this.mesh);
-    }
-
 }
