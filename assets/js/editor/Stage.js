@@ -34,12 +34,12 @@ export default class Stage extends THREE.Object3D {
         this.fixedProps.filter(prop => prop.visible).forEach((prop) => {
             fixedprops.push({
                 _id: prop._id,
-                position: prop.position,
-                rotation: prop.rotation,
-                scale: prop.scale
+                position: {x:prop.position.x - (prop.width * 0.5),y:prop.position.y - 0.5,z:prop.position.z},
+                rotation: {x:prop.rotation.x,y:prop.rotation.y,z:prop.rotation.z},
+                scale: {x:prop.scale.x,y:prop.scale.y,z:prop.scale.z}
             })
         });
-        this.pressets.props.fixedProps = fixedprops;
+        this.pressets.props.fixed = fixedprops;
 
         //TODO : Export platforms
         // let platforms = [];
@@ -56,7 +56,8 @@ export default class Stage extends THREE.Object3D {
 
     init() {
         //init fixed Props
-        this.pressets.props.fixed.forEach(prop => {
+        this.pressets.props.fixed.forEach((prop,index) => {
+            console.log(prop,index)
             this.addFixedProp(prop)
         });
 

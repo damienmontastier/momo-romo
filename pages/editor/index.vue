@@ -84,10 +84,11 @@ export default {
     },
     ...mapMutations({
       setCurrentStageId: "editor/setCurrentStageId",
-      setDraggingPropId: "editor/setDraggingPropId"
+      setDraggingPropId: "editor/setDraggingPropId",
+      export: "editor/export"
     }),
     exprt() {
-      console.log(this.editor.export());
+      this.export(this.editor.export());
       // let json = JSON.stringify(this.editor.export());
       // let file = new File(exportJson, "write");
       // file.open();

@@ -1,4 +1,5 @@
 import * as firebase from 'firebase/app'
+import 'firebase/database'
 import 'firebase/storage'
 
 var config = {
@@ -13,5 +14,6 @@ var config = {
     !firebase.apps.length ? firebase.initializeApp(config) : ''
 
 export const storage = firebase.storage()
+export const database = firebase.database()
 
 export default firebase
