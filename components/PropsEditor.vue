@@ -1,6 +1,7 @@
 <template>
   <div id="props-editor" ref="props-editor" v-on:mouseup="onMouseUp">
     <img
+      v-if="loaded"
       ref="atlas-image"
       :src="this.currentAtlas.png"
       alt
@@ -11,7 +12,7 @@
 </template>
 
 <script>
-import { mapGetters, mapMutations } from "vuex";
+import { mapGetters, mapMutations, mapState } from "vuex";
 
 Number.prototype.map = function(in_min, in_max, out_min, out_max) {
   return ((this - in_min) * (out_max - out_min)) / (in_max - in_min) + out_min;
@@ -21,6 +22,9 @@ export default {
   computed: {
     ...mapGetters({
       currentAtlas: "editor/currentAtlas"
+    }),
+    ...mapState({
+      loaded: state => state.editor.loaded
     })
   },
   mounted() {},

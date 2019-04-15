@@ -3,14 +3,16 @@ import FixedProp from '../objects/FixedProp'
 import History from '../editor/History'
 import Platform from '../editor/Platform'
 
-export default class Stage  extends THREE.Object3D{
+export default class Stage extends THREE.Object3D {
     constructor(opts) {
         super()
         this.textureAtlas = opts.textureAtlas;
         // this.fixedProps = [ ...opts.pressets.props.fixed ];
         this.fixedProps = []
         this.platforms = []
-        this.pressets = { ...opts.pressets };
+        this.pressets = {
+            ...opts.pressets
+        };
         // console.log(this.pressets)
         //     let store
         //     if (process.browser) {
@@ -19,18 +21,23 @@ export default class Stage  extends THREE.Object3D{
         //         console.log(store.state.editor)
         //     })
         // }
-        
+
 
         // window.addEventListener('click',()=>{
         //     this.export()
         // })
     }
 
-    export() {
+    export () {
         //export fixed props
         let fixedprops = [];
-        this.fixedProps.filter(prop => prop.visible).forEach((prop)=>{
-            fixedprops.push({_id: prop._id, position: prop.position, rotation: prop.rotation, scale: prop.scale})
+        this.fixedProps.filter(prop => prop.visible).forEach((prop) => {
+            fixedprops.push({
+                _id: prop._id,
+                position: prop.position,
+                rotation: prop.rotation,
+                scale: prop.scale
+            })
         });
         this.pressets.props.fixedProps = fixedprops;
 
@@ -40,7 +47,11 @@ export default class Stage  extends THREE.Object3D{
         //     platforms.push({position: platform.position, rotation: platform.rotation, scale: platform.scale})
         // });
 
-        console.log(this.pressets.id,this.pressets);
+        // console.log(this.pressets.id,this.pressets);
+        return {
+            id: this.pressets.id,
+            pressets: this.pressets
+        }
     }
 
     init() {
@@ -67,27 +78,35 @@ export default class Stage  extends THREE.Object3D{
 
     removeElement(target) {
         target.visible = false
-        History.push({name: 'deleted',target: target,copy:{}})
+        History.push({
+            name: 'deleted',
+            target: target,
+            copy: {}
+        })
     }
 
     addPlatform(params) {
         let platform = new Platform(params)
 
-        let position = typeof params == "undefined" || undefined ? new THREE.Vector3(0,0,0) : params.position
-        let rotation = typeof params == "undefined" || undefined ? new THREE.Vector3(0,0,0) : params.rotation
+        let position = typeof params == "undefined" || undefined ? new THREE.Vector3(0, 0, 0) : params.position
+        let rotation = typeof params == "undefined" || undefined ? new THREE.Vector3(0, 0, 0) : params.rotation
 
         platform.position.set(position.x * .5, position.y, position.z)
         platform.rotation.set(rotation.x, rotation.y, rotation.z)
-        
+
         this.platforms.push(platform)
 
-        this.add(platform)        
+        this.add(platform)
     }
 
-    addFixedProp({_id,position,rotation}) {
+    addFixedProp({
+        _id,
+        position,
+        rotation
+    }) {
         let id = _id
-        rotation = rotation || new THREE.Vector3(0,0,0)
-        position = position || new THREE.Vector3(0,0,0)
+        rotation = rotation || new THREE.Vector3(0, 0, 0)
+        position = position || new THREE.Vector3(0, 0, 0)
         console.log(id, 'prop added')
         let t = this.textureAtlas.get(id);
         let prop = new FixedProp({
@@ -103,7 +122,7 @@ export default class Stage  extends THREE.Object3D{
             })
         });
         prop.position.set((t._data.ratio * 0.5) + position.x, 0.5 + position.y, 0 + position.z);
-        prop.rotation.set(rotation.x,rotation.y,rotation.z)
+        prop.rotation.set(rotation.x, rotation.y, rotation.z)
         prop.index = this.fixedProps.length
         this.fixedProps.push(prop);
         this.add(prop);

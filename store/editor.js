@@ -1,11 +1,18 @@
+import {
+    storage
+} from '@/config/FirebaseInit'
+
 import atlases from '@/static/textures/atlases'
-const stagesPressets = require("@/static/content/levels/levels.json");
+// const stagesPressets = require("@/static/content/levels/levels.json");
+
+export const strict = false
 
 export const state = () => ({
     atlases: atlases,
-    stages: stagesPressets,
-    currentStageId: Object.keys(stagesPressets)[0],
-    draggingPropId: null
+    stages: null,
+    currentStageId: null,
+    draggingPropId: null,
+    loaded: false
 })
 
 export const getters = {
@@ -26,5 +33,24 @@ export const mutations = {
     },
     setDraggingPropId(state, id) {
         state.draggingPropId = id
+    },
+    setStages(state, stages) {
+        state.stages = stages
+    },
+    setLoaded(state, value) {
+        state.loaded = value
+    }
+}
+
+export const actions = {
+    async get({
+        commit
+    }) {
+        let url = await storage.ref('levels.json').getDownloadURL()
+        let response = await fetch(url)
+        let data = await response.json()
+        await commit('setStages', data)
+        await commit('setCurrentStageId', Object.keys(data)[0])
+        await commit('setLoaded', true)
     }
 }

@@ -2,6 +2,7 @@
   <div id="editor" ref="editor">
     <select name="stages" id="stages-select" ref="stages-select" v-on:change="onChange"></select>
     <props-editor></props-editor>
+    <export-btn v-on:exprt="exprt"></export-btn>
   </div>
 </template>
 
@@ -10,6 +11,7 @@ import { mapMutations, mapState, mapGetters } from "vuex";
 
 import PropsEditor from "@/components/PropsEditor";
 import Editor from "@/assets/js/editor/Editor";
+import ExportBtn from "@/components/ExportBtn";
 
 export default {
   data() {
@@ -22,48 +24,58 @@ export default {
     };
   },
   mounted() {
-    this.editor = new Editor({
-      stages: this.stages,
-      atlases: this.atlases
-    });
-    this.$refs.editor.appendChild(this.editor.renderer.domElement);
-    Object.keys(this.stages).forEach(id => {
-      let option = document.createElement("option");
-      option.value = id;
-      option.textContent = id;
-      this.$refs["stages-select"].appendChild(option);
-    });
-    this.onChange();
-    this.editor.renderer.domElement.addEventListener("mouseup", () => {
-      if (this.isDragging) {
-        this.editor.stages[this.currentStageId].addFixedProp({
-          _id: this.draggingPropId
-        });
-        this.setDraggingPropId(null);
-      }
-    });
-    this.editor.renderer.domElement.addEventListener("click", event => {
-      this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-      this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-      this.editor.raycast(this.mouse);
-
-      if (event.shiftKey) {
-        this.editor.addPlatform();
-      }
-    });
+    this.$store.dispatch("editor/get");
   },
   computed: {
     ...mapState({
       stages: state => state.editor.stages,
       atlases: state => state.editor.atlases,
       currentStageId: state => state.editor.currentStageId,
-      draggingPropId: state => state.editor.draggingPropId
+      draggingPropId: state => state.editor.draggingPropId,
+      loaded: state => state.editor.loaded
     }),
     ...mapGetters({
       isDragging: "editor/isDragging"
     })
   },
+  watch: {
+    loaded() {
+      console.log("LOADED");
+      this.init();
+    }
+  },
   methods: {
+    init() {
+      this.editor = new Editor({
+        stages: this.stages,
+        atlases: this.atlases
+      });
+      this.$refs.editor.appendChild(this.editor.renderer.domElement);
+      Object.keys(this.stages).forEach(id => {
+        let option = document.createElement("option");
+        option.value = id;
+        option.textContent = id;
+        this.$refs["stages-select"].appendChild(option);
+      });
+      this.onChange();
+      this.editor.renderer.domElement.addEventListener("mouseup", () => {
+        if (this.isDragging) {
+          this.editor.stages[this.currentStageId].addFixedProp({
+            _id: this.draggingPropId
+          });
+          this.setDraggingPropId(null);
+        }
+      });
+      this.editor.renderer.domElement.addEventListener("click", event => {
+        this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+        this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+        this.editor.raycast(this.mouse);
+
+        if (event.shiftKey) {
+          this.editor.addPlatform();
+        }
+      });
+    },
     onChange() {
       this.setCurrentStageId(this.$refs["stages-select"].value);
       this.editor.stages[this.currentStageId].loadTextureAtlas();
@@ -73,10 +85,19 @@ export default {
     ...mapMutations({
       setCurrentStageId: "editor/setCurrentStageId",
       setDraggingPropId: "editor/setDraggingPropId"
-    })
+    }),
+    exprt() {
+      console.log(this.editor.export());
+      // let json = JSON.stringify(this.editor.export());
+      // let file = new File(exportJson, "write");
+      // file.open();
+      // file.writeline(json);
+      // file.close();
+    }
   },
   components: {
-    PropsEditor
+    PropsEditor,
+    ExportBtn
   }
 };
 </script>
