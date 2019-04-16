@@ -23,6 +23,7 @@ module.exports = {
       href: '/favicon.ico'
     }],
   },
+  // mode: 'spa',
   css: [{
     src: '~/assets/scss/main.scss',
     lang: 'scss'

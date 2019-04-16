@@ -115,7 +115,7 @@ export default {
     },
     onChange() {
       this.setCurrentStageId(this.$refs["stages-select"].value);
-      this.editor.stages[this.currentStageId].loadTextureAtlas();
+      // this.editor.stages[this.currentStageId].loadTextureAtlas();
 
       this.editor.update(this.currentStageId);
     },

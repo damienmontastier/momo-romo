@@ -67,12 +67,12 @@ export default class Level {
     }
 
     init() {
-        this.fixedProps.forEach(prop => {
-            this.addFixedProp(prop)
-        });
-        this.platforms.forEach(platform => {
-            this.addPlatforms(platform)
-        });
+        // this.fixedProps.forEach(prop => {
+        //     this.addFixedProp(prop)
+        // });
+        // this.platforms.forEach(platform => {
+        //     this.addPlatforms(platform)
+        // });
     }
 
     addFixedProp(props) {
