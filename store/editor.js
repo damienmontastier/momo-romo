@@ -42,7 +42,15 @@ export const mutations = {
         state.loaded = value
     },
     export (state, json) {
-        database.ref('stages/').set(json)
+        database.ref('stages/').set(json, function (error) {
+            if (error) {
+                // The write failed...
+                console.log('export failed', error)
+            } else {
+                // Data saved successfully!
+                console.log('export succeed')
+            }
+        });
     }
 }
 
