@@ -34,9 +34,21 @@ export default class Stage extends THREE.Object3D {
         this.fixedProps.filter(prop => prop.visible).forEach((prop) => {
             fixedprops.push({
                 _id: prop._id,
-                position: {x:prop.position.x - (prop.width * 0.5),y:prop.position.y - 0.5,z:prop.position.z},
-                rotation: {x:prop.rotation.x,y:prop.rotation.y,z:prop.rotation.z},
-                scale: {x:prop.scale.x,y:prop.scale.y,z:prop.scale.z}
+                position: {
+                    x: prop.position.x,
+                    y: prop.position.y,
+                    z: prop.position.z
+                },
+                rotation: {
+                    x: prop.rotation.x,
+                    y: prop.rotation.y,
+                    z: prop.rotation.z
+                },
+                scale: {
+                    x: prop.scale.x,
+                    y: prop.scale.y,
+                    z: prop.scale.z
+                }
             })
         });
         this.pressets.props.fixed = fixedprops;
@@ -56,8 +68,8 @@ export default class Stage extends THREE.Object3D {
 
     init() {
         //init fixed Props
-        this.pressets.props.fixed.forEach((prop,index) => {
-            console.log(prop,index)
+        this.pressets.props.fixed.forEach((prop, index) => {
+            console.log(prop, index)
             this.addFixedProp(prop)
         });
 
@@ -122,7 +134,7 @@ export default class Stage extends THREE.Object3D {
                 alphaTest: 0.5,
             })
         });
-        prop.position.set((t._data.ratio * 0.5) + position.x, 0.5 + position.y, 0 + position.z);
+        prop.position.set(position.x, position.y, position.z);
         prop.rotation.set(rotation.x, rotation.y, rotation.z)
         prop.index = this.fixedProps.length
         this.fixedProps.push(prop);
