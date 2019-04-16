@@ -113,7 +113,6 @@ export default class Editor {
                 // this.target.highlight(false)
             }
         }
-
     }
 
     onWindowResize() {

@@ -3,17 +3,15 @@ import * as THREE from 'three';
 export default class Platform extends THREE.Object3D {
     constructor(params) {
         super()
-        if (params = undefined || "undefined") {
-            this.width = 1
-            this.height = 1
-        } else {
-            this.width = params.scale.x
-            this.height = params.scale.y
-        }
+
+        this.width = typeof params == "undefined" || undefined ? 1 : params.scale.x
+        this.height = 6
+
         this.render()
     }
 
     render() {
+
         this.geometry = new THREE.BoxGeometry(this.width, .1, this.height);
         this.material = new THREE.MeshBasicMaterial({
             wireframe: true,
