@@ -14,9 +14,7 @@
 import { mapMutations, mapState } from "vuex";
 
 export default {
-  mounted() {
-    console.log(this.list);
-  },
+  mounted() {},
   computed: {
     todos() {
       return this.$store.state.todos.list;

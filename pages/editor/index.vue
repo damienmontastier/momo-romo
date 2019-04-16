@@ -13,6 +13,7 @@ import PropsEditor from "@/components/PropsEditor";
 import Editor from "@/assets/js/editor/Editor";
 import Raycaster from "@/assets/js/editor/Raycaster";
 import ExportBtn from "@/components/ExportBtn";
+import Socket from "@/assets/js/utils/Socket.js";
 
 export default {
   data() {
@@ -21,10 +22,12 @@ export default {
       mouse: {
         x: 0,
         y: 0
-      }
+      },
+      socket: null
     };
   },
   mounted() {
+    this.socket = new Socket();
     this.$store.dispatch("editor/get");
   },
   computed: {
@@ -59,7 +62,6 @@ export default {
       stages.sort((a, b) => {
         return a.index - b.index;
       });
-      console.log(stages);
       stages.forEach(stage => {
         let option = document.createElement("option");
         option.value = stage.id;
@@ -107,7 +109,6 @@ export default {
           this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
           this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
           let platform = this.editor.stages[this.currentStageId].addPlatform();
-          console.log(intersects[0].point);
           let p = intersects[0].point;
           platform.position.set(p.x, p.y, 3);
         }
@@ -115,7 +116,7 @@ export default {
     },
     onChange() {
       this.setCurrentStageId(this.$refs["stages-select"].value);
-      this.editor.stages[this.currentStageId].loadTextureAtlas();
+      // this.editor.stages[this.currentStageId].loadTextureAtlas();
 
       this.editor.update(this.currentStageId);
     },

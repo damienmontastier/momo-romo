@@ -6,8 +6,8 @@ function ID() {
   return (
     "_" +
     Math.random()
-      .toString(36)
-      .substr(2, 9)
+    .toString(36)
+    .substr(2, 9)
   );
 }
 
@@ -19,6 +19,7 @@ export default class Socket {
         type: "desktop",
       },
     });
+    console.log('ok')
     this.addEvent();
     this.createRoom();
   }
@@ -32,7 +33,7 @@ export default class Socket {
 
   addEvent() {
     this.socket.on("time", t => {
-      // console.log(t);
+      console.log(t);
     });
   }
 }
