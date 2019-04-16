@@ -22,6 +22,13 @@ export default class Stage extends THREE.Object3D {
         //     })
         // }
 
+        if (!this.pressets.props) {
+            this.pressets.props = {
+                fixed: [],
+                sprites: []
+            }
+        }
+
 
         // window.addEventListener('click',()=>{
         //     this.export()
@@ -74,7 +81,6 @@ export default class Stage extends THREE.Object3D {
     init() {
         //init fixed Props
         this.pressets.props.fixed.forEach((prop, index) => {
-            console.log(prop, index)
             this.addFixedProp(prop)
         });
 
