@@ -71,12 +71,14 @@ export default class Stage  extends THREE.Object3D{
     }
 
     addPlatform(params) {
+
         let platform = new Platform(params)
 
-        let position = typeof params == "undefined" || undefined ? new THREE.Vector3(0,0,0) : params.position
+        let position = typeof params == "undefined" || undefined ? new THREE.Vector3(1,0,0) : params.position
         let rotation = typeof params == "undefined" || undefined ? new THREE.Vector3(0,0,0) : params.rotation
 
-        platform.position.set(position.x * .5, position.y, position.z)
+        platform.position.set(position.x - (platform.width / 2), position.y, this.characterAxis - (platform.height / 2))
+        platform.position.set(position.x, position.y, platform.height/2)
         platform.rotation.set(rotation.x, rotation.y, rotation.z)
         
         this.platforms.push(platform)
@@ -107,5 +109,6 @@ export default class Stage  extends THREE.Object3D{
         prop.index = this.fixedProps.length
         this.fixedProps.push(prop);
         this.add(prop);
+        return prop
     }
 }

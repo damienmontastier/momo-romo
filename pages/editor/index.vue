@@ -10,6 +10,7 @@ import { mapMutations, mapState, mapGetters } from "vuex";
 
 import PropsEditor from "@/components/PropsEditor";
 import Editor from "@/assets/js/editor/Editor";
+import Raycaster from "@/assets/js/editor/Raycaster";
 
 export default {
   data() {
@@ -35,10 +36,22 @@ export default {
     });
     this.onChange();
     this.editor.renderer.domElement.addEventListener("mouseup", () => {
+      //fixedprops
+      this.editor.renderer.domElement.addEventListener("mousemove", event => {
+        this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+        this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+      });
       if (this.isDragging) {
-        this.editor.stages[this.currentStageId].addFixedProp({
+        let intersects = Raycaster.use(
+          this.mouse,
+          this.editor.gridsHelper.children
+        );
+
+        let pos = intersects[0].point;
+        let prop = this.editor.stages[this.currentStageId].addFixedProp({
           _id: this.draggingPropId
         });
+        prop.position.set(pos.x, pos.y, 0);
         this.setDraggingPropId(null);
       }
     });
@@ -48,6 +61,7 @@ export default {
       this.editor.raycast(this.mouse);
 
       if (event.shiftKey) {
+        //platforms
         this.editor.addPlatform();
       }
     });
