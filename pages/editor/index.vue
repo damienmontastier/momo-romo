@@ -96,10 +96,20 @@ export default {
       this.editor.renderer.domElement.addEventListener("click", event => {
         this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
         this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
         this.editor.raycast(this.mouse);
 
         if (event.shiftKey) {
-          this.editor.addPlatform();
+          let intersects = Raycaster.use(
+            this.mouse,
+            this.editor.gridsHelper.children
+          );
+          this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+          this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+          let platform = this.editor.stages[this.currentStageId].addPlatform();
+          console.log(intersects[0].point);
+          let p = intersects[0].point;
+          platform.position.set(p.x, p.y, 3);
         }
       });
     },

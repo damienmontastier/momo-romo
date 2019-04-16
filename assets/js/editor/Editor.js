@@ -70,10 +70,6 @@ export default class Editor {
 
     }
 
-    addPlatform() {
-        this.stages[this.currentStageId].addPlatform()
-    }
-
     addArrows() {
         ArrowsHelper.init(this.renderer.domElement)
         this.scene.add(ArrowsHelper);
