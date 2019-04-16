@@ -63,7 +63,6 @@ export const actions = {
         // let data = await response.json()
         let snapshot = await database.ref('/stages').once('value')
         let data = await snapshot.val()
-        console.log(data)
         await commit('setStages', data)
         await commit('setCurrentStageId', Object.keys(data)[0])
         await commit('setLoaded', true)

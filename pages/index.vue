@@ -3,7 +3,7 @@
     <h1 class="title">momoo-romo</h1>
 
     <nuxt-link
-      v-for="(level, index) in levels"
+      v-for="(level, index) in stages"
       :key="index"
       :to="{ name: 'level', params: {level: index}}"
     >{{index}}</nuxt-link>
@@ -14,18 +14,29 @@
 import { mapMutations, mapState } from "vuex";
 
 export default {
+  middleware: "firebaseStages",
   components: {},
+  watch: {
+    // loaded() {
+    //   this.init();
+    // }
+  },
   computed: {
     ...mapState({
-      // counter: state => state.global.counter,
-      levels: state => state.levels
+      stages: state => state.stages,
+      loaded: state => state.loaded
     })
   },
-  created() {},
+  created() {
+    // this.$store.dispatch("get");
+  },
+  mounted() {
+    console.log("index", this.stages);
+  },
   methods: {
-    ...mapMutations({
-      add: "increment"
-    })
+    // init() {
+    //   // console.log(this.stages);
+    // }
   }
 };
 </script>
