@@ -149,8 +149,11 @@ export default class Editor {
     }
 
     export () {
+        let json = {}
         Object.entries(this.stages).forEach((stage) => {
-            stage[1].export()
+            let exprt = stage[1].export()
+            json[exprt.id] = exprt.pressets
         })
+        return json
     }
 }
