@@ -33,6 +33,7 @@ export default class Stage extends THREE.Object3D {
         // window.addEventListener('click',()=>{
         //     this.export()
         // })
+        this.loadTextureAtlas()
     }
 
     export () {
@@ -66,12 +67,29 @@ export default class Stage extends THREE.Object3D {
         this.pressets.props.fixed = fixedprops;
 
         //TODO : Export platforms
-        // let platforms = [];
-        // this.platforms.filter(platform => platform.visible).forEach((platform)=>{
-        //     platforms.push({position: platform.position, rotation: platform.rotation, scale: platform.scale})
-        // });
+        let platforms = [];
+        this.platforms.filter(platform => platform.visible).forEach((platform) => {
+            platforms.push({
+                position: {
+                    x: platform.position.x,
+                    y: platform.position.y,
+                    z: platform.position.z,
+                },
+                rotation: {
+                    x: platform.rotation.x,
+                    y: platform.rotation.y,
+                    z: platform.rotation.z,
+                },
+                scale: {
+                    x: platform.scale.x,
+                    y: platform.scale.y,
+                    z: platform.scale.z,
+                }
+            })
+        });
 
-        // console.log(this.pressets.id,this.pressets);
+        this.pressets.platforms = platforms;
+
         return {
             id: this.pressets.id,
             pressets: this.pressets
@@ -110,7 +128,7 @@ export default class Stage extends THREE.Object3D {
     }
 
     addPlatform(params) {
-
+        console.log("params", params)
         let platform = new Platform(params)
 
         let position = typeof params == "undefined" || undefined ? new THREE.Vector3(1, 0, 0) : params.position
@@ -123,6 +141,8 @@ export default class Stage extends THREE.Object3D {
         this.platforms.push(platform)
 
         this.add(platform)
+
+        return platform
     }
 
     addFixedProp({
