@@ -8,7 +8,6 @@ if (process.client) {
         update(target) {
             this.remove();
             this.target = target;
-            console.log()
             this.init();
         }
 
@@ -41,7 +40,7 @@ if (process.client) {
                 this.scale.add(this.target.scale, 'x').name('scale').onChange(() => {
                     this.target.scale.y = this.target.scale.x
                 });
-            } else if(this.target.mesh._type == "Platform") {
+            } else if (this.target.mesh._type == "Platform") {
                 this.scale.add(this.target.scale, 'x').name('x (width)').onChange(() => {
                     this.target.scale.x
                 });
