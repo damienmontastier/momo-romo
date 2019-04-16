@@ -51,6 +51,11 @@ export default class Stage extends THREE.Object3D {
                 }
             })
         });
+        // !this.pressets.props ? this.pressets.props = {} : null;
+
+        // !this.pressets.props.fixed ? this.pressets.props.fixed = [] : null;
+        // !this.pressets.props.platforms ? this.pressets.props.platforms = [] : null;
+
         this.pressets.props.fixed = fixedprops;
 
         //TODO : Export platforms
@@ -102,11 +107,11 @@ export default class Stage extends THREE.Object3D {
 
         let platform = new Platform(params)
 
-        let position = typeof params == "undefined" || undefined ? new THREE.Vector3(1,0,0) : params.position
-        let rotation = typeof params == "undefined" || undefined ? new THREE.Vector3(0,0,0) : params.rotation
+        let position = typeof params == "undefined" || undefined ? new THREE.Vector3(1, 0, 0) : params.position
+        let rotation = typeof params == "undefined" || undefined ? new THREE.Vector3(0, 0, 0) : params.rotation
 
         platform.position.set(position.x - (platform.width / 2), position.y, this.characterAxis - (platform.height / 2))
-        platform.position.set(position.x, position.y, platform.height/2)
+        platform.position.set(position.x, position.y, platform.height / 2)
         platform.rotation.set(rotation.x, rotation.y, rotation.z)
 
         this.platforms.push(platform)

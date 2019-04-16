@@ -41,7 +41,7 @@ export const mutations = {
     setLoaded(state, value) {
         state.loaded = value
     },
-    export(state, json) {
+    export (state, json) {
         database.ref('stages/').set(json)
     }
 }
@@ -50,7 +50,7 @@ export const actions = {
     async get({
         commit
     }) {
-        // let url = await storage.ref('levels.json').getDownloadURL()
+        // let url = await storage.ref('levels1.json').getDownloadURL()
         // let response = await fetch(url)
         // let data = await response.json()
         let snapshot = await database.ref('/stages').once('value')

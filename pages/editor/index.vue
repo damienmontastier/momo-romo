@@ -52,12 +52,26 @@ export default {
         atlases: this.atlases
       });
       this.$refs.editor.appendChild(this.editor.renderer.domElement);
-      Object.keys(this.stages).forEach(id => {
+      let stages = [];
+      Object.values(this.stages).forEach(stage => {
+        stages.push(stage);
+      });
+      stages.sort((a, b) => {
+        return a.index - b.index;
+      });
+      console.log(stages);
+      stages.forEach(stage => {
         let option = document.createElement("option");
-        option.value = id;
-        option.textContent = id;
+        option.value = stage.id;
+        option.textContent = stage.index + 1 + "-" + stage.id;
         this.$refs["stages-select"].appendChild(option);
       });
+      // Object.keys(this.stages).forEach(id => {
+      //   let option = document.createElement("option");
+      //   option.value = id;
+      //   option.textContent = id;
+      //   this.$refs["stages-select"].appendChild(option);
+      // });
       this.onChange();
       this.editor.renderer.domElement.addEventListener("mouseup", () => {
         //fixedprops
