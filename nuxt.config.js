@@ -37,6 +37,7 @@ module.exports = {
       ]
     }]
   },
+  plugins: ['~plugins/firebase'],
   /*
    ** Customize the progress bar color
    */
@@ -63,8 +64,8 @@ module.exports = {
     //     })
     //   }
     // }
-    build: {
-      vendor: ['three-orbit-controls','dat.gui']
-    }
+    // build: {
+    vendor: ['three-orbit-controls', 'dat.gui', 'firebase']
+    // }
   }
 }
