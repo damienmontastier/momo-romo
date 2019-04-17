@@ -13,12 +13,12 @@ import TextureAtlas from "@/assets/js/utils/TextureAtlas";
 import Game from "@/assets/js/game/Game";
 
 export default {
-    middleware: "firebaseStages",
+  middleware: "loadStage",
 
   // TODO fix le problème de la validation de la route, elle n'existe pas avant le dispatch
-  // validate({ params, store }) {
-  //   return stages.hasOwnProperty(params.level); // Si l'url n'est pas un level, Error 404
-  // },
+  validate({ params, store }) {
+    return ((store.state.game.stage) ? true : false); // Si l'url n'est pas un level, Error 404
+  },
   components: {},
   data: () => {
     return {};
@@ -27,41 +27,26 @@ export default {
     ...mapState({
       atlases: state => state.game.atlases,
       currentStageId: state => state.game.currentStageId,
-      stages: state => state.stages,
-      // stages: state => state.game.stages,
-      loaded: state => state.game.loaded
+      stage: state => state.game.stage,
+      stages: state => state.stages
     }),
     ...mapGetters({
       currentAtlas: "game/currentAtlas"
     })
   },
-  // watch: {
-  //   loaded() {
-  //     this.init();
-  //   }
-  // },
   created() {
-    // this.$store.dispatch("game/get");
     this.setCurrentStageId(this.$route.params.level);
-    console.log(this.currentStageId)
   },
   methods: {
     ...mapMutations({
       setCurrentStageId: "game/setCurrentStageId"
-    }),
-    // init() {
-    //   this.game = new Game({
-    //     currentLevelParams: this.stages[this.currentStageId],
-    //     currentAltlas: this.currentAtlas
-    //   }).start();
-    // }
+    })
   },
   mounted() {
-    console.log(this.stages)
     this.game = new Game({
-        currentLevelParams: this.stages[this.currentStageId],
-        currentAltlas: this.currentAtlas
-      }).start();
+      currentLevelParams: this.stage,
+      currentAltlas: this.currentAtlas
+    }).start();
   }
 };
 </script>

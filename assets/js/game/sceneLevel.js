@@ -3,6 +3,7 @@ import OrbitControls from 'orbit-controls-es6';
 import FixedProp from '../objects/FixedProp'
 import CANNON from 'cannon'
 import physicParams from '../physics/physicParams';
+import Character from '../objects/Character';
 import '../physics/CannonDebugRenderer'
 
 
@@ -10,7 +11,7 @@ export default class Level {
     constructor(opts) {
         this.canvas = document.getElementById("canvas")
         this.textureAtlas = opts.textureAtlas; // textureAtlas
-        this.fixedProps = [...opts.levelParams.props.fixed]; // Fixed Props
+        this.fixedProps = opts.levelParams.props.fixed; // Fixed Props
         this.levelParams = {
             ...opts.levelParams
         };
@@ -73,6 +74,7 @@ export default class Level {
         this.platforms.forEach(platform => {
             this.addPlatforms(platform)
         });
+        this.addCharactere()
     }
 
     addFixedProp(props) {
@@ -89,21 +91,39 @@ export default class Level {
             })
         });
         prop.position.set(props.position.x, props.position.y, props.position.z);
+        prop.scale.set(props.scale.x, props.scale.y, props.scale.z);
+        prop.rotation.set(props.rotation.x, props.rotation.y, props.rotation.z);
         this.fixedProps.push(prop);
         this.scene.add(prop)
+    }
+
+    addCharactere() {
+        var radius = 1; // m
+        var sphereBody = new CANNON.Body({
+            mass: 5, // kg
+            position: new CANNON.Vec3(0, 5, 3), // m
+            shape: new CANNON.Sphere(radius)
+        });
+        this.world.add(sphereBody);
+ 
+        this.character = new Character(sphereBody)
     }
 
     addPlatforms(platform) {
         // TODO add class for sphere, plane, box
         let size = platform.scale
         let position = platform.position
+        let rotation = platform.rotation
+        var axis = new CANNON.Vec3(0, 0, 1);
+        console.log(size.z)
 
         let body = new CANNON.Body({
             mass: 0,
-            shape: new CANNON.Box(new CANNON.Vec3(size.x, size.y / 10, size.z)),
+            shape: new CANNON.Box(new CANNON.Vec3(size.x / 2, size.y / 10, size.z / 2)),
             material: new CANNON.Material(),
-            position: new CANNON.Vec3(position.x, position.y, position.z)
+            position: new CANNON.Vec3(position.x, position.y, position.z),
         });
+        body.quaternion.setFromAxisAngle(axis, THREE.Math.radToDeg(rotation.z))
 
         this.world.add(body);
     }

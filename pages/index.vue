@@ -14,7 +14,6 @@
 import { mapMutations, mapState } from "vuex";
 
 export default {
-  middleware: "firebaseStages",
   components: {},
   watch: {
     // loaded() {

@@ -3,7 +3,6 @@ import TextureAtlas from '@/assets/js/utils/TextureAtlas.js';
 
 export default class Game {
     constructor(opts) {
-        console.log(opts)
         this.currentLevelParams = opts.currentLevelParams
         this.currentAltlas = opts.currentAltlas
     }
