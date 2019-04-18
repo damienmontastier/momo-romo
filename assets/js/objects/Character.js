@@ -38,6 +38,7 @@ export default class Character {
             position: new CANNON.Vec3(2, 5, 3), // m
             shape: new CANNON.Sphere(radius)
         });
+        // sphereBody.angularDamping = 1
         this.sphereBody = sphereBody
         return this.sphereBody
     }
