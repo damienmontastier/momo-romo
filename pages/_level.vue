@@ -17,7 +17,7 @@ export default {
 
   // TODO fix le problème de la validation de la route, elle n'existe pas avant le dispatch
   validate({ params, store }) {
-    return ((store.state.game.stage) ? true : false); // Si l'url n'est pas un level, Error 404
+    return store.state.game.stage ? true : false; // Si l'url n'est pas un level, Error 404
   },
   components: {},
   data: () => {

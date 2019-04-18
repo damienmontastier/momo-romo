@@ -1,9 +1,17 @@
 import * as THREE from "three";
+import CANNON from 'cannon'
 
 export default class Character {
     constructor(characterShape) {
+
+        this.addCharactere()
+
         this.characterShape = characterShape
-        console.log(this.characterShape)
+
+        this.velocityValue = new THREE.Vector3();
+
+        this.canJump = false
+        this.canMove = false
     }
     // onCollide(e) {
     //     if (e.contact.enabled) {
@@ -11,68 +19,51 @@ export default class Character {
     //         this.canMove = true
     //     }
     // }
-    // keydown(e) {
-    //     switch (e.code) {
-    //         case "Space": //space
-    //             this.canJump && this.jump()
-    //             break;
-    //         case "KeyW": //forward
-    //         case "ArrowUp": //forward
-    //             this.moveForward = true
-    //             break;
-    //         case "KeyA": //left
-    //         case "ArrowLeft": //left
-    //             this.moveLeft = true
-    //             break;
-    //         case "KeyD": //right
-    //         case "ArrowRight": //right
-    //             this.moveRight = true
-    //             break;
-    //         case "KeyS": //backward
-    //         case "ArrowDown": //backward
-    //             this.moveBackward = true
-    //             break;
-    //     }
-    // }
-    // keyup(e) {
-    //     switch (e.code) {
-    //         case "KeyW": //forward
-    //         case "ArrowUp": //forward
-    //             this.moveForward = false
-    //             break;
-    //         case "KeyA": //left
-    //         case "ArrowLeft": //left
-    //             this.moveLeft = false
-    //             break;
-    //         case "KeyD": //right
-    //         case "ArrowRight": //right
-    //             this.moveRight = false
-    //             break;
-    //         case "KeyS": //backward
-    //         case "ArrowDown": //backward
-    //             this.moveBackward = false
-    //             break;
-    //     }
-    // }
-    // update() {
-    //     this.move()
-    //     this.walk()
-    // }
-    // move() {
-    //     this.velocityValue.set(0, 0, 0)
-    //     if (this.moveForward) {
-    //         this.velocityValue.z = -20;
-    //     }
-    //     if (this.moveBackward) {
-    //         this.velocityValue.z = 20;
-    //     }
-    //     if (this.moveLeft) {
-    //         this.velocityValue.x = -20;
-    //     }
-    //     if (this.moveRight) {
-    //         this.velocityValue.x = 20;
-    //     }
-    // }
+
+    moveLeft(value) {
+        this.left = value
+    }
+    moveRight(value) {
+        this.right = value
+    }
+
+    addCharactere() {
+        var radius = 1; // m
+        var sphereBody = new CANNON.Body({
+            mass: 5, // kg
+            position: new CANNON.Vec3(2, 5, 3), // m
+            shape: new CANNON.Sphere(radius)
+        });
+        this.sphereBody = sphereBody
+        return this.sphereBody
+    }
+
+    update() {
+        this.move()
+        this.walk()
+    }
+
+    move() {
+        this.velocityValue.set(0, 0, 0)
+
+        if (this.left) {
+            this.velocityValue.x = -2;
+        }
+        if (this.right) {
+            this.velocityValue.x = 2;
+        }
+    }
+
+    walk() {
+        // if (this.canMove) {
+            if (this.moveForward || this.moveBackward || this.moveLeft || this.moveRight) {
+                var accelerationValue = new CANNON.Vec3(this.velocityValue.x, 0, 0);
+                this.sphereBody.velocity = accelerationValue
+            }
+        // }
+    }
+
+
     // walk() {
     //     if (this.canMove) {
     //         if (this.moveForward || this.moveBackward || this.moveLeft || this.moveRight) {

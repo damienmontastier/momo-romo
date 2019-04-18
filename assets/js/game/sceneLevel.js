@@ -5,7 +5,7 @@ import CANNON from 'cannon'
 import physicParams from '../physics/physicParams';
 import Character from '../objects/Character';
 import '../physics/CannonDebugRenderer'
-
+import KeyboardManager from "../utils/KeyboardManager";
 
 export default class Level {
     constructor(opts) {
@@ -31,11 +31,16 @@ export default class Level {
         this.scene = new THREE.Scene();
 
         // axes
+
+        this.character = new Character()
+
         this.scene.add(new THREE.AxesHelper(20));
 
         this.loaderTexture()
 
         this.worldPhysic();
+
+        this.KeyboardManager = new KeyboardManager(this.onInput.bind(this));
 
         this.renderer = new THREE.WebGLRenderer();
 
@@ -48,6 +53,25 @@ export default class Level {
         this.canvas.appendChild(this.renderer.domElement);
 
         window.addEventListener("resize", this.onWindowResize.bind(this));
+    }
+
+    onInput(key, value) {
+        // console.log(key, value)
+        switch (key) {
+            case "ARROWLEFT":
+                this.character.moveLeft(value)
+                break;
+            case "ARROWRIGHT":
+                this.character.moveRight(value)
+
+                break;
+            case "SPACE":
+
+                break;
+            default:
+                break;
+        }
+        // console.log(event)
     }
 
     worldPhysic() {
@@ -98,15 +122,9 @@ export default class Level {
     }
 
     addCharactere() {
-        var radius = 1; // m
-        var sphereBody = new CANNON.Body({
-            mass: 5, // kg
-            position: new CANNON.Vec3(0, 5, 3), // m
-            shape: new CANNON.Sphere(radius)
-        });
-        this.world.add(sphereBody);
- 
-        this.character = new Character(sphereBody)
+        this.characters = this.character.addCharactere()
+
+        this.world.add(this.characters)
     }
 
     addPlatforms(platform) {
@@ -115,7 +133,6 @@ export default class Level {
         let position = platform.position
         let rotation = platform.rotation
         var axis = new CANNON.Vec3(0, 0, 1);
-        console.log(size.z)
 
         let body = new CANNON.Body({
             mass: 0,
@@ -123,7 +140,7 @@ export default class Level {
             material: new CANNON.Material(),
             position: new CANNON.Vec3(position.x, position.y, position.z),
         });
-        body.quaternion.setFromAxisAngle(axis, THREE.Math.radToDeg(rotation.z))
+        body.quaternion.setFromAxisAngle(axis, rotation.z)
 
         this.world.add(body);
     }
@@ -136,6 +153,8 @@ export default class Level {
 
     render() {
         this.cannonDebugRenderer.update()
+
+        this.character.update()
 
         this.physicParams.update()
 

@@ -37,6 +37,7 @@ class ArrowsHelper extends THREE.Object3D {
         );
         this.xArrow._type = "ArrowHelper";
         this.xArrow._dir = "x";
+        this.xArrow.scale.set(5, 1, 5);
         this.xShadowPlane = new THREE.Mesh(shadowPlaneGeometry.clone(), shadowPlaneMaterial.clone());
         this.xShadowPlane._type = "PlaneHelper";
         this.xShadowPlane._dir = "x";
@@ -50,6 +51,7 @@ class ArrowsHelper extends THREE.Object3D {
         );
         this.yArrow._type = "ArrowHelper";
         this.yArrow._dir = "y";
+        this.yArrow.scale.set(5, 1, 5);
         this.yShadowPlane = new THREE.Mesh(shadowPlaneGeometry.clone(), shadowPlaneMaterial.clone());
         // this.yShadowPlane.rotation.y = THREE.Math.degToRad(90);
         this.yShadowPlane._type = "PlaneHelper";
@@ -64,15 +66,16 @@ class ArrowsHelper extends THREE.Object3D {
         );
         this.zArrow._type = "ArrowHelper";
         this.zArrow._dir = "z";
+        this.zArrow.scale.set(5, 1, 5);
         this.zShadowPlane = new THREE.Mesh(shadowPlaneGeometry.clone(), shadowPlaneMaterial.clone());
         this.zShadowPlane.rotation.x = THREE.Math.degToRad(90);
         this.zShadowPlane._type = "PlaneHelper";
         this.zShadowPlane._dir = "z";
 
-        this.circleGeometry = new THREE.CircleGeometry( 0.25, 16 );
-        this.xCircle = new THREE.Mesh( this.circleGeometry.clone(), new THREE.MeshBasicMaterial({
+        this.circleGeometry = new THREE.CircleGeometry(0.25, 16);
+        this.xCircle = new THREE.Mesh(this.circleGeometry.clone(), new THREE.MeshBasicMaterial({
             color: 0xff0000
-        }) );
+        }));
         this.xCircle.position.z = 0.1;
         this.xCircle._type = "CircleHelper";
         this.add(this.xCircle)
@@ -90,34 +93,33 @@ class ArrowsHelper extends THREE.Object3D {
     }
 
     setTarget(target) {
-        if((target && !this.target) || (target && this.target && target.uuid !== this.target.uuid)) {
+        if ((target && !this.target) || (target && this.target && target.uuid !== this.target.uuid)) {
             GUI.update(target)
         }
 
-        if(!target){
+        if (!target) {
             GUI.remove(target)
-        }       
+        }
 
         this.target = target;
-        
+
         this.update();
     }
 
     update() {
         if (this.target) {
-            
-            if(this.edited) {
-                History.push(
-                {
-                    name:'moved',
-                    copy:{
+
+            if (this.edited) {
+                History.push({
+                    name: 'moved',
+                    copy: {
                         position: this.targetOriginPosition,
                         rotation: this.targetOriginRotation
                     },
                     target: this.target
                 })
             }
-            
+
             this.targetOriginPosition = this.target.position.clone();
             this.targetOriginRotation = this.target.rotation.clone();
             this.position = this.target.position;
@@ -147,7 +149,7 @@ class ArrowsHelper extends THREE.Object3D {
             this.edited = true;
 
             let intersects = Raycaster.use(this.mouse, this.children);
-            if(this.mode == 'position'){
+            if (this.mode == 'position') {
                 this.targetPlane = intersects.filter(
                     i => i.object._type === 'PlaneHelper' && i.object._dir == this.targetArrowDir
                 );
@@ -169,17 +171,17 @@ class ArrowsHelper extends THREE.Object3D {
                     }
                     // this.position = this.target.position;
                 }
-            } else if(this.mode == 'rotation') {
+            } else if (this.mode == 'rotation') {
                 this.targetPlane = intersects.filter(
                     i => i.object._type === 'PlaneHelper' && i.object._dir == 'x'
                 );
-                if(this.targetPlane[0]) {
-                    
+                if (this.targetPlane[0]) {
+
                     this.movePoint = this.targetPlane[0].point;
                     let r = this.movePoint.x - this.downPoint.x;
                     this.target.rotation.z = this.targetOriginRotation.z + r;
                 }
-                
+
             }
         }
     }
@@ -205,15 +207,15 @@ class ArrowsHelper extends THREE.Object3D {
             // console.log(intersects.filter(i => i.object._type === "CircleHelper"))
             let targetArrow = intersects.filter(i => i.object.type === "Mesh" && (i.object.parent._type === "ArrowHelper" || i.object._type === "CircleHelper"));
             if (targetArrow[0]) {
-                if(targetArrow[0].object.parent._type === "ArrowHelper") {
+                if (targetArrow[0].object.parent._type === "ArrowHelper") {
                     this.mode = "position"
                     this.targetArrowDir = targetArrow[0].object.parent._dir;
                     this.targetPlane = intersects.filter(
                         i => i.object._type === 'PlaneHelper' && i.object._dir == this.targetArrowDir
                     );
                     this.downPoint = this.targetPlane[0].point;
-                    
-                } else if(targetArrow[0].object._type === "CircleHelper"){
+
+                } else if (targetArrow[0].object._type === "CircleHelper") {
                     this.mode = "rotation"
                     this.targetPlane = intersects.filter(
                         i => i.object._type === 'PlaneHelper' && i.object._dir === 'x'
