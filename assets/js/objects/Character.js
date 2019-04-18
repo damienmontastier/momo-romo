@@ -23,14 +23,18 @@ export default class Character {
     moveLeft(value) {
         this.left = value
     }
+    jump(value) {
+        this.jumpjump = value
+    }
     moveRight(value) {
         this.right = value
     }
 
+
     addCharactere() {
         var radius = 1; // m
         var sphereBody = new CANNON.Body({
-            mass: 5, // kg
+            mass: 1, // kg
             position: new CANNON.Vec3(2, 5, 3), // m
             shape: new CANNON.Sphere(radius)
         });
@@ -52,31 +56,21 @@ export default class Character {
         if (this.right) {
             this.velocityValue.x = 2;
         }
+        if (this.jumpjump) {
+            this.velocityValue.y = 5;
+        }
     }
 
     walk() {
         // if (this.canMove) {
-            if (this.moveForward || this.moveBackward || this.moveLeft || this.moveRight) {
-                var accelerationValue = new CANNON.Vec3(this.velocityValue.x, 0, 0);
-                this.sphereBody.velocity = accelerationValue
-            }
+        if (this.moveForward || this.moveBackward || this.moveLeft || this.moveRight) {
+            var accelerationValue = new CANNON.Vec3(this.velocityValue.x, 0, 0);
+            this.sphereBody.velocity = accelerationValue
+        }
+        if (this.jumpjump) {
+            var accelerationValue = new CANNON.Vec3(0, this.velocityValue.y, 0);
+            this.sphereBody.velocity = accelerationValue
+        }
         // }
     }
-
-
-    // walk() {
-    //     if (this.canMove) {
-    //         if (this.moveForward || this.moveBackward || this.moveLeft || this.moveRight) {
-    //             // this.characterShape.physic.velocity = this.velocityValue
-    //             var accelerationValue = new CANNON.Vec3(this.velocityValue.x, 0, this.velocityValue.z);
-    //             this.characterShape.physic.velocity = accelerationValue
-    //         }
-    //     }
-    // }
-    // jump() {
-    //     this.velocityValue.set(0, 0, 0)
-    //     this.characterShape.physic.velocity.y = 22
-    //     this.canJump = false
-    //     this.canMove = false;
-    // }
 }

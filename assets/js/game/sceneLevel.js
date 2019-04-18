@@ -56,22 +56,19 @@ export default class Level {
     }
 
     onInput(key, value) {
-        // console.log(key, value)
         switch (key) {
             case "ARROWLEFT":
                 this.character.moveLeft(value)
                 break;
             case "ARROWRIGHT":
                 this.character.moveRight(value)
-
                 break;
-            case "SPACE":
-
+            case " ":
+                this.character.jump(value)
                 break;
             default:
                 break;
         }
-        // console.log(event)
     }
 
     worldPhysic() {
