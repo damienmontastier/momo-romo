@@ -13,8 +13,11 @@ import TextureAtlas from "@/assets/js/utils/TextureAtlas";
 import Game from "@/assets/js/game/Game";
 
 export default {
+  middleware: "loadStage",
+
+  // TODO fix le problème de la validation de la route, elle n'existe pas avant le dispatch
   validate({ params, store }) {
-    return store.state.levels.hasOwnProperty(params.level); // Si l'url n'est pas un level, Error 404
+    return store.state.game.stage ? true : false; // Si l'url n'est pas un level, Error 404
   },
   components: {},
   data: () => {
@@ -22,33 +25,31 @@ export default {
   },
   computed: {
     ...mapState({
-      levels: state => state.level.levels,
-      atlases: state => state.level.atlases
+      atlases: state => state.game.atlases,
+      currentStageId: state => state.game.currentStageId,
+      stage: state => state.game.stage,
+      stages: state => state.stages
     }),
-    ...mapMutations({})
+    ...mapGetters({
+      currentAtlas: "game/currentAtlas"
+    })
   },
   created() {
-    this.currentStageId = this.$route.params.level; // ID of the current level
-    this.currentLevelParams = this.levels[this.currentStageId]; // Params of the current level
-    this.currentAltlas = this.atlases[this.currentStageId]; // Texture of the current Level
+    this.setCurrentStageId(this.$route.params.level);
+  },
+  methods: {
+    ...mapMutations({
+      setCurrentStageId: "game/setCurrentStageId"
+    })
   },
   mounted() {
     this.game = new Game({
-      currentLevelParams: this.currentLevelParams,
-      currentAltlas: this.currentAltlas
+      currentLevelParams: this.stage,
+      currentAltlas: this.currentAtlas
     }).start();
   }
 };
 </script>
 
 <style lang="scss" scoped>
-#canvas {
-  // width: 100%;
-  // height: 100vh;
-  // display: flex;
-  // align-items: center;
-  // justify-content: center;
-  // position: absolute;
-  // top: 0;
-}
 </style>

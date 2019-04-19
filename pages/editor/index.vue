@@ -96,7 +96,6 @@ export default {
       this.editor.renderer.domElement.addEventListener("click", event => {
         this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
         this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-
         this.editor.raycast(this.mouse);
 
         if (event.shiftKey) {
@@ -115,7 +114,7 @@ export default {
     },
     onChange() {
       this.setCurrentStageId(this.$refs["stages-select"].value);
-      this.editor.stages[this.currentStageId].loadTextureAtlas();
+      // this.editor.stages[this.currentStageId].loadTextureAtlas();
 
       this.editor.update(this.currentStageId);
     },

@@ -128,14 +128,15 @@ export default class Stage extends THREE.Object3D {
     }
 
     addPlatform(params) {
-        console.log("params", params)
         let platform = new Platform(params)
 
-        let position = typeof params == "undefined" || undefined ? new THREE.Vector3(1, 0, 0) : params.position
+        console.log(params)
+        let position = typeof params == "undefined" || undefined ? new THREE.Vector3(0, 0, 0) : params.position
         let rotation = typeof params == "undefined" || undefined ? new THREE.Vector3(0, 0, 0) : params.rotation
+        let scale = typeof params == "undefined" || undefined ? new THREE.Vector3(1, 1, 6) : params.scale
 
-        platform.position.set(position.x - (platform.width / 2), position.y, this.characterAxis - (platform.height / 2))
-        platform.position.set(position.x, position.y, platform.height / 2)
+        platform.scale.set(scale.x, scale.y, scale.z)
+        platform.position.set(position.x, position.y, position.z)
         platform.rotation.set(rotation.x, rotation.y, rotation.z)
 
         this.platforms.push(platform)
@@ -148,11 +149,13 @@ export default class Stage extends THREE.Object3D {
     addFixedProp({
         _id,
         position,
-        rotation
+        rotation, 
+        scale
     }) {
         let id = _id
         rotation = rotation || new THREE.Vector3(0, 0, 0)
         position = position || new THREE.Vector3(0, 0, 0)
+        scale = scale || new THREE.Vector3(1, 1, 1)
         console.log(id, 'prop added')
         let t = this.textureAtlas.get(id);
         let prop = new FixedProp({
@@ -169,6 +172,7 @@ export default class Stage extends THREE.Object3D {
         });
         prop.position.set(position.x, position.y, position.z);
         prop.rotation.set(rotation.x, rotation.y, rotation.z)
+        prop.scale.set(scale.x, scale.y, scale.z)
         prop.index = this.fixedProps.length
         this.fixedProps.push(prop);
         this.add(prop);

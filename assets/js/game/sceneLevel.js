@@ -3,14 +3,15 @@ import OrbitControls from 'orbit-controls-es6';
 import FixedProp from '../objects/FixedProp'
 import CANNON from 'cannon'
 import physicParams from '../physics/physicParams';
+import Character from '../objects/Character';
 import '../physics/CannonDebugRenderer'
-
+import KeyboardManager from "../utils/KeyboardManager";
 
 export default class Level {
     constructor(opts) {
         this.canvas = document.getElementById("canvas")
         this.textureAtlas = opts.textureAtlas; // textureAtlas
-        this.fixedProps = [...opts.levelParams.props.fixed]; // Fixed Props
+        this.fixedProps = opts.levelParams.props.fixed; // Fixed Props
         this.levelParams = {
             ...opts.levelParams
         };
@@ -30,11 +31,16 @@ export default class Level {
         this.scene = new THREE.Scene();
 
         // axes
+
+        this.character = new Character()
+
         this.scene.add(new THREE.AxesHelper(20));
 
         this.loaderTexture()
 
         this.worldPhysic();
+
+        this.KeyboardManager = new KeyboardManager(this.onInput.bind(this));
 
         this.renderer = new THREE.WebGLRenderer();
 
@@ -47,6 +53,22 @@ export default class Level {
         this.canvas.appendChild(this.renderer.domElement);
 
         window.addEventListener("resize", this.onWindowResize.bind(this));
+    }
+
+    onInput(key, value) {
+        switch (key) {
+            case "ARROWLEFT":
+                this.character.moveLeft(value)
+                break;
+            case "ARROWRIGHT":
+                this.character.moveRight(value)
+                break;
+            case " ":
+                this.character.jump(value)
+                break;
+            default:
+                break;
+        }
     }
 
     worldPhysic() {
@@ -73,6 +95,7 @@ export default class Level {
         this.platforms.forEach(platform => {
             this.addPlatforms(platform)
         });
+        this.addCharactere()
     }
 
     addFixedProp(props) {
@@ -89,21 +112,32 @@ export default class Level {
             })
         });
         prop.position.set(props.position.x, props.position.y, props.position.z);
+        prop.scale.set(props.scale.x, props.scale.y, props.scale.z);
+        prop.rotation.set(props.rotation.x, props.rotation.y, props.rotation.z);
         this.fixedProps.push(prop);
         this.scene.add(prop)
+    }
+
+    addCharactere() {
+        this.characters = this.character.addCharactere()
+
+        this.world.add(this.characters)
     }
 
     addPlatforms(platform) {
         // TODO add class for sphere, plane, box
         let size = platform.scale
         let position = platform.position
+        let rotation = platform.rotation
+        var axis = new CANNON.Vec3(0, 0, 1);
 
         let body = new CANNON.Body({
             mass: 0,
-            shape: new CANNON.Box(new CANNON.Vec3(size.x, size.y / 10, size.z)),
+            shape: new CANNON.Box(new CANNON.Vec3(size.x / 2, size.y / 10, size.z / 2)),
             material: new CANNON.Material(),
-            position: new CANNON.Vec3(position.x, position.y, position.z)
+            position: new CANNON.Vec3(position.x, position.y, position.z),
         });
+        body.quaternion.setFromAxisAngle(axis, rotation.z)
 
         this.world.add(body);
     }
@@ -116,6 +150,8 @@ export default class Level {
 
     render() {
         this.cannonDebugRenderer.update()
+
+        this.character.update()
 
         this.physicParams.update()
 
