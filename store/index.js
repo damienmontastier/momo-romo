@@ -1,14 +1,32 @@
-const levels = require('@/static/content/levels/levels.json');
+import {
+    storage,
+    database
+} from '@/config/FirebaseInit'
 
 export const strict = false
 
 export const state = () => ({
-    counter: "10",
-    levels: levels
+    stages: null,
+    loaded: false
 })
 
 export const mutations = {
-    increment(state) {
-        state.counter++
+    setStages(state, data) {
+        state.stages = data
+    },
+    setLoaded(state, value) {
+        state.loaded = value
+    },
+}
+
+export const actions = {
+    async get({
+        commit,
+        state
+    }) {
+        let snapshot = await database.ref('stages/').once('value')
+        let data = await snapshot.val()
+        await commit('setStages', data)
+        await commit('setLoaded', true)
     }
 }

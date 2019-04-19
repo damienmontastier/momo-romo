@@ -1,18 +1,15 @@
 import * as THREE from 'three';
 
 export default class Platform extends THREE.Object3D {
-    constructor(params) {
+    constructor() {
         super()
-
-        this.width = typeof params == "undefined" || undefined ? 1 : params.scale.x
         this.height = 6
-
         this.render()
     }
 
     render() {
 
-        this.geometry = new THREE.BoxGeometry(this.width, .1, this.height);
+        this.geometry = new THREE.BoxGeometry(1, .1, 1);
         this.material = new THREE.MeshBasicMaterial({
             wireframe: true,
             color: 0x0000ff,
