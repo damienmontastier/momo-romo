@@ -130,7 +130,6 @@ export default class Stage extends THREE.Object3D {
     addPlatform(params) {
         let platform = new Platform(params)
 
-        console.log(params)
         let position = typeof params == "undefined" || undefined ? new THREE.Vector3(0, 0, 0) : params.position
         let rotation = typeof params == "undefined" || undefined ? new THREE.Vector3(0, 0, 0) : params.rotation
         let scale = typeof params == "undefined" || undefined ? new THREE.Vector3(1, 1, 6) : params.scale

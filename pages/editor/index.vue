@@ -26,9 +26,13 @@ export default {
       socket: null
     };
   },
-  mounted() {
-    this.socket = new Socket();
+  created() {
     this.$store.dispatch("editor/get");
+  },
+  mounted() {
+    
+    // this.socket = new Socket();
+    
     window.onbeforeunload = function (e) {
       e = e || window.event;
 
@@ -136,7 +140,7 @@ export default {
       export: "editor/export"
     }),
     exprt() {
-      this.export(this.editor.export());
+      this.export(this.editor.export())
       // let json = JSON.stringify(this.editor.export());
       // let file = new File(exportJson, "write");
       // file.open();
