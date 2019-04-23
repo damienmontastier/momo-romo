@@ -13,7 +13,6 @@ export default function ({
       if (Object.values(stages).includes(route.params.level)) {
 
       } else {
-        console.log(route.path)
         redirect(route.path, {
           room: true
         })
