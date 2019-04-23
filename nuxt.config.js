@@ -28,6 +28,12 @@ module.exports = {
     src: '~/assets/scss/main.scss',
     lang: 'scss'
   }],
+  // router: {
+  //   middleware: 'isMobile'
+  // },
+  modules: [
+    'nuxt-device-detect'
+  ],
   module: {
     rules: [{
       test: /\.scss$/,
@@ -38,7 +44,7 @@ module.exports = {
       ]
     }]
   },
-  plugins: ['~plugins/firebase'],
+  plugins: [],
   /*
    ** Customize the progress bar color
    */

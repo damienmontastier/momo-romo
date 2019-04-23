@@ -25,7 +25,6 @@ class History{
                     ArrowsHelper.update()
                     break;
                 case 'deleted':
-                    console.log('restore')
                     command.target.visible = true
                     ArrowsHelper.setTarget(command.target)
                     break;
