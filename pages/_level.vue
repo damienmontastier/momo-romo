@@ -1,14 +1,10 @@
 <template>
   <div>
     <section class="container">
-      <p> slug : {{$route.query}}</p>
+      <p>slug : {{$route.query}}</p>
       <!-- <h1>{{currentStageId}} level</h1> -->
-      <div v-if="$route.query.room">
-        JE CHERCHE UNE ROOM
-      </div>
-      <div v-else>
-        JE VEUX UN LEVEL
-      </div>
+      <div v-if="$route.query.room">JE CHERCHE UNE ROOM</div>
+      <div v-else>JE VEUX UN LEVEL</div>
     </section>
     <div id="canvas"></div>
   </div>
@@ -41,7 +37,7 @@ export default {
     //   })
   },
   created() {
-    console.log(this.$route)
+    // console.log(this.$route)
     // console.log(this.stagesList);
     // this.setCurrentStageId(this.$route.params.level);
   },

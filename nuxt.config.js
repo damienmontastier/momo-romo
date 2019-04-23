@@ -23,14 +23,14 @@ module.exports = {
       href: '/favicon.ico'
     }],
   },
-  mode: 'spa',
+  // mode: 'spa',
   css: [{
     src: '~/assets/scss/main.scss',
     lang: 'scss'
   }],
-  router: {
-    middleware: 'isMobile'
-  },
+  // router: {
+  //   middleware: 'isMobile'
+  // },
   modules: [
     'nuxt-device-detect'
   ],
