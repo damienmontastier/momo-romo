@@ -2,7 +2,7 @@
   <div id="editor" ref="editor">
     <select name="stages" id="stages-select" ref="stages-select" v-on:change="onChange"></select>
     <props-editor></props-editor>
-    <export-btn v-on:exprt="exprt"></export-btn>
+    <export-btn v-on:save="save" v-on:exprt="exprt"></export-btn>
   </div>
 </template>
 
@@ -137,15 +137,27 @@ export default {
     ...mapMutations({
       setCurrentStageId: "editor/setCurrentStageId",
       setDraggingPropId: "editor/setDraggingPropId",
-      export: "editor/export"
+      export: "editor/save"
     }),
-    exprt() {
+    save() {
+      // console.log("save")
       this.export(this.editor.export())
       // let json = JSON.stringify(this.editor.export());
       // let file = new File(exportJson, "write");
       // file.open();
       // file.writeline(json);
       // file.close();
+    },
+    exprt() {
+      let dataStr = JSON.stringify(this.editor.export());
+      let dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+      
+      let exportFileDefaultName = 'assets.json';
+      
+      let linkElement = document.createElement('a');
+      linkElement.setAttribute('href', dataUri);
+      linkElement.setAttribute('download', exportFileDefaultName);
+      linkElement.click();
     }
   },
   components: {

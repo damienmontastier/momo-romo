@@ -1,7 +1,6 @@
 <template>
   <div>
     <div>synchro : {{isSynchro}}</div>
-    <!-- <canvas ref="qrcode"></canvas> -->
     <div ref="qrcode" id="qrcode"></div>
   </div>
 </template>
