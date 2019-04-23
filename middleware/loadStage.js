@@ -5,11 +5,21 @@ import {
 
 export default function ({
   store,
-  route
+  route,
+  redirect
 }) {
-  var dataSnapshot = database.ref('/stages/' + route.params.level);
-  dataSnapshot.on('value', (snapshot) => {
-    let data = snapshot.val()
-    store.commit('game/setStage', data)
-  });
+  return new Promise((resolve, reject) => {
+    store.dispatch("loadStagesList").then((stages) => {
+      if (Object.values(stages).includes(route.params.level)) {
+
+      } else {
+        console.log(route.path)
+        redirect(route.path, {
+          room: true
+        })
+      }
+
+      resolve()
+    })
+  })
 }

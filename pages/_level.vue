@@ -1,7 +1,14 @@
 <template>
   <div>
     <section class="container">
-      <h1>{{currentStageId}} level</h1>
+      <p> slug : {{$route.query}}</p>
+      <!-- <h1>{{currentStageId}} level</h1> -->
+      <div v-if="$route.query.room">
+        JE CHERCHE UNE ROOM
+      </div>
+      <div v-else>
+        JE VEUX UN LEVEL
+      </div>
     </section>
     <div id="canvas"></div>
   </div>
@@ -15,39 +22,41 @@ import Game from "@/assets/js/game/Game";
 export default {
   middleware: "loadStage",
 
-  // TODO fix le problème de la validation de la route, elle n'existe pas avant le dispatch
-  validate({ params, store }) {
-    return store.state.game.stage ? true : false; // Si l'url n'est pas un level, Error 404
-  },
+  // async validate({ params, store, redirect }) {
+  //   let list = await store.dispatch("loadStagesList");
+  //   return Object.values(list).includes(params.level);
+  // },
+
   components: {},
   data: () => {
     return {};
   },
   computed: {
     ...mapState({
-      atlases: state => state.game.atlases,
-      currentStageId: state => state.game.currentStageId,
-      stage: state => state.game.stage,
-      stages: state => state.stages
-    }),
-    ...mapGetters({
-      currentAtlas: "game/currentAtlas"
+      stage: state => state.stage,
+      stagesList: state => state.stagesList
     })
+    //   ...mapGetters({
+    //     currentAtlas: "game/currentAtlas"
+    //   })
   },
   created() {
-    this.setCurrentStageId(this.$route.params.level);
+    console.log(this.$route)
+    // console.log(this.stagesList);
+    // this.setCurrentStageId(this.$route.params.level);
   },
   methods: {
-    ...mapMutations({
-      setCurrentStageId: "game/setCurrentStageId"
-    })
-  },
-  mounted() {
-    this.game = new Game({
-      currentLevelParams: this.stage,
-      currentAltlas: this.currentAtlas
-    }).start();
+    // ...mapMutations({
+    //   // setCurrentStageId: "game/setCurrentStageId",
+    //   setStage: "game/setStage"
+    // })
   }
+  // mounted() {
+  //   this.game = new Game({
+  //     currentLevelParams: this.stage,
+  //     currentAltlas: this.currentAtlas
+  //   }).start();
+  // }
 };
 </script>
 
