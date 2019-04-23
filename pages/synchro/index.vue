@@ -22,7 +22,6 @@ export default {
     }),
     ...mapMutations({}),
     generateQRCode() {
-      console.log(this.roomID);
       QRCode.toString(this.url + this.roomID, (error, string) => {
         this.$refs.qrcode.innerHTML = string;
         // if (error) console.error(error);
