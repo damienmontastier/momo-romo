@@ -7,7 +7,8 @@ export const strict = false
 
 export const state = () => ({
     stages: null,
-    loaded: false
+    loaded: false,
+    stagesList: null
 })
 
 export const mutations = {
@@ -17,16 +18,22 @@ export const mutations = {
     setLoaded(state, value) {
         state.loaded = value
     },
+    setStagesList(state, data) {
+        state.stagesList = data
+    }
 }
 
 export const actions = {
-    async get({
-        commit,
-        state
+    loadStagesList({
+        commit
     }) {
-        let snapshot = await database.ref('stages/').once('value')
-        let data = await snapshot.val()
-        await commit('setStages', data)
-        await commit('setLoaded', true)
+        return new Promise((resolve, reject) => {
+            database.ref('/stagesList/').once('value').then((snapshot) => {
+                var data = snapshot.val()
+                commit("setStagesList", Object.values(data))
+                resolve(Object.values(data))
+            })
+
+        })
     }
 }
