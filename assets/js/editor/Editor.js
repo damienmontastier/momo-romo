@@ -91,6 +91,7 @@ export default class Editor {
                 this.stages[key].visible = true;
             }
         })
+        
     }
 
     raycast(mouse) {

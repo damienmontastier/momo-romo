@@ -2,6 +2,7 @@
   <div id="editor" ref="editor">
     <select name="stages" id="stages-select" ref="stages-select" v-on:change="onChange"></select>
     <props-editor></props-editor>
+    <LayerElement v-if="loaded"></LayerElement>
     <export-btn v-on:exprt="exprt"></export-btn>
   </div>
 </template>
@@ -10,6 +11,7 @@
 import { mapMutations, mapState, mapGetters } from "vuex";
 
 import PropsEditor from "@/components/PropsEditor";
+import LayerElement from "@/components/LayerElement";
 import Editor from "@/assets/js/editor/Editor";
 import Raycaster from "@/assets/js/editor/Raycaster";
 import ExportBtn from "@/components/ExportBtn";
@@ -30,20 +32,19 @@ export default {
     this.$store.dispatch("editor/get");
   },
   mounted() {
-    
     // this.socket = new Socket();
-    
-    window.onbeforeunload = function (e) {
+
+    window.onbeforeunload = function(e) {
       e = e || window.event;
 
       // For IE and Firefox prior to version 4
       if (e) {
-          e.returnValue = 'Sure?';
+        e.returnValue = "Sure?";
       }
 
       // For Safari
-      return 'Sure?';
-  };
+      return "Sure?";
+    };
   },
   computed: {
     ...mapState({
@@ -106,7 +107,7 @@ export default {
           let prop = this.editor.stages[this.currentStageId].addFixedProp({
             _id: this.draggingPropId
           });
-          prop.position.set(pos.x, pos.y, 0);
+          prop.position.set(pos.x, pos.y, pos.z);
           this.setDraggingPropId(null);
         }
       });
@@ -133,6 +134,7 @@ export default {
       // this.editor.stages[this.currentStageId].loadTextureAtlas();
 
       this.editor.update(this.currentStageId);
+      this.$store.state.editor.currentStageRef = this.editor.stages[this.currentStageId]
     },
     ...mapMutations({
       setCurrentStageId: "editor/setCurrentStageId",
@@ -140,7 +142,7 @@ export default {
       export: "editor/export"
     }),
     exprt() {
-      this.export(this.editor.export())
+      this.export(this.editor.export());
       // let json = JSON.stringify(this.editor.export());
       // let file = new File(exportJson, "write");
       // file.open();
@@ -150,7 +152,8 @@ export default {
   },
   components: {
     PropsEditor,
-    ExportBtn
+    ExportBtn,
+    LayerElement
   }
 };
 </script>

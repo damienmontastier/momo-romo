@@ -1,10 +1,8 @@
 <template>
   <div>
     <section class="container">
-      <p>slug : {{$route.query}}</p>
-      <!-- <h1>{{currentStageId}} level</h1> -->
-      <div v-if="$route.query.room">JE CHERCHE UNE ROOM</div>
-      <div v-else>JE VEUX UN LEVEL</div>
+      <room v-if="$route.query.room"></room>
+      <level v-else></level>
     </section>
     <div id="canvas"></div>
   </div>
@@ -14,6 +12,8 @@
 import { mapState, mapGetters, mapMutations } from "vuex";
 import TextureAtlas from "@/assets/js/utils/TextureAtlas";
 import Game from "@/assets/js/game/Game";
+import level from "@/components/level";
+import room from "@/components/room";
 
 export default {
   middleware: "loadStage",
@@ -23,36 +23,21 @@ export default {
   //   return Object.values(list).includes(params.level);
   // },
 
-  components: {},
+  components: {
+    level,
+    room
+  },
   data: () => {
     return {};
   },
   computed: {
-    ...mapState({
-      stage: state => state.stage,
-      stagesList: state => state.stagesList
-    })
-    //   ...mapGetters({
-    //     currentAtlas: "game/currentAtlas"
-    //   })
+    ...mapState({}),
+    ...mapGetters({})
   },
-  created() {
-    // console.log(this.$route)
-    // console.log(this.stagesList);
-    // this.setCurrentStageId(this.$route.params.level);
-  },
+  created() {},
   methods: {
-    // ...mapMutations({
-    //   // setCurrentStageId: "game/setCurrentStageId",
-    //   setStage: "game/setStage"
-    // })
+    ...mapMutations({})
   }
-  // mounted() {
-  //   this.game = new Game({
-  //     currentLevelParams: this.stage,
-  //     currentAltlas: this.currentAtlas
-  //   }).start();
-  // }
 };
 </script>
 
