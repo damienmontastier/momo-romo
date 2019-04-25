@@ -1,6 +1,6 @@
 import * as THREE from "three";
 
-export default class FixedProp extends THREE.Object3D{
+export default class FixedProp extends THREE.Object3D {
     constructor(opts) {
         super()
         this._type = "fixedProp";
@@ -28,8 +28,10 @@ export default class FixedProp extends THREE.Object3D{
     highlight(value) {
         if (value === true) {
             this.mesh.material.color.set(0x00ff00);
+            this._highlight = true
         } else if (value === false) {
             this.mesh.material.color.set(0xffffff);
+            this._highlight = false
         }
     }
 }

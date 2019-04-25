@@ -67,7 +67,6 @@ export default class Editor {
         this.renderer.setAnimationLoop(this.render.bind(this));
 
         window.addEventListener("resize", this.onWindowResize.bind(this));
-
     }
 
     addArrows() {
@@ -91,11 +90,17 @@ export default class Editor {
                 this.stages[key].visible = true;
             }
         })
-        
+
     }
 
     raycast(mouse) {
-        let intersects = Raycaster.use(mouse, this.stages[this.currentStageId].children);
+        let targets = []
+        this.stages[this.currentStageId].children.forEach((stage) =>{
+            stage.children.filter(c => c.material.visible).forEach((child)=>{
+                targets.push(child)
+            })
+        })
+        let intersects = Raycaster.use(mouse, targets);
 
         if (intersects[0]) {
             if (this.target) {

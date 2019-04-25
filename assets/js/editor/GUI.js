@@ -23,25 +23,25 @@ if (process.client) {
         init() {
             this.position = this.addFolder('position');
             this.position.open();
-            this.position.add(this.target.position, 'x').listen();
-            this.position.add(this.target.position, 'y').listen();
-            this.position.add(this.target.position, 'z').listen();
+            this.position.add(this.target.position, 'x');
+            this.position.add(this.target.position, 'y');
+            this.position.add(this.target.position, 'z');
 
             this.rotation = this.addFolder('rotation');
             this.rotation.open();
             // this.rotation.add(this.target.rotation,'x');
             // this.rotation.add(this.target.rotation,'y');
-            this.rotation.add(this.target.rotation, 'z').listen();
+            this.rotation.add(this.target.rotation, 'z');
 
             this.scale = this.addFolder('scale');
             this.scale.open();
 
             if (this.target.mesh._type == "FixedProp") {
-                this.scale.add(this.target.scale, 'x').name('scale').listen().onChange(() => {
+                this.scale.add(this.target.scale, 'x').name('scale').onChange(() => {
                     this.target.scale.y = this.target.scale.x
                 });
             } else if (this.target.mesh._type == "Platform") {
-                this.scale.add(this.target.scale, 'x').name('x (width)').listen().onChange(() => {
+                this.scale.add(this.target.scale, 'x').name('x (width)').onChange(() => {
                     this.target.scale.x
                 });
             }
