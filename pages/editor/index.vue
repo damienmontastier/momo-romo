@@ -149,11 +149,13 @@ export default {
       this.export(this.editor.export());
     },
     exprt() {
+      let d = new Date();
+      let date = "-" + d.getDate() + "_" + d.getMonth() + "_" + d.getFullYear();
       let dataStr = JSON.stringify(this.editor.export());
       let dataUri =
         "data:application/json;charset=utf-8," + encodeURIComponent(dataStr);
 
-      let exportFileDefaultName = "assets.json";
+      let exportFileDefaultName = "assets" + date + ".json";
 
       let linkElement = document.createElement("a");
       linkElement.setAttribute("href", dataUri);
