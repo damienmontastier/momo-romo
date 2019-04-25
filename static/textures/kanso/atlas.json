@@ -1,164 +1,108 @@
-{
-	"frames": [
+{"frames": [
 
-		{
-			"filename": "background.png",
-			"frame": {
-				"x": 0,
-				"y": 0,
-				"w": 1909,
-				"h": 544
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 1909,
-				"h": 544
-			},
-			"sourceSize": {
-				"w": 1909,
-				"h": 544
-			}
-		},
-		{
-			"filename": "bag.png",
-			"frame": {
-				"x": 0,
-				"y": 544,
-				"w": 372,
-				"h": 302
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 372,
-				"h": 302
-			},
-			"sourceSize": {
-				"w": 372,
-				"h": 302
-			}
-		},
-		{
-			"filename": "cactus.png",
-			"frame": {
-				"x": 372,
-				"y": 544,
-				"w": 287,
-				"h": 492
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 287,
-				"h": 492
-			},
-			"sourceSize": {
-				"w": 287,
-				"h": 492
-			}
-		},
-		{
-			"filename": "momo.png",
-			"frame": {
-				"x": 659,
-				"y": 544,
-				"w": 238,
-				"h": 317
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 238,
-				"h": 317
-			},
-			"sourceSize": {
-				"w": 238,
-				"h": 317
-			}
-		},
-		{
-			"filename": "plants.png",
-			"frame": {
-				"x": 897,
-				"y": 544,
-				"w": 450,
-				"h": 560
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 450,
-				"h": 560
-			},
-			"sourceSize": {
-				"w": 450,
-				"h": 560
-			}
-		},
-		{
-			"filename": "shoes.png",
-			"frame": {
-				"x": 1347,
-				"y": 544,
-				"w": 383,
-				"h": 283
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 383,
-				"h": 283
-			},
-			"sourceSize": {
-				"w": 383,
-				"h": 283
-			}
-		},
-		{
-			"filename": "table.png",
-			"frame": {
-				"x": 0,
-				"y": 1104,
-				"w": 794,
-				"h": 484
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 794,
-				"h": 484
-			},
-			"sourceSize": {
-				"w": 794,
-				"h": 484
-			}
-		}
-	],
-	"meta": {
-		"app": "https://www.codeandweb.com/texturepacker",
-		"version": "1.0",
-		"image": "scene1_rough.png",
-		"format": "RGBA8888",
-		"size": {
-			"w": 2048,
-			"h": 2048
-		},
-		"scale": "1",
-		"smartupdate": "$TexturePacker:SmartUpdate:bb12d919e337666b6f25700e1ee23b2c:8a6ab5c24a8148a924d15b10fe43a816:f95da3490f4b02c3f3eb70cdeb50438e$"
-	}
+{
+	"filename": "1_meuble.png",
+	"frame": {"x":774,"y":254,"w":503,"h":387},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":503,"h":387},
+	"sourceSize": {"w":503,"h":387}
+},
+{
+	"filename": "1_plantes.png",
+	"frame": {"x":1319,"y":641,"w":289,"h":491},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":289,"h":491},
+	"sourceSize": {"w":289,"h":491}
+},
+{
+	"filename": "2_lampe.png",
+	"frame": {"x":61,"y":0,"w":119,"h":143},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":119,"h":143},
+	"sourceSize": {"w":119,"h":143}
+},
+{
+	"filename": "2_sol.png",
+	"frame": {"x":180,"y":0,"w":1448,"h":177},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":1448,"h":177},
+	"sourceSize": {"w":1448,"h":177}
+},
+{
+	"filename": "3_meuble.png",
+	"frame": {"x":1628,"y":0,"w":166,"h":254},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":166,"h":254},
+	"sourceSize": {"w":166,"h":254}
+},
+{
+	"filename": "4_fenêtre.png",
+	"frame": {"x":465,"y":254,"w":266,"h":276},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":266,"h":276},
+	"sourceSize": {"w":266,"h":276}
+},
+{
+	"filename": "4_kakemono.png",
+	"frame": {"x":731,"y":254,"w":43,"h":289},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":43,"h":289},
+	"sourceSize": {"w":43,"h":289}
+},
+{
+	"filename": "4_neko.png",
+	"frame": {"x":0,"y":0,"w":61,"h":143},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":61,"h":143},
+	"sourceSize": {"w":61,"h":143}
+},
+{
+	"filename": "4_tableau.png",
+	"frame": {"x":265,"y":254,"w":200,"h":266},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":200,"h":266},
+	"sourceSize": {"w":200,"h":266}
+},
+{
+	"filename": "4_étagère.png",
+	"frame": {"x":0,"y":641,"w":1319,"h":410},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":1319,"h":410},
+	"sourceSize": {"w":1319,"h":410}
+},
+{
+	"filename": "5_montagne.png",
+	"frame": {"x":0,"y":254,"w":265,"h":259},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":265,"h":259},
+	"sourceSize": {"w":265,"h":259}
+},
+{
+	"filename": "background.png",
+	"frame": {"x":0,"y":1132,"w":1286,"h":578},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":1286,"h":578},
+	"sourceSize": {"w":1286,"h":578}
+}],
+"meta": {
+	"app": "https://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "level.png",
+	"format": "RGBA8888",
+	"size": {"w":2048,"h":2048},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:ae98ee54c9a4e197649defef2924fc34:1b8a3fe8382d9c2db9d4abe5b4d3e188:131701cb6c4e8d84a5be75f0cc65185d$"
+}
 }
