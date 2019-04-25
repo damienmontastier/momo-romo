@@ -1,7 +1,6 @@
 <template>
   <div>
     <div>synchro : {{isSynchro}}</div>
-    <!-- <canvas ref="qrcode"></canvas> -->
     <div ref="qrcode" id="qrcode"></div>
   </div>
 </template>
@@ -12,8 +11,8 @@ import QRCode from "qrcode";
 export default {
   mounted() {
     this.init({
-      device: this.$device.isMobile,
-      roomID: this.$device.isMobile ? this.$route.query.id : null
+      device: this.$device.isMobileOrTablet,
+      roomID: this.$device.isMobileOrTablet ? this.$route.query.id : null
     });
   },
   methods: {
