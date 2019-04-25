@@ -58,6 +58,7 @@ export default {
   methods: {
     select(target) {
       ArrowsHelper.setTarget(target);
+      target.highlight(true);
     },
     hover(target) {
       target.highlight(true);
@@ -70,18 +71,10 @@ export default {
       }
     },
     visible(target, index) {
-      console.log(target);
-
       if (target.material.visible == false) {
         target.material.visible = true;
-        // this.$refs[target.id + index][0].getElementsByTagName(
-        //   "span"
-        // )[0].style.backgroundColor = "red";
       } else {
         target.material.visible = false;
-        // this.$refs[target.id + index][0].getElementsByTagName(
-        //   "span"
-        // )[0].style.backgroundColor = "green";
       }
     }
   },
@@ -110,7 +103,7 @@ export default {
       background: #f7fcf7;
     }
     #checkbox:checked {
-      background-color:red;
+      background-color: red;
     }
   }
   &:last-child {

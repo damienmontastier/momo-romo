@@ -92,7 +92,7 @@ class ArrowsHelper extends THREE.Object3D {
         this.visible = false;
     }
 
-      setTarget(target) {
+    setTarget(target) {
         if (this.target) {
             this.target.highlight(false)
         }

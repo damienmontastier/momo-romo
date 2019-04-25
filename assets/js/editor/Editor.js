@@ -95,8 +95,8 @@ export default class Editor {
 
     raycast(mouse) {
         let targets = []
-        this.stages[this.currentStageId].children.forEach((stage) =>{
-            stage.children.filter(c => c.material.visible).forEach((child)=>{
+        this.stages[this.currentStageId].children.forEach((stage) => {
+            stage.children.filter(c => c.material.visible).forEach((child) => {
                 targets.push(child)
             })
         })
@@ -132,8 +132,11 @@ export default class Editor {
         switch (key) {
             case 'Delete':
             case 'DELETE':
-                if (this.target) {
-                    this.stages[this.currentStageId].removeElement(this.target)
+            case 'Backspace':
+            case 'BACKSPACE':
+                if (ArrowsHelper.target) {
+
+                    this.stages[this.currentStageId].removeElement(ArrowsHelper.target)
                     ArrowsHelper.setTarget(null);
                 }
                 break;
