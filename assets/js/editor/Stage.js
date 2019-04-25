@@ -8,7 +8,14 @@ export default class Stage extends THREE.Object3D {
         super()
         this.textureAtlas = opts.textureAtlas;
         // this.fixedProps = [ ...opts.pressets.props.fixed ];
+        this.fixedPropsGroup = new THREE.Group()
+        this.fixedPropsGroup.name = 'fixedPropsGroup'
+        this.add(this.fixedPropsGroup)
         this.fixedProps = []
+
+        this.platformsGroup = new THREE.Group()
+        this.platformsGroup.name = 'platformsGroup'
+        this.add(this.platformsGroup)
         this.platforms = []
         this.pressets = {
             ...opts.pressets
@@ -140,7 +147,7 @@ export default class Stage extends THREE.Object3D {
 
         this.platforms.push(platform)
 
-        this.add(platform)
+        this.fixedPropsGroup.add(platform)
 
         return platform
     }
@@ -174,7 +181,8 @@ export default class Stage extends THREE.Object3D {
         prop.scale.set(scale.x, scale.y, scale.z)
         prop.index = this.fixedProps.length
         this.fixedProps.push(prop);
-        this.add(prop);
+        // this.add(prop);
+        this.fixedPropsGroup.add(prop)
         return prop
     }
 }

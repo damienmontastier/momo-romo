@@ -1,9 +1,15 @@
+import {
+    storage,
+    database
+} from '@/config/FirebaseInit'
+
 import atlases from '@/static/textures/atlases'
 
 export const state = () => ({
     atlases: atlases,
     currentStageId: null,
     stage: null,
+    loaded: false,
 })
 
 export const mutations = {
@@ -13,13 +19,27 @@ export const mutations = {
     setStage(state, data) {
         state.stage = data
     },
+    setLoaded(state, value) {
+        state.loaded = value
+    },
 }
 
 export const getters = {
-    currentStage: state => {
-        return state.stages[state.currentStageId]
-    },
     currentAtlas: (state) => {
         return state.atlases[state.currentStageId]
+    }
+}
+
+export const actions = {
+    async loadStage({
+        commit,
+        getters
+    }, id) {
+        await commit('setCurrentStageId', id)
+        await getters.currentAtlas
+        let snapshot = await database.ref('/stages/' + id).once('value')
+        let data = await snapshot.val()
+        await commit('setStage', data)
+        await commit('setLoaded', true)
     }
 }

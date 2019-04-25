@@ -13,15 +13,24 @@ export const state = () => ({
     stages: null,
     currentStageId: null,
     draggingPropId: null,
-    loaded: false
+    loaded: false,
+    currentStageRef: null
 })
 
 export const getters = {
     currentStage: state => {
-        return state.stages[state.currentStageId]
+        if (state.stages) {
+            return state.stages[state.currentStageId]
+        } else {
+            return null
+        }
     },
     currentAtlas: (state, getters) => {
-        return state.atlases[getters.currentStage.atlas]
+        if (getters.currentStage) {
+            return state.atlases[getters.currentStage.atlas]
+        } else {
+            return null
+        }
     },
     isDragging: (state) => {
         return Boolean(state.draggingPropId != null)

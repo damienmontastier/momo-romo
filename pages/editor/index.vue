@@ -3,6 +3,8 @@
     <select name="stages" id="stages-select" ref="stages-select" v-on:change="onChange"></select>
     <props-editor></props-editor>
     <export-btn v-on:save="save" v-on:exprt="exprt"></export-btn>
+    <LayerElement v-if="loaded"></LayerElement>
+    <export-btn v-on:exprt="exprt" v-on:save="save"></export-btn>
   </div>
 </template>
 
@@ -10,6 +12,7 @@
 import { mapMutations, mapState, mapGetters } from "vuex";
 
 import PropsEditor from "@/components/PropsEditor";
+import LayerElement from "@/components/LayerElement";
 import Editor from "@/assets/js/editor/Editor";
 import Raycaster from "@/assets/js/editor/Raycaster";
 import ExportBtn from "@/components/ExportBtn";
@@ -30,20 +33,19 @@ export default {
     this.$store.dispatch("editor/get");
   },
   mounted() {
-    
     // this.socket = new Socket();
-    
-    window.onbeforeunload = function (e) {
+
+    window.onbeforeunload = function(e) {
       e = e || window.event;
 
       // For IE and Firefox prior to version 4
       if (e) {
-          e.returnValue = 'Sure?';
+        e.returnValue = "Sure?";
       }
 
       // For Safari
-      return 'Sure?';
-  };
+      return "Sure?";
+    };
   },
   computed: {
     ...mapState({
@@ -106,7 +108,7 @@ export default {
           let prop = this.editor.stages[this.currentStageId].addFixedProp({
             _id: this.draggingPropId
           });
-          prop.position.set(pos.x, pos.y, 0);
+          prop.position.set(pos.x, pos.y, pos.z);
           this.setDraggingPropId(null);
         }
       });
@@ -133,6 +135,9 @@ export default {
       // this.editor.stages[this.currentStageId].loadTextureAtlas();
 
       this.editor.update(this.currentStageId);
+      this.$store.state.editor.currentStageRef = this.editor.stages[
+        this.currentStageId
+      ];
     },
     ...mapMutations({
       setCurrentStageId: "editor/setCurrentStageId",
@@ -140,29 +145,26 @@ export default {
       export: "editor/save"
     }),
     save() {
-      // console.log("save")
-      this.export(this.editor.export())
-      // let json = JSON.stringify(this.editor.export());
-      // let file = new File(exportJson, "write");
-      // file.open();
-      // file.writeline(json);
-      // file.close();
+      console.log("save");
+      this.export(this.editor.export());
     },
     exprt() {
       let dataStr = JSON.stringify(this.editor.export());
-      let dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
-      
-      let exportFileDefaultName = 'assets.json';
-      
-      let linkElement = document.createElement('a');
-      linkElement.setAttribute('href', dataUri);
-      linkElement.setAttribute('download', exportFileDefaultName);
+      let dataUri =
+        "data:application/json;charset=utf-8," + encodeURIComponent(dataStr);
+
+      let exportFileDefaultName = "assets.json";
+
+      let linkElement = document.createElement("a");
+      linkElement.setAttribute("href", dataUri);
+      linkElement.setAttribute("download", exportFileDefaultName);
       linkElement.click();
     }
   },
   components: {
     PropsEditor,
-    ExportBtn
+    ExportBtn,
+    LayerElement
   }
 };
 </script>
