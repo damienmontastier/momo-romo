@@ -6,15 +6,11 @@ import {
 export const strict = false
 
 export const state = () => ({
-    stages: null,
     loaded: false,
     stagesList: null
 })
 
 export const mutations = {
-    setStages(state, data) {
-        state.stages = data
-    },
     setLoaded(state, value) {
         state.loaded = value
     },

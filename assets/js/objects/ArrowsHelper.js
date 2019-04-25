@@ -92,9 +92,13 @@ class ArrowsHelper extends THREE.Object3D {
         this.visible = false;
     }
 
-    setTarget(target) {
+      setTarget(target) {
+        if (this.target) {
+            this.target.highlight(false)
+        }
         if ((target && !this.target) || (target && this.target && target.uuid !== this.target.uuid)) {
             GUI.update(target)
+            target.highlight(true)
         }
 
         if (!target) {
