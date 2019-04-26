@@ -17,6 +17,12 @@ export default class Stage extends THREE.Object3D {
         this.platformsGroup.name = 'platformsGroup'
         this.add(this.platformsGroup)
         this.platforms = []
+
+        this.checkpointsGroup = new THREE.Group()
+        this.checkpointsGroup.name = 'checkpointsGroup'
+        this.add(this.checkpointsGroup)
+        this.checkpoints = []
+
         this.pressets = {
             ...opts.pressets
         };
@@ -147,7 +153,7 @@ export default class Stage extends THREE.Object3D {
 
         this.platforms.push(platform)
 
-        this.fixedPropsGroup.add(platform)
+        this.platformsGroup.add(platform)
 
         return platform
     }
@@ -155,7 +161,7 @@ export default class Stage extends THREE.Object3D {
     addFixedProp({
         _id,
         position,
-        rotation, 
+        rotation,
         scale
     }) {
         let id = _id
