@@ -118,18 +118,18 @@ export default {
         this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
         this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
-        if (!ArrowsHelper.isMoved) {
-          this.editor.raycast(this.mouse);
-        }
-
-        let intersects = Raycaster.use(
-          this.mouse,
-          this.editor.gridsHelper.children
-        );
         if (event.shiftKey) {
+          let intersects = Raycaster.use(
+            this.mouse,
+            this.editor.gridsHelper.children
+          );
           let platform = this.editor.stages[this.currentStageId].addPlatform();
           let p = intersects[0].point;
           platform.position.set(p.x, p.y, 3);
+        } else {
+          if (!ArrowsHelper.isMoved) {
+            this.editor.raycast(this.mouse);
+          }
         }
       });
     },
