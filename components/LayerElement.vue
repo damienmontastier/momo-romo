@@ -57,6 +57,7 @@ export default {
   },
   methods: {
     select(target) {
+      console.log("select");
       ArrowsHelper.setTarget(target);
       target.highlight(true);
     },
@@ -70,11 +71,15 @@ export default {
         target.highlight(true);
       }
     },
-    visible(target, index) {
+    visible(target) {
       if (target.material.visible == false) {
         target.material.visible = true;
+        this.select(target);
       } else {
         target.material.visible = false;
+        setTimeout(() => {
+          ArrowsHelper.setTarget(null);
+        }, 10);
       }
     }
   },

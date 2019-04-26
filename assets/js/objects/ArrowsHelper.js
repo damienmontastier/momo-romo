@@ -198,6 +198,9 @@ class ArrowsHelper extends THREE.Object3D {
         }
         this.targetPlane = null;
         this.controls.enabled = true;
+        setTimeout(() => {
+            this.isMoved = false
+        }, 10)
     }
 
     onMouseDown(event) {
@@ -211,6 +214,7 @@ class ArrowsHelper extends THREE.Object3D {
             // console.log(intersects.filter(i => i.object._type === "CircleHelper"))
             let targetArrow = intersects.filter(i => i.object.type === "Mesh" && (i.object.parent._type === "ArrowHelper" || i.object._type === "CircleHelper"));
             if (targetArrow[0]) {
+                this.isMoved = true
                 if (targetArrow[0].object.parent._type === "ArrowHelper") {
                     this.mode = "position"
                     this.targetArrowDir = targetArrow[0].object.parent._dir;
