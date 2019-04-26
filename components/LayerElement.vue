@@ -3,7 +3,6 @@
     <ul class="layer">
       <p>Platforms</p>
       <li
-        :data-test="platform.id+index"
         @click="select(platform)"
         :ref="platform.id+index"
         @mouseover="hover(platform)"
@@ -19,7 +18,6 @@
     <ul class="layer">
       <p>Props</p>
       <li
-        :data-test="prop._id+index"
         @click="select(prop)"
         :ref="prop.id+index"
         @mouseover="hover(prop)"
