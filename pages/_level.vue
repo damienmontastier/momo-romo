@@ -4,7 +4,6 @@
       <room v-if="$route.query.room"></room>
       <level v-else></level>
     </section>
-    <div id="canvas"></div>
   </div>
 </template>
 
