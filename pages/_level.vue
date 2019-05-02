@@ -27,11 +27,15 @@ export default {
     room
   },
   data: () => {
-    return {};
+    return {
+      renderComponent: true,
+    };
   },
   computed: {
     ...mapState({}),
     ...mapGetters({})
+  },
+  mounted() {
   },
   created() {},
   methods: {

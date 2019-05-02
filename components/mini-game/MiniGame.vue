@@ -12,7 +12,10 @@ export default {
     },
     components: {
         Kintsugi
-    }
+    },
+    mounted() {
+        console.log('mini game mounted')
+    },
 }
 </script>
 

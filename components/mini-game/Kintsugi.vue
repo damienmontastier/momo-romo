@@ -8,7 +8,7 @@
 <script>
 import * as THREE from 'three';
 import OrbitControls from 'orbit-controls-es6';
-import '~/assets/js/utils/GLTFLoader';
+import ObjectLoader from '~/assets/js/utils/ObjectLoader';
 
 class App{
     constructor() {
@@ -35,7 +35,7 @@ class App{
             1,
             10000
         );
-        this.camera.position.set(100, 100, 100);
+        this.camera.position.set(0, 0, 100);
 
         // controls
         this.controls = new OrbitControls(this.camera);
@@ -61,12 +61,43 @@ class App{
     }
     
     loadBowl() {
-        this.loader = new THREE.GLTFLoader();
-        this.loader.load('https://rocheclement.fr/momoromo/bol/_.glb',(object => {
-            this.model = object.scene.children[0].children[0];
+        ObjectLoader.load({url:'https://rocheclement.fr/momoromo/bol/_.glb',format:'glb'})
+        .then(object=>{
+            this.model = object.scene.children[0].children[0].children[0];
             console.log(this.model)
+            this.model.children.forEach((c,index)=>{
+                c._originPosition = c.getWorldPosition(new THREE.Vector3())
+                c._originRotation = c.rotation
+                c._originScale = c.scale
+                
+                c.position.multiplyScalar(1.5)
+                // c.children[1].rotation.z = THREE.Math.degToRad(index*10)
+            })
+
+            //fragments
+            let fragments = []
+            fragments.push(this.model.getObjectByName('polybowl_0'))
+            fragments.push(this.model.getObjectByName('polybowl_1'))
+            fragments.push(this.model.getObjectByName('polybowl_2'))
+            fragments.push(this.model.getObjectByName('polybowl_3'))
+            console.log(fragments)
+
+            //fractures
+            let fractures = []
+            fractures.push(this.model.getObjectByName('fracture_1'))
+            fractures.push(this.model.getObjectByName('fracture_2'))
+            fractures.push(this.model.getObjectByName('fracture_3'))
+            console.log(fractures)
+
+            fractures.forEach((fracture)=>{
+                fracture.children.forEach((piece)=>{
+                    // piece.material.color.set = new THREE.Color(0xff0000)
+                    // console.log(piece)
+                })
+            })
+
             this.scene.add(this.model)
-        }))
+        })
 
     }
 }

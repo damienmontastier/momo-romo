@@ -30,17 +30,22 @@ export default {
     })
   },
   created() {
+    console.log('desktop stage created')
     this.$store.dispatch("game/loadStage", this.$route.params.level);
   },
   watch: {
+    // TODO: FIX IT
     loaded() {
-      this.game = new Game({
-        currentLevelParams: this.stage,
-        currentAltlas: this.currentAtlas
-      }).start();
-    }
+        this.game = new Game({
+          currentLevelParams: this.stage,
+          currentAltlas: this.currentAtlas
+        }).start();
+      }
   },
-  mounted() {},
+  mounted() {
+    console.log('desktop stage mounted')
+    
+  },
   methods: {},
   components: {
     MiniGame
@@ -51,7 +56,7 @@ export default {
 <style lang="scss" scoped>
 #checkbox {
   position: absolute;
-  bottom: 0;
+  top: 0;
   left: 0;
   z-index: 100;
 }

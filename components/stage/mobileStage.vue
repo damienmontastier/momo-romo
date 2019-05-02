@@ -9,7 +9,8 @@ import { mapGetters, mapMutations, mapState } from "vuex";
 
 export default {
   computed: {},
-  mounted() {},
+  mounted() {
+  },
   methods: {}
 };
 </script>

@@ -1,7 +1,9 @@
 <template>
   <div>
     <div>synchro : {{isSynchro}}</div>
-    <div ref="qrcode" id="qrcode"></div>
+    <div ref="qrcode" id="qrcode" v-html="qrcode"></div>
+    <a :href="url">{{url}}</a>
+    <button @click="disconnect">disconnect</button>
   </div>
 </template>
 
@@ -9,20 +11,28 @@
 import { mapMutations, mapActions, mapState } from "vuex";
 import QRCode from "qrcode";
 export default {
+  data() {
+    return {
+      qrcode:null
+    }
+  },
   mounted() {
-    this.init({
+    this.connect({
       device: this.$device.isMobileOrTablet,
-      roomID: this.$device.isMobileOrTablet ? this.$route.query.id : null
+      // roomID: this.$device.isMobileOrTablet ? this.$route.query.id : null
+      roomID: null
     });
   },
   methods: {
     ...mapActions({
-      init: "synchro/init"
+      connect: "synchro/connect",
+      disconnect: "synchro/disconnect"
     }),
     ...mapMutations({}),
     generateQRCode() {
-      QRCode.toString(this.url + this.roomID, (error, string) => {
-        this.$refs.qrcode.innerHTML = string;
+      QRCode.toString(this.url, (error, string) => {
+        this.qrcode = string
+        // this.$refs.qrcode.innerHTML = string;
         // if (error) console.error(error);
         // console.log("success!");
       });
