@@ -1,12 +1,8 @@
 <template>
     <div id="kintsugi">
-        <div class="title">kintsugi mini game {{loaded}}</div>
+        <div class="title">kintsugi mobile mini game {{loaded}}</div>
         <div ref="canvas" id="canvas"></div>
         <div id="debug">
-            <button @click="nextFracture()">Next fracture</button>
-            <button @click="nextStep()">Next step</button>
-            <button @click="launchStep()">Start</button>
-            <button @click="cancelFracture()">Cancel</button>
         </div>
     </div>
 </template>
@@ -17,16 +13,16 @@ import OrbitControls from 'orbit-controls-es6';
 import ObjectLoader from '~/assets/js/utils/ObjectLoader';
 import { mapState } from 'vuex';
 
-
 class App{
     constructor() {
-        this.loaded = false
+        this.loaded = false;
+        
     }
 
     init (ref) {
         this.ref = ref
-        this.WIDTH = this.ref.offsetWidth
-        this.HEIGHT = this.ref.offsetHeight
+        this.WIDTH = window.innerWidth
+        this.HEIGHT = window.innerHeight
 
         // renderer
         this.renderer = new THREE.WebGLRenderer({antialias:true});
@@ -143,89 +139,22 @@ class App{
 export default {
     head: {
         script: [
-            {src: 'https://cdnjs.cloudflare.com/ajax/libs/gsap/2.1.2/TweenLite.min.js'}
+            {
+                src: 'https://cdnjs.cloudflare.com/ajax/libs/gsap/2.1.2/TweenLite.min.js'
+            },
+            {
+                src: 'https://cdn.rawgit.com/hammerjs/touchemulator/0.0.2/touch-emulator.js'
+            }
         ]
     },
     data() {
         return {
             app: new App(),
-            controls: [
-                ['d','m'],
-                ['f','l'],
-                ['g','k'],
-                ['h','j']
-            ],
-            gameModel:[
-                {
-                    fragments:[0,1],
-                    fracture:0
-                },
-                {
-                    fragments:[2],
-                    fracture:1
-                },
-                {
-                    fragments:[3],
-                    fracture:2
-                }
-            ],
-            currentFracture: 0,
-            currentStep:0
-        }
-    },
-    methods: {
-        init() {
-            this.app.init(this.$refs.canvas)
-            this.app.loadBowl()
-        },
-        nextFracture() {
-            this.currentStep = 0
-            this.currentFracture++
-            this.launchStep()
-        },
-        nextStep() {
-            
-            if(this.currentStep === 3 ) {
-                
-                if(this.socket) {
-                    console.log('SOCKET TO MOBILE')
-                    this.socket.emit('custom-event',{
-                        name: 'kintsugi mini-game',
-                        in: this.roomID,
-                        args: {
-                            id:"launch fracture",
-                            fracture:this.currentFracture
-                        }
-                    })
-                }
-                
-            }
-            if(this.currentStep>3) {
-                
-                // this.nextFracture()
-            } else {
-                this.launchStep()
-            }
-            this.currentStep++
-        },
-        launchStep() {
-            if(this.gameModel[this.currentFracture]) {
-                this.app.bringCloser(this.gameModel[this.currentFracture].fragments,this.currentStep)
-            }
-        },
-        cancelFracture() {
-            
-            if(this.gameModel[this.currentFracture]) {
-                this.app.spread(this.gameModel[this.currentFracture].fragments)
-                this.currentStep = 0
-            }
-            // this.currentFracture--
         }
     },
     computed: {
         ...mapState({
-            socket: state => state.synchro.socket,
-            roomID: state => state.synchro.roomID
+            socket: state => state.synchro.socket
         }),
         loaded() {
             return this.app.loaded
@@ -238,39 +167,26 @@ export default {
     },
     mounted() {
         this.init()
-    }
+        this.createSocketEvents()
+        TouchEmulator();
+    },
+    methods: {
+        createSocketEvents() {
+            if(this.socket){
+                console.log('on')
+                this.socket.on('kintsugi mini-game',(params)=>{
+                    console.log(params)
+                })
+            }
+        },
+        init() {
+            this.app.init(this.$refs.canvas)
+            this.app.loadBowl()
+        },
+    },
 }
 </script>
 
 <style lang="scss" scoped>
-#kintsugi {
-    height: 50vh;
-    width: 50vh;
-    margin: auto;
-    background: white;
-    position: relative;
-
-    .title {
-        position: absolute;
-        top:0px;
-        left: 0px;
-        color: #fff;
-        background-color: #000
-    }
-
-    #canvas {
-        width: 100%;
-        height: 100%;
-    }
-
-    #debug {
-        position: absolute;
-        bottom:0px;
-        left: 0px;
-        width: 100%;
-        display: flex;
-        flex-direction: row;
-    }
-}
 
 </style>

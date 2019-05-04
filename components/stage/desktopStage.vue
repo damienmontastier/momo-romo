@@ -2,7 +2,7 @@
   <div id="desktopStage">
     <h1>desktopStage</h1>
     <div id="canvas"></div>
-    <mini-game :uid="this.$route.params.level" v-if="isLevelCompleted"></mini-game>
+    <mini-game :uid="$route.params.level" v-if="isLevelCompleted"></mini-game>
     <input type="checkbox" id="checkbox" v-model="isLevelCompleted">
   </div>
 </template>

@@ -77,12 +77,7 @@ export const mutations = {
 }
 
 export const actions = {
-    connect({
-        commit
-    }, {
-        device,
-        roomID
-    }) {
+    connect({commit}, {device,roomID}) {
         commit('setDevice', device);
         commit('setRoomID', roomID);
         commit('connection');
