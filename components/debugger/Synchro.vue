@@ -1,6 +1,7 @@
 <template>
     <div>
-        SYNCHRO: {{isSynchro}}
+        <div>SYNCHRO: {{isSynchro}}</div>
+        <a :href="url">{{url}}</a>
     </div>
 </template>
 
@@ -9,7 +10,8 @@ import { mapState } from 'vuex';
 export default {
     computed: {
         ...mapState({
-            isSynchro: state => state.synchro.isSynchro
+            isSynchro: state => state.synchro.isSynchro,
+            url: state => state.synchro.url
         })
     },
 }

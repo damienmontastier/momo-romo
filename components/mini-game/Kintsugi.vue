@@ -177,18 +177,31 @@ export default {
         init() {
             this.app.init(this.$refs.canvas)
             this.app.loadBowl()
+            this.createSocketEvents()
+        },
+        createSocketEvents() {
+            console.log(this.socket)
+            if(this.socket){
+                console.log('on')
+                this.socket.on('kintsugi mini-game',(params)=>{
+                    console.log('kintsugi mini-game',params)
+                    if(params.id === 'next fracture') {
+                        console.log('next')
+                        this.nextFracture()
+                    }
+                })
+            }
         },
         nextFracture() {
             this.currentStep = 0
             this.currentFracture++
-            this.launchStep()
+            // this.launchStep()
         },
         nextStep() {
             
             if(this.currentStep === 3 ) {
                 
                 if(this.socket) {
-                    console.log('SOCKET TO MOBILE')
                     this.socket.emit('custom-event',{
                         name: 'kintsugi mini-game',
                         in: this.roomID,
@@ -210,13 +223,36 @@ export default {
         },
         launchStep() {
             if(this.gameModel[this.currentFracture]) {
-                this.app.bringCloser(this.gameModel[this.currentFracture].fragments,this.currentStep)
+                let fragments = this.gameModel[this.currentFracture].fragments
+                this.app.bringCloser(fragments,this.currentStep)
+                if(this.socket) {
+                    this.socket.emit('custom-event',{
+                        name: 'kintsugi mini-game',
+                        in: this.roomID,
+                        args: {
+                            id:"bring closer",
+                            fragments:fragments,
+                            step:this.currentStep
+                        }
+                    })
+                }
             }
         },
         cancelFracture() {
             
             if(this.gameModel[this.currentFracture]) {
-                this.app.spread(this.gameModel[this.currentFracture].fragments)
+                let fragments = this.gameModel[this.currentFracture].fragments
+                this.app.spread(fragments)
+                if(this.socket) {
+                    this.socket.emit('custom-event',{
+                        name: 'kintsugi mini-game',
+                        in: this.roomID,
+                        args: {
+                            id:"cancel fracture",
+                            fragments:fragments
+                        }
+                    })
+                }
                 this.currentStep = 0
             }
             // this.currentFracture--

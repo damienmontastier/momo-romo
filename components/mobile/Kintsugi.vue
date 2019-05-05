@@ -1,6 +1,6 @@
 <template>
     <div id="kintsugi">
-        <div class="title">kintsugi mobile mini game {{loaded}}</div>
+        <div class="title">kintsugi mobile mini game {{roomID}}</div>
         <div ref="canvas" id="canvas"></div>
         <div id="debug">
         </div>
@@ -16,13 +16,16 @@ import { mapState } from 'vuex';
 class App{
     constructor() {
         this.loaded = false;
-        
+        this.mouse = new THREE.Vector2();
+        this.raycaster = new THREE.Raycaster();
     }
 
-    init (ref) {
-        this.ref = ref
-        this.WIDTH = window.innerWidth
-        this.HEIGHT = window.innerHeight
+    init (ref,socket,roomID) {
+        this.socket = socket;
+        this.roomID = roomID
+        this.ref = ref;
+        this.WIDTH = window.innerWidth;
+        this.HEIGHT = window.innerHeight;
 
         // renderer
         this.renderer = new THREE.WebGLRenderer({antialias:true});
@@ -42,8 +45,8 @@ class App{
         this.camera.position.set(0, 0, 100);
 
         // controls
-        this.controls = new OrbitControls(this.camera);
-        this.controls.enabled = true;
+        // this.controls = new OrbitControls(this.camera);
+        // this.controls.enabled = true;
 
         // ambient light
         this.scene.add(new THREE.AmbientLight(0x222222));
@@ -61,7 +64,36 @@ class App{
     }
 
     render() {
+        if(this.loaded) {
+            if(this.currentFracture) {
+                this.raycast()                
+            }
+
+        }
+        
 		this.renderer.render(this.scene, this.camera);
+    }
+
+    raycast() {
+        this.raycaster.setFromCamera(this.mouse, this.camera);
+        let intersects = this.raycaster.intersectObjects(
+				this.currentFracture.children.filter(f => !f._triggered),
+				true
+            );
+            if(intersects[0]) {
+                let piece = intersects[0].object
+                console.log(piece)
+                if(
+                    piece.name === 0 ||
+                    this.currentFracture.children[piece.name - 1].triggered === true
+                ) {
+					piece.triggered = true;
+                    piece.material.color.set(0x00ff00);
+                    if(piece.name === this.currentFracture.children[this.currentFracture.children.length-1].name) {
+                        this.endFracture()
+                    }
+                }
+            }
     }
     
     loadBowl() {
@@ -96,8 +128,9 @@ class App{
             // console.log(fractures)
 
             this.fractures.forEach((fracture)=>{
-                fracture.children.forEach((piece)=>{
+                fracture.children.forEach((piece,index)=>{
                     piece.material.color.set(new THREE.Color(0xff0000))
+                    piece.name = index
                     // console.log(piece)
                 })
             })
@@ -134,6 +167,31 @@ class App{
             TweenLite.to(target2.position, 0.5, {x:p2.x,y:p2.y,z:p2.z})
         }
     }
+
+    lauchFracture(fracture) {
+        if(this.fractures[fracture]) {
+            this.currentFracture = this.fractures[fracture]
+            console.log(this.currentFracture)
+        }
+        
+    }
+
+    endFracture() {
+        console.log('fracture ended')
+        if(this.socket){
+            console.log('emit next fracture')
+            this.socket.emit('custom-event',{
+                name: 'kintsugi mini-game',
+                in: this.roomID,
+                args: {
+                    id:"next fracture",
+                    fracture:this.currentFracture
+                }
+            })
+        }
+        this.currentFracture = null
+        
+    }
 }
 
 export default {
@@ -150,11 +208,14 @@ export default {
     data() {
         return {
             app: new App(),
+            mouse: new THREE.Vector2(),
+            isMouseDown: false
         }
     },
     computed: {
         ...mapState({
-            socket: state => state.synchro.socket
+            socket: state => state.synchro.socket,
+            roomID:state => state.synchro.roomID
         }),
         loaded() {
             return this.app.loaded
@@ -163,26 +224,67 @@ export default {
     watch: {
         loaded(val) {
             console.log('isLoaded')
+        },
+        mouse: {
+            handler: function() {
+                this.app.mouse = this.mouse
+            },
+            deep: true
         }
     },
+    // created() {
+    //     TouchEmulator();
+    // },
     mounted() {
+        // TouchEmulator();
+        window.addEventListener("touchmove", this.onTouchMove.bind(this), false);
+        window.addEventListener("mousemove", this.onMouseMove.bind(this), false);
+        window.addEventListener("mousedown", this.onMouseDown.bind(this), false);
+        window.addEventListener("mouseup", this.onMouseUp.bind(this), false);
         this.init()
         this.createSocketEvents()
-        TouchEmulator();
     },
     methods: {
         createSocketEvents() {
             if(this.socket){
-                console.log('on')
                 this.socket.on('kintsugi mini-game',(params)=>{
-                    console.log(params)
+                    if(params.id === "launch fracture") {
+                        this.app.lauchFracture(params.fracture)
+                    }
+                    if(params.id === "bring closer") {
+                        this.app.bringCloser(params.fragments, params.step)
+                        console.log('bring closer')
+                    }
+                    if(params.id === "cancel fracture") {
+                        this.app.spread(params.fragments)
+                    }
                 })
             }
         },
         init() {
-            this.app.init(this.$refs.canvas)
+            this.app.init(this.$refs.canvas,this.socket,this.roomID)
             this.app.loadBowl()
         },
+        onMouseMove(event) {
+            if(this.isMouseDown) {
+                this.mouse.x = event.clientX / window.innerWidth * 2 - 1;
+                this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+            }
+        },
+        onTouchMove(event) {
+            // if(event){
+                this.mouse.x = event.touches[0].clientX / window.innerWidth * 2 - 1;
+                this.mouse.y = -(event.touches[0].clientY / window.innerHeight) * 2 + 1;
+            // }
+        },
+        onMouseDown(event) {
+            console.log('mousedown')
+            this.isMouseDown = true
+        },
+        onMouseUp(event) {
+            console.log('mouseup')
+            this.isMouseDown = false
+        }
     },
 }
 </script>
