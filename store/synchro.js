@@ -1,7 +1,7 @@
 import io from "socket.io-client";
 
 const serverURL = 'https://blooming-garden-58138.herokuapp.com/'
-const URL = 'http://localhost:3000/synchro/?id='
+const URL = 'http://localhost:3000/'
 
 export const state = () => ({
     socket: null,
@@ -9,7 +9,7 @@ export const state = () => ({
     roomID: null,
     isSynchro: false,
     serverURL: serverURL,
-    url: URL
+    url: null
 })
 
 export const getters = {
@@ -17,15 +17,24 @@ export const getters = {
 }
 
 export const mutations = {
-    init(state, roomID) {
+    connection(state) {
+        console.log('connection',state.device,state.roomID)
         state.socket = io(serverURL, {
             query: {
                 device: state.device,
-                roomID: roomID
-            }
+                roomID: state.roomID
+            },
+            autoConnect: false
         });
+        state.socket.connect()
+    },
+    disconnection(state) {
+        state.socket.disconnect()
+    },
+    init(state) {
         state.socket.on('room created', (id) => {
-            console.log('room created', 'http://localhost:3000/synchro/?id=' + id)
+            state.url = URL + id
+            console.log('room created', state.url)
             state.roomID = id
         })
 
@@ -39,23 +48,42 @@ export const mutations = {
             state.isSynchro = value
         })
 
+        state.socket.on('disconnect', (reason) => {
+            console.log('disconnect',reason)
+            setTimeout(()=> {
+                state.socket.io.opts.query = {
+                    device: state.device,
+                    roomID: state.roomID
+                }
+                state.socket.connect()
+            },2000)
+              
+        });
+
+        state.socket.on('connect',()=>{
+            console.log('connect')
+        })
+
         state.socket.on('debug', (v) => {
             console.log(v)
         })
     },
     setDevice(state, device) {
         state.device = device ? 'mobile' : 'desktop';
+    },
+    setRoomID(state, roomID) {
+        state.roomID = roomID;
     }
 }
 
 export const actions = {
-    async init({
-        commit
-    }, {
-        device,
-        roomID
-    }) {
+    connect({commit}, {device,roomID}) {
         commit('setDevice', device);
-        commit('init', roomID);
+        commit('setRoomID', roomID);
+        commit('connection');
+        commit('init');
+    },
+    disconnect({commit},{}) {
+        commit('disconnection');
     }
 }

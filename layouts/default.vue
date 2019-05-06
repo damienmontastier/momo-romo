@@ -1,8 +1,23 @@
 <template>
   <div>
     <nuxt/>
+    <debugger id="debugger" v-if="$route.name != 'editor'"></debugger>
   </div>
 </template>
+
+<script>
+import Debugger from '@/components/debugger/debugger'
+export default {
+  components: {
+    Debugger
+  },
+  mounted() {
+    console.log(this.$route)
+  }
+  
+}
+</script>
+
 
 <style>
 html {
@@ -48,6 +63,16 @@ html {
 .button--grey:hover {
   color: #fff;
   background-color: #35495e;
+}
+
+#debugger {
+  position: absolute;
+  right: 0px;
+  top: 0px;
+  background: rgba(0,0,0,0.75);
+  color: #fff;
+  padding: 16px;
+  z-index: 10000;
 }
 </style>
 

@@ -2,6 +2,8 @@
   <div id="desktopStage">
     <h1>desktopStage</h1>
     <div id="canvas"></div>
+    <mini-game :uid="$route.params.level" v-if="isLevelCompleted"></mini-game>
+    <input type="checkbox" id="checkbox" v-model="isLevelCompleted">
   </div>
 </template>
 
@@ -9,8 +11,14 @@
 import { mapGetters, mapMutations, mapState } from "vuex";
 import Game from "@/assets/js/game/Game";
 import TextureAtlas from "@/assets/js/utils/TextureAtlas";
+import MiniGame from "@/components/mini-game/MiniGame.vue"
 
 export default {
+  data() {
+    return {
+      isLevelCompleted: true
+    }
+  },
   computed: {
     ...mapState({
       stage: state => state.game.stage,
@@ -22,22 +30,31 @@ export default {
     })
   },
   created() {
+    console.log('desktop stage created')
     this.$store.dispatch("game/loadStage", this.$route.params.level);
   },
   mounted() {},
   watch: {
+    // TODO: FIX IT
     loaded() {
-      console.log('fdfsd',this.stage)
-      this.game = new Game({
-        currentLevelParams: this.stage,
-        currentAltlas: this.currentAtlas
-      }).start();
-    }
+        this.game = new Game({
+          currentLevelParams: this.stage,
+          currentAltlas: this.currentAtlas
+        }).start();
+      }
   },
-  mounted() {},
-  methods: {}
+  methods: {},
+  components: {
+    MiniGame
+  }
 };
 </script>
 
 <style lang="scss" scoped>
+#checkbox {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 100;
+}
 </style>
