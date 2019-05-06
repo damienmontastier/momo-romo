@@ -18,9 +18,18 @@ if (process.client) {
                 this.removeFolder(this.scale);
                 this.position = this.rotation = this.scale = null
             }
+            if (this.checkpoint && this.target.mesh._type == "FixedProp") {
+                this.removeFolder(this.checkpoint)
+                this.checkpoint = null
+            }
         }
 
         init() {
+            this._params = {
+                animated: this.target.checkpointAnimate,
+                minigame: this.target.checkpointMinigame,
+            };
+
             this.position = this.addFolder('position');
             this.position.open();
             this.position.add(this.target.position, 'x');
@@ -37,6 +46,16 @@ if (process.client) {
             this.scale.open();
 
             if (this.target.mesh._type == "FixedProp") {
+                this.checkpoint = this.addFolder("Checkpoint");
+                this.checkpoint.open();
+                this.checkpoint.add(this._params, 'animated').name("animated").onChange((value) => {
+                    this.target.checkpointAnimate = value
+                });
+                
+                this.checkpoint.add(this._params, 'minigame').name("minigame").onChange((value) => {
+                    this.target.checkpointMinigame = value
+                });;
+
                 this.scale.add(this.target.scale, 'x').name('scale').onChange(() => {
                     this.target.scale.y = this.target.scale.x
                 });

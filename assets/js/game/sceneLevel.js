@@ -5,7 +5,6 @@ import CANNON from 'cannon'
 import physicParams from '../physics/physicParams';
 import Character from '../objects/Character';
 import '../physics/CannonDebugRenderer'
-import KeyboardManager from "../utils/KeyboardManager";
 
 export default class Level {
     constructor(opts) {
@@ -16,6 +15,8 @@ export default class Level {
             ...opts.levelParams
         };
         this.platforms = this.levelParams.platforms
+
+        this.character = new Character()
 
         //Setup Camera
         this.camera = new THREE.PerspectiveCamera(
@@ -30,17 +31,11 @@ export default class Level {
 
         this.scene = new THREE.Scene();
 
-        // axes
-
-        this.character = new Character()
-
         this.scene.add(new THREE.AxesHelper(20));
 
         this.loaderTexture()
 
         this.worldPhysic();
-
-        this.KeyboardManager = new KeyboardManager(this.onInput.bind(this));
 
         this.renderer = new THREE.WebGLRenderer();
 
@@ -53,22 +48,6 @@ export default class Level {
         this.canvas.appendChild(this.renderer.domElement);
 
         window.addEventListener("resize", this.onWindowResize.bind(this));
-    }
-
-    onInput(key, value) {
-        switch (key) {
-            case "ARROWLEFT":
-                this.character.moveLeft(value)
-                break;
-            case "ARROWRIGHT":
-                this.character.moveRight(value)
-                break;
-            case " ":
-                this.character.jump(value)
-                break;
-            default:
-                break;
-        }
     }
 
     worldPhysic() {
@@ -95,6 +74,7 @@ export default class Level {
         this.platforms.forEach(platform => {
             this.addPlatforms(platform)
         });
+
         this.addCharactere()
     }
 
@@ -119,9 +99,7 @@ export default class Level {
     }
 
     addCharactere() {
-        this.characters = this.character.addCharactere()
-
-        this.world.add(this.characters)
+        this.world.add(this.character.body)
     }
 
     addPlatforms(platform) {

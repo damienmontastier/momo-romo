@@ -10,14 +10,11 @@ export default function ({
 }) {
   return new Promise((resolve, reject) => {
     store.dispatch("loadStagesList").then((stages) => {
-      if (Object.values(stages).includes(route.params.level)) {
-
-      } else {
+      if (!Object.values(stages).includes(route.params.level)) {
         redirect(route.path, {
           room: true
         })
       }
-
       resolve()
     })
   })
