@@ -94,6 +94,12 @@ export default class Level {
         prop.position.set(props.position.x, props.position.y, props.position.z);
         prop.scale.set(props.scale.x, props.scale.y, props.scale.z);
         prop.rotation.set(props.rotation.x, props.rotation.y, props.rotation.z);
+        prop.checkpointMinigame = props.checkpoint.minigame
+        prop.checkpointAnimate = props.checkpoint.animate
+        if (props.checkpoint.minigame) {
+            this.minigameProps = prop
+            console.log(this.minigameProps)
+        }
         this.fixedProps.push(prop);
         this.scene.add(prop)
     }
@@ -130,6 +136,14 @@ export default class Level {
         this.cannonDebugRenderer.update()
 
         this.character.update()
+
+        if (this.minigameProps) {
+            if (this.character.body.position.x >= this.minigameProps.position.x - 2 && this.character.body.position.x <= this.minigameProps.position.x + 2) {
+                console.log(this.character.body.position.x - this.minigameProps.position.x)
+            }
+        }
+
+        // console.log(this.character.body.position.x)
 
         this.physicParams.update()
 

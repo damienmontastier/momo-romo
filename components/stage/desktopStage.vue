@@ -11,13 +11,13 @@
 import { mapGetters, mapMutations, mapState } from "vuex";
 import Game from "@/assets/js/game/Game";
 import TextureAtlas from "@/assets/js/utils/TextureAtlas";
-import MiniGame from "@/components/mini-game/MiniGame.vue"
+import MiniGame from "@/components/mini-game/MiniGame.vue";
 
 export default {
   data() {
     return {
-      isLevelCompleted: true
-    }
+      isLevelCompleted: false
+    };
   },
   computed: {
     ...mapState({
@@ -30,18 +30,17 @@ export default {
     })
   },
   created() {
-    console.log('desktop stage created')
     this.$store.dispatch("game/loadStage", this.$route.params.level);
   },
   mounted() {},
   watch: {
     // TODO: FIX IT
     loaded() {
-        this.game = new Game({
-          currentLevelParams: this.stage,
-          currentAltlas: this.currentAtlas
-        }).start();
-      }
+      this.game = new Game({
+        currentLevelParams: this.stage,
+        currentAltlas: this.currentAtlas
+      }).start();
+    }
   },
   methods: {},
   components: {
