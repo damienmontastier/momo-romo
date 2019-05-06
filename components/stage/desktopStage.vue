@@ -1,6 +1,7 @@
 <template>
   <div id="desktopStage">
     <h1>desktopStage</h1>
+    <div id="canvas"></div>
   </div>
 </template>
 
@@ -23,8 +24,10 @@ export default {
   created() {
     this.$store.dispatch("game/loadStage", this.$route.params.level);
   },
+  mounted() {},
   watch: {
     loaded() {
+      console.log('fdfsd',this.stage)
       this.game = new Game({
         currentLevelParams: this.stage,
         currentAltlas: this.currentAtlas

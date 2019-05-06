@@ -4,14 +4,11 @@
       <room v-if="$route.query.room"></room>
       <level v-else></level>
     </section>
-    <div id="canvas"></div>
   </div>
 </template>
 
 <script>
 import { mapState, mapGetters, mapMutations } from "vuex";
-import TextureAtlas from "@/assets/js/utils/TextureAtlas";
-import Game from "@/assets/js/game/Game";
 import level from "@/components/level";
 import room from "@/components/room";
 
