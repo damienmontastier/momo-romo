@@ -30,7 +30,7 @@ export default {
     // this.$store.dispatch("get");
   },
   mounted() {
-    console.log("index", this.stages);
+    // console.log("index", this.stages);
   },
   methods: {
     // init() {

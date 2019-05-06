@@ -33,6 +33,7 @@ export default {
     console.log('desktop stage created')
     this.$store.dispatch("game/loadStage", this.$route.params.level);
   },
+  mounted() {},
   watch: {
     // TODO: FIX IT
     loaded() {
@@ -41,10 +42,6 @@ export default {
           currentAltlas: this.currentAtlas
         }).start();
       }
-  },
-  mounted() {
-    console.log('desktop stage mounted')
-    
   },
   methods: {},
   components: {
