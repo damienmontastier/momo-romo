@@ -17,6 +17,7 @@
     </ul>
     <ul class="layer">
       <p>Props</p>
+
       <li
         @click="select(prop)"
         :ref="prop.id+index"
@@ -29,7 +30,28 @@
         <input @click="visible(prop, index)" type="checkbox" id="checkbox" checked>
         {{prop._id + index}}
       </li>
+      <p>{{picked}}</p>
     </ul>
+    <div class="layer">
+      <p>Minigame</p>
+      <div
+        v-for="(prop,index) in currentStageRef.fixedProps"
+        :key="index"
+        @mouseover="hover(prop)"
+        @mouseleave="out(prop)"
+      >
+        <input
+          :id="prop._id+index"
+          @click="minigame(prop, index)"
+          :ref="prop._id+index"
+          name="radio"
+          type="radio"
+          :value="prop._id+index"
+          :checked="prop.checkpointMinigame"
+        >
+        <label :for="prop._id+index">{{prop._id+index}}</label>
+      </div>
+    </div>
   </div>
 </template>
 <script>
@@ -37,6 +59,11 @@ import { mapMutations, mapState, mapGetters } from "vuex";
 import ArrowsHelper from "../assets/js/objects/ArrowsHelper";
 
 export default {
+  data() {
+    return {
+      picked: null
+    };
+  },
   computed: {
     ...mapState({
       currentStageId: state => state.editor.currentStageId,
@@ -55,7 +82,6 @@ export default {
   },
   methods: {
     select(target) {
-      console.log("select");
       ArrowsHelper.setTarget(target);
       target.highlight(true);
     },
@@ -79,6 +105,13 @@ export default {
           ArrowsHelper.setTarget(null);
         }, 10);
       }
+    },
+    minigame(target) {
+      //put minigame var to true
+      this.currentStageRef.fixedProps.forEach(fixed => {
+        fixed.checkpointMinigame = false;
+      });
+      target.checkpointMinigame = true;
     }
   },
   watch: {
@@ -99,9 +132,10 @@ export default {
   margin-bottom: 20px;
   background: white;
   padding: 5px;
+
   li {
-    padding-left: 10px;
     cursor: pointer;
+    padding-left: 10px;
     &:hover {
       background: #f7fcf7;
     }

@@ -2,8 +2,7 @@
   <div id="desktopStage">
     <h1>desktopStage</h1>
     <div id="canvas"></div>
-    <mini-game :uid="$route.params.level" v-if="isLevelCompleted"></mini-game>
-    <input type="checkbox" id="checkbox" v-model="isLevelCompleted">
+    <mini-game :uid="$route.params.level" v-if="minigame"></mini-game>
   </div>
 </template>
 
@@ -17,7 +16,8 @@ export default {
   data() {
     return {
       isLevelCompleted: false,
-      game: new Game()
+      game: new Game(),
+      minigame: null
     };
   },
   computed: {
@@ -33,15 +33,24 @@ export default {
   created() {
     this.$store.dispatch("game/loadStage", this.$route.params.level);
   },
-  mounted() {},
+  mounted() {
+    //Ecouter l'événement.
+    window.addEventListener(
+      "launchMiniGame",
+      e => {
+        this.minigame = e.minigame;
+      },
+      false
+    );
+  },
   watch: {
+    minigame() {},
     // TODO: FIX IT
     loaded() {
       this.game.start({
         currentLevelParams: this.stage,
         currentAltlas: this.currentAtlas
       });
-      this.game.behind()
     }
   },
   methods: {},

@@ -6,6 +6,7 @@ import Platform from '../editor/Platform'
 export default class Stage extends THREE.Object3D {
     constructor(opts) {
         super()
+
         this.textureAtlas = opts.textureAtlas;
         // this.fixedProps = [ ...opts.pressets.props.fixed ];
         this.fixedPropsGroup = new THREE.Group()
@@ -17,11 +18,6 @@ export default class Stage extends THREE.Object3D {
         this.platformsGroup.name = 'platformsGroup'
         this.add(this.platformsGroup)
         this.platforms = []
-
-        this.checkpointsGroup = new THREE.Group()
-        this.checkpointsGroup.name = 'checkpointsGroup'
-        this.add(this.checkpointsGroup)
-        this.checkpoints = []
 
         this.pressets = {
             ...opts.pressets
@@ -49,7 +45,7 @@ export default class Stage extends THREE.Object3D {
         this.loadTextureAtlas()
     }
 
-    export () {
+    export() {
         //export fixed props
         let fixedprops = [];
         this.fixedProps.filter(prop => prop.visible).forEach((prop) => {
@@ -166,13 +162,13 @@ export default class Stage extends THREE.Object3D {
         _id,
         position,
         rotation,
-        scale
+        scale,
+        checkpoint
     }) {
         let id = _id
         rotation = rotation || new THREE.Vector3(0, 0, 0)
         position = position || new THREE.Vector3(0, 0, 0)
         scale = scale || new THREE.Vector3(1, 1, 1)
-        console.log(id, 'prop added')
         let t = this.textureAtlas.get(id);
         let prop = new FixedProp({
             id: id,
@@ -190,7 +186,8 @@ export default class Stage extends THREE.Object3D {
         prop.rotation.set(rotation.x, rotation.y, rotation.z)
         prop.scale.set(scale.x, scale.y, scale.z)
         prop.index = this.fixedProps.length
-        prop.checkpointAnimate = prop.checkpointMinigame = false
+        prop.checkpointAnimate = checkpoint.animate
+        prop.checkpointMinigame = checkpoint.minigame
         this.fixedProps.push(prop);
         // this.add(prop);
         this.fixedPropsGroup.add(prop)

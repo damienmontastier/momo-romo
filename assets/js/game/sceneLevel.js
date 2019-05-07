@@ -18,6 +18,8 @@ export default class Level {
 
         this.character = new Character()
 
+        this.isMiniGameLaunched = false
+
         //Setup Camera
         this.camera = new THREE.PerspectiveCamera(
             40,
@@ -131,8 +133,20 @@ export default class Level {
         this.renderer.setSize(window.innerWidth, window.innerHeight);
     }
 
-    behind(value) {
-        return 'yo'
+
+    nextToMinigame(value) {
+        var event = new Event('launchMiniGame');
+
+        if (value && !this.isMiniGameLaunched) {
+            this.isMiniGameLaunched = true
+            event.minigame = value
+        } else {
+            this.isMiniGameLaunched = false
+
+            event.minigame = value
+        }
+
+        window.dispatchEvent(event);
     }
 
     render() {
@@ -142,9 +156,9 @@ export default class Level {
 
         if (this.minigameProps) {
             if (this.character.body.position.x >= this.minigameProps.position.x - 2 && this.character.body.position.x <= this.minigameProps.position.x + 2) {
-                this.behind(true)
+                this.nextToMinigame(true)
             } else {
-                this.behind(false)
+                this.nextToMinigame(false)
             }
         }
 
