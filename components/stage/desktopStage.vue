@@ -16,7 +16,8 @@ import MiniGame from "@/components/mini-game/MiniGame.vue";
 export default {
   data() {
     return {
-      isLevelCompleted: false
+      isLevelCompleted: false,
+      game: new Game()
     };
   },
   computed: {
@@ -36,10 +37,11 @@ export default {
   watch: {
     // TODO: FIX IT
     loaded() {
-      this.game = new Game({
+      this.game.start({
         currentLevelParams: this.stage,
         currentAltlas: this.currentAtlas
-      }).start();
+      });
+      this.game.behind()
     }
   },
   methods: {},
