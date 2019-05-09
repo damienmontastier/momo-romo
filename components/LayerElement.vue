@@ -17,7 +17,6 @@
     </ul>
     <ul class="layer">
       <p>Props</p>
-
       <li
         @click="select(prop)"
         :ref="prop.id+index"
@@ -32,26 +31,46 @@
       </li>
       <p>{{picked}}</p>
     </ul>
-    <div class="layer">
-      <p>Minigame</p>
-      <div
+    <ul class="layer">
+      <p>Checkpoint Minigame</p>
+      <li
+        v-for="(prop,index) in currentStageRef.fixedProps"
+        :key="index"
+        @mouseover="hover(prop)"
+        @mouseleave="out(prop)"
+      >
+          <input
+            :id="prop._id+index"
+            @click="minigame(prop, index)"
+            :ref="prop._id+index"
+            name="radio"
+            type="radio"
+            :value="prop._id+index || false"
+            :checked="prop.checkpointMinigame"
+          >
+          {{prop._id+index}}
+      </li>
+    </ul>
+    <ul class="layer">
+      <p>Checkpoint animate</p>
+      <li
         v-for="(prop,index) in currentStageRef.fixedProps"
         :key="index"
         @mouseover="hover(prop)"
         @mouseleave="out(prop)"
       >
         <input
+          type="checkbox"
+          v-model="prop.checkpointAnimate"
+          :name="prop._id + index"
+          :value="prop.checkpointAnimate"
           :id="prop._id+index"
-          @click="minigame(prop, index)"
-          :ref="prop._id+index"
-          name="radio"
-          type="radio"
-          :value="prop._id+index"
-          :checked="prop.checkpointMinigame"
+          @click="animate(prop)"
+          :checked="prop.checkpointAnimate"
         >
-        <label :for="prop._id+index">{{prop._id+index}}</label>
-      </div>
-    </div>
+        {{prop._id+index}}
+      </li>
+    </ul>
   </div>
 </template>
 <script>
@@ -61,7 +80,8 @@ import ArrowsHelper from "../assets/js/objects/ArrowsHelper";
 export default {
   data() {
     return {
-      picked: null
+      picked: null,
+      animateProps: []
     };
   },
   computed: {
@@ -75,10 +95,7 @@ export default {
         fixedProps: this.currentStageRef.fixedProps.length,
         platforms: this.currentStageRef.platforms.length
       };
-    },
-    ...mapGetters({
-      isDragging: "editor/isDragging"
-    })
+    }
   },
   methods: {
     select(target) {
@@ -112,10 +129,15 @@ export default {
         fixed.checkpointMinigame = false;
       });
       target.checkpointMinigame = true;
+    },
+    animate(target) {
+      console.log(target);
+      target.checkpointAnimate = true;
     }
   },
   watch: {
-    currentStageProps() {}
+    currentStageProps() {},
+    animateProps() {}
   },
   mounted() {
     console.log(this.currentStageRef);

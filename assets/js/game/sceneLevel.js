@@ -19,6 +19,9 @@ export default class Level {
         this.character = new Character()
 
         this.isMiniGameLaunched = false
+        this.isAnimatedLaunched = false
+
+        this.checkpointAnimatedGroup = []
 
         //Setup Camera
         this.camera = new THREE.PerspectiveCamera(
@@ -38,6 +41,9 @@ export default class Level {
         this.loaderTexture()
 
         this.worldPhysic();
+
+        this.eventAnimate = new Event('launchAnimated');
+        this.eventAnimate.props = new Object();
 
         this.renderer = new THREE.WebGLRenderer();
 
@@ -101,6 +107,9 @@ export default class Level {
         if (props.checkpoint.minigame) {
             this.minigameProps = prop
         }
+        if (props.checkpoint.animate) {
+            this.checkpointAnimatedGroup.push(prop)
+        }
         this.fixedProps.push(prop);
         this.scene.add(prop)
     }
@@ -149,6 +158,18 @@ export default class Level {
         window.dispatchEvent(event);
     }
 
+    nextToAnimated(value, elementId) {
+        if (value && !this.isAnimatedLaunched) {
+            this.isAnimatedLaunched = true
+            this.eventAnimate.props[elementId] = value
+        } else {
+            this.isAnimatedLaunched = value
+            this.eventAnimate.props[elementId] = false
+        }
+
+        window.dispatchEvent(this.eventAnimate);
+    }
+
     render() {
         this.cannonDebugRenderer.update()
 
@@ -160,6 +181,16 @@ export default class Level {
             } else {
                 this.nextToMinigame(false)
             }
+        }
+
+        if (this.checkpointAnimatedGroup) {
+            this.checkpointAnimatedGroup.forEach((element) => {
+                if (this.character.body.position.x >= element.position.x - 2 && this.character.body.position.x <= element.position.x + 2) {
+                    this.nextToAnimated(true, element._id)
+                } else {
+                    this.nextToAnimated(false, element._id)
+                }
+            });
         }
 
         this.physicParams.update()

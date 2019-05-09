@@ -67,8 +67,8 @@ export default class Stage extends THREE.Object3D {
                     z: prop.scale.z
                 },
                 checkpoint: {
-                    animate: prop.checkpointAnimate,
-                    minigame: prop.checkpointMinigame,
+                    animate: prop.checkpointAnimate || false,
+                    minigame: prop.checkpointMinigame || false,
                 }
             })
         });
@@ -186,8 +186,10 @@ export default class Stage extends THREE.Object3D {
         prop.rotation.set(rotation.x, rotation.y, rotation.z)
         prop.scale.set(scale.x, scale.y, scale.z)
         prop.index = this.fixedProps.length
-        prop.checkpointAnimate = checkpoint.animate
-        prop.checkpointMinigame = checkpoint.minigame
+
+        prop.checkpointAnimate = typeof checkpoint == "undefined" || undefined ? false : checkpoint.animate
+        prop.checkpointMinigame = typeof checkpoint == "undefined" || undefined ? false : checkpoint.minigame
+
         this.fixedProps.push(prop);
         // this.add(prop);
         this.fixedPropsGroup.add(prop)

@@ -104,6 +104,7 @@ export default {
           let prop = this.editor.stages[this.currentStageId].addFixedProp({
             _id: this.draggingPropId
           });
+          console.log(prop)
           prop.position.set(pos.x, pos.y, pos.z);
           this.setDraggingPropId(null);
         }

@@ -1,6 +1,7 @@
 <template>
   <div id="desktopStage">
     <h1>desktopStage</h1>
+
     <div id="canvas"></div>
     <mini-game :uid="$route.params.level" v-if="minigame"></mini-game>
   </div>
@@ -34,7 +35,6 @@ export default {
     this.$store.dispatch("game/loadStage", this.$route.params.level);
   },
   mounted() {
-    //Ecouter l'événement.
     window.addEventListener(
       "launchMiniGame",
       e => {
@@ -42,6 +42,7 @@ export default {
       },
       false
     );
+    window.addEventListener("launchAnimated", this.eventProps, false);
   },
   watch: {
     minigame() {},
@@ -53,7 +54,14 @@ export default {
       });
     }
   },
-  methods: {},
+  methods: {
+    //FIX IT TOO MUCH CONSOLE LOG
+    eventProps(e) {
+      if (e.props.bag) {
+        console.log("bag");
+      }
+    }
+  },
   components: {
     MiniGame
   }
