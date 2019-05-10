@@ -18,7 +18,12 @@ export default class Level {
 
         this.character = new Character()
 
+        this.eventAnimate = new Event('launchAnimated');
+
+        this.eventAnimate.props = new Object();
+
         this.isMiniGameLaunched = false
+
         this.isAnimatedLaunched = false
 
         this.checkpointAnimatedGroup = []
@@ -41,9 +46,6 @@ export default class Level {
         this.loaderTexture()
 
         this.worldPhysic();
-
-        this.eventAnimate = new Event('launchAnimated');
-        this.eventAnimate.props = new Object();
 
         this.renderer = new THREE.WebGLRenderer();
 
@@ -151,7 +153,6 @@ export default class Level {
             event.minigame = value
         } else {
             this.isMiniGameLaunched = false
-
             event.minigame = value
         }
 
@@ -160,12 +161,22 @@ export default class Level {
 
     nextToAnimated(value, elementId) {
         if (value && !this.isAnimatedLaunched) {
-            this.isAnimatedLaunched = true
             this.eventAnimate.props[elementId] = value
+            this.isAnimatedLaunched = true
         } else {
-            this.isAnimatedLaunched = value
-            this.eventAnimate.props[elementId] = false
+            this.eventAnimate.props[elementId] = value
+            this.isAnimatedLaunched = false
         }
+
+        // console.log(this.eventAnimate.props)
+
+        // if (value && !this.isAnimatedLaunched) {
+        //     this.isAnimatedLaunched = true
+        //     this.eventAnimate.props[elementId] = value
+        // } else {
+        //     this.isAnimatedLaunched = value
+        //     this.eventAnimate.props[elementId] = false
+        // }
 
         window.dispatchEvent(this.eventAnimate);
     }
@@ -187,7 +198,8 @@ export default class Level {
             this.checkpointAnimatedGroup.forEach((element) => {
                 if (this.character.body.position.x >= element.position.x - 2 && this.character.body.position.x <= element.position.x + 2) {
                     this.nextToAnimated(true, element._id)
-                } else {
+                }
+                else {
                     this.nextToAnimated(false, element._id)
                 }
             });

@@ -6,10 +6,10 @@ export default class Character {
     constructor() {
         this.body = null
 
-        this.velocityValue = new THREE.Vector3();
+        this.forceValue = new THREE.Vector3();
 
-        this.canMove = false
-        this.canJump = false
+        // this.canMove = false
+        // this.canJump = false
 
         this.addBody()
 
@@ -17,7 +17,7 @@ export default class Character {
     }
 
     addBody() {
-        var radius = 1; // m
+        var radius = .5; // m
         var body = new CANNON.Body({
             mass: 1, // kg
             position: new CANNON.Vec3(2, 5, 3), // m
@@ -35,12 +35,13 @@ export default class Character {
 
     onCollide(e) {
         if (e.contact.enabled) {
-            this.canMove = true
-            this.canJump = true
+            // this.canMove = true
+            // this.canJump = true
         }
     }
 
     onInput(key, value) {
+        console.log(key)
         switch (key) {
             case "ARROWLEFT":
                 this.moveLeft = value
@@ -49,7 +50,8 @@ export default class Character {
                 this.moveRight = value
                 break;
             case " ":
-                this.canJump && this.jump(value)
+                this.jump(value)
+                // this.canJump && this.jump(value)
                 break;
             default:
                 break;
@@ -57,31 +59,32 @@ export default class Character {
     }
 
     jump(value) {
+        console.log('yes')
         if (value) {
-            this.body.velocity.y = 15
-            this.canJump = false
-            this.canMove = false;
+            this.body.force.y += 500
+            // this.canJump = false
+            // this.canMove = false;
         }
     }
 
     movement() {
-        this.velocityValue.set(0, 0, 0)
+        this.forceValue.set(0, 0, 0)
 
         if (this.moveLeft) {
-            this.velocityValue.x = -2;
+            this.forceValue.x += -20;
         }
         if (this.moveRight) {
-            this.velocityValue.x = 2;
+            this.forceValue.x += 20;
         }
     }
 
     move() {
-        if (this.canMove) {
-            if (this.moveLeft || this.moveRight) {
-                let accelerationValue = new CANNON.Vec3(this.velocityValue.x, 0, 0);
-                this.body.velocity = accelerationValue
-            }
+        // if (this.canMove) {
+        if (this.moveLeft || this.moveRight) {
+            let accelerationValue = new CANNON.Vec3(this.forceValue.x, 0, 0);
+            this.body.force = accelerationValue
         }
+        // }
     }
 
     update() {

@@ -18,7 +18,8 @@ export default {
     return {
       isLevelCompleted: false,
       game: new Game(),
-      minigame: null
+      minigame: null,
+      coucou: null
     };
   },
   computed: {
@@ -42,7 +43,14 @@ export default {
       },
       false
     );
-    window.addEventListener("launchAnimated", this.eventProps, false);
+    window.addEventListener(
+      "launchAnimated",
+      e => {
+        // console.log(e.props);
+        // this.coucou = e.props;
+      },
+      false
+    );
   },
   watch: {
     minigame() {},
@@ -56,11 +64,6 @@ export default {
   },
   methods: {
     //FIX IT TOO MUCH CONSOLE LOG
-    eventProps(e) {
-      if (e.props.bag) {
-        console.log("bag");
-      }
-    }
   },
   components: {
     MiniGame
