@@ -29,6 +29,47 @@
         <input @click="visible(prop, index)" type="checkbox" id="checkbox" checked>
         {{prop._id + index}}
       </li>
+      <p>{{picked}}</p>
+    </ul>
+    <ul class="layer">
+      <p>Checkpoint Minigame</p>
+      <li
+        v-for="(prop,index) in currentStageRef.fixedProps"
+        :key="index"
+        @mouseover="hover(prop)"
+        @mouseleave="out(prop)"
+      >
+          <input
+            :id="prop._id+index"
+            @click="minigame(prop, index)"
+            :ref="prop._id+index"
+            name="radio"
+            type="radio"
+            :value="prop._id+index || false"
+            :checked="prop.checkpointMinigame"
+          >
+          {{prop._id+index}}
+      </li>
+    </ul>
+    <ul class="layer">
+      <p>Checkpoint animate</p>
+      <li
+        v-for="(prop,index) in currentStageRef.fixedProps"
+        :key="index"
+        @mouseover="hover(prop)"
+        @mouseleave="out(prop)"
+      >
+        <input
+          type="checkbox"
+          v-model="prop.checkpointAnimate"
+          :name="prop._id + index"
+          :value="prop.checkpointAnimate"
+          :id="prop._id+index"
+          @click="animate(prop)"
+          :checked="prop.checkpointAnimate"
+        >
+        {{prop._id+index}}
+      </li>
     </ul>
   </div>
 </template>
@@ -37,6 +78,12 @@ import { mapMutations, mapState, mapGetters } from "vuex";
 import ArrowsHelper from "../assets/js/objects/ArrowsHelper";
 
 export default {
+  data() {
+    return {
+      picked: null,
+      animateProps: []
+    };
+  },
   computed: {
     ...mapState({
       currentStageId: state => state.editor.currentStageId,
@@ -48,14 +95,10 @@ export default {
         fixedProps: this.currentStageRef.fixedProps.length,
         platforms: this.currentStageRef.platforms.length
       };
-    },
-    ...mapGetters({
-      isDragging: "editor/isDragging"
-    })
+    }
   },
   methods: {
     select(target) {
-      console.log("select");
       ArrowsHelper.setTarget(target);
       target.highlight(true);
     },
@@ -79,10 +122,22 @@ export default {
           ArrowsHelper.setTarget(null);
         }, 10);
       }
+    },
+    minigame(target) {
+      //put minigame var to true
+      this.currentStageRef.fixedProps.forEach(fixed => {
+        fixed.checkpointMinigame = false;
+      });
+      target.checkpointMinigame = true;
+    },
+    animate(target) {
+      console.log(target);
+      target.checkpointAnimate = true;
     }
   },
   watch: {
-    currentStageProps() {}
+    currentStageProps() {},
+    animateProps() {}
   },
   mounted() {
     console.log(this.currentStageRef);
@@ -99,9 +154,10 @@ export default {
   margin-bottom: 20px;
   background: white;
   padding: 5px;
+
   li {
-    padding-left: 10px;
     cursor: pointer;
+    padding-left: 10px;
     &:hover {
       background: #f7fcf7;
     }

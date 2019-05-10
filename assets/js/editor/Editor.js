@@ -153,7 +153,7 @@ export default class Editor {
         }
     }
 
-    export () {
+    export() {
         let json = {}
         Object.entries(this.stages).forEach((stage) => {
             let exprt = stage[1].export()

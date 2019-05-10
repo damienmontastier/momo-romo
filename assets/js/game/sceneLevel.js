@@ -18,6 +18,16 @@ export default class Level {
 
         this.character = new Character()
 
+        this.eventAnimate = new Event('launchAnimated');
+
+        this.eventAnimate.props = new Object();
+
+        this.isMiniGameLaunched = false
+
+        this.isAnimatedLaunched = false
+
+        this.checkpointAnimatedGroup = []
+
         //Setup Camera
         this.camera = new THREE.PerspectiveCamera(
             40,
@@ -94,6 +104,14 @@ export default class Level {
         prop.position.set(props.position.x, props.position.y, props.position.z);
         prop.scale.set(props.scale.x, props.scale.y, props.scale.z);
         prop.rotation.set(props.rotation.x, props.rotation.y, props.rotation.z);
+        prop.checkpointMinigame = props.checkpoint.minigame
+        prop.checkpointAnimate = props.checkpoint.animate
+        if (props.checkpoint.minigame) {
+            this.minigameProps = prop
+        }
+        if (props.checkpoint.animate) {
+            this.checkpointAnimatedGroup.push(prop)
+        }
         this.fixedProps.push(prop);
         this.scene.add(prop)
     }
@@ -126,10 +144,66 @@ export default class Level {
         this.renderer.setSize(window.innerWidth, window.innerHeight);
     }
 
+
+    nextToMinigame(value) {
+        var event = new Event('launchMiniGame');
+
+        if (value && !this.isMiniGameLaunched) {
+            this.isMiniGameLaunched = true
+            event.minigame = value
+        } else {
+            this.isMiniGameLaunched = false
+            event.minigame = value
+        }
+
+        window.dispatchEvent(event);
+    }
+
+    nextToAnimated(value, elementId) {
+        if (value && !this.isAnimatedLaunched) {
+            this.eventAnimate.props[elementId] = value
+            this.isAnimatedLaunched = true
+        } else {
+            this.eventAnimate.props[elementId] = value
+            this.isAnimatedLaunched = false
+        }
+
+        // console.log(this.eventAnimate.props)
+
+        // if (value && !this.isAnimatedLaunched) {
+        //     this.isAnimatedLaunched = true
+        //     this.eventAnimate.props[elementId] = value
+        // } else {
+        //     this.isAnimatedLaunched = value
+        //     this.eventAnimate.props[elementId] = false
+        // }
+
+        window.dispatchEvent(this.eventAnimate);
+    }
+
     render() {
         this.cannonDebugRenderer.update()
 
         this.character.update()
+
+        if (this.minigameProps) {
+            if (this.character.body.position.x >= this.minigameProps.position.x - 2 && this.character.body.position.x <= this.minigameProps.position.x + 2) {
+                this.nextToMinigame(true)
+            } else {
+                this.nextToMinigame(false)
+            }
+        }
+
+        if (this.checkpointAnimatedGroup) {
+            this.checkpointAnimatedGroup.forEach((element) => {
+                if (this.character.body.position.x >= element.position.x - 2 && this.character.body.position.x <= element.position.x + 2) {
+                    this.nextToAnimated(true, element._id)
+                }
+                else {
+                    this.nextToAnimated(false, element._id)
+                }
+            });
+        }
 
         this.physicParams.update()
 
