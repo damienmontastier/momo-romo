@@ -42,7 +42,7 @@ class TileTextureAnimator {
       if (this.currentTile == this.tileEnd) {
         this.currentTile = this.tileStart;
       }
-      console.log(this.currentTile);
+
       this.setOffset();
       this.currentTile++;
     }
@@ -106,6 +106,7 @@ export default class Sprite extends THREE.Object3D{
     });
 
     this.currentSpriteID = id
+    console.log(this.currentSpriteID)
 
     this.animation = sprite.animator;
     this.animation.currentTile = this.animation.tileStart;

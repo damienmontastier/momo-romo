@@ -1,10 +1,10 @@
 <template>
     <div ref="page">
         <div id="debugger-sprite">
-            <div>sprites :</div>
-            <div>{{ currentSpriteID }}</div>
+            <div>sprites : {{ currentSpriteID }}</div>
+            <div></div>
             <ul>
-                <li v-for="sprite in sprites" @click="launchSprite(sprite.id)">{{sprite.id}}</li>
+                <li v-for="sprite in sprites" @click="launchSprite(sprite.id)" :class="{'current' : currentSpriteID === sprite.id}">{{sprite.id}}</li>
             </ul>
         </div>
         <canvas ref="canvas"></canvas>
@@ -21,14 +21,11 @@ export default {
     computed: {
         sprites() {
             return MomoJson.sprites
-        },
-        currentSpriteID() {
-            if(this.momo) {
-                return this.momo.currentSpriteID
-            } else {
-                return null
-            }
-            
+        }
+    },
+    data() {
+        return {
+            currentSpriteID: 'default'
         }
     },
     mounted() {
@@ -76,13 +73,14 @@ export default {
             this.renderer.setAnimationLoop(this.render.bind(this));
         },
         render() {
-            const delta = this.clock.getDelta() * 100;
+            const delta = this.clock.getDelta() * 750;
             this.time += delta;
             this.momo.update(delta);
             this.renderer.render(this.scene, this.camera);
         },
         launchSprite(id) {
             this.momo.changeState(id);
+            this.currentSpriteID = id;
         }
     },
 }
@@ -94,5 +92,14 @@ export default {
     top: 0px;
     left:0px;
     background: #fff;
+
+    ul {
+        li {
+            &.current {
+                background: red;
+                color: #fff;
+            }
+        }
+    }
 }
 </style>
