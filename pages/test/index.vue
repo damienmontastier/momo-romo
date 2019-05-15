@@ -102,7 +102,7 @@ export default {
                 .addState('jump')
                 .addState('jump to walk')
                 .addState('walk', {
-                    loop: true
+                    // loop: true
                 })
                 .start()
             // .then(() => this.momo.changeState('jump to walk')
