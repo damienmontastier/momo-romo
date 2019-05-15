@@ -5,6 +5,8 @@
             <div></div>
             <ul>
                 <li v-for="sprite in sprites" @click="launchSprite(sprite.id)" :class="{'current' : currentSpriteID === sprite.id}">{{sprite.id}}</li>
+                <li @click="turnToWalk()">turn + walk</li>
+                <li @click="jumpToWalk()">jump + walk</li>
             </ul>
         </div>
         <canvas ref="canvas"></canvas>
@@ -14,8 +16,8 @@
 <script>
 import * as THREE from 'three'
 import OrbitControls from 'orbit-controls-es6';
-import Sprite from '@/assets/js/objects/Sprite';
-import MomoSprite from '~/static/sprites/momo/momo.png';
+import Sprite from '@/assets/js/objects/asprite';
+import MomoSprite from '~/static/sprites/momo/momo12.png';
 const MomoJson = require("~/static/sprites/momo/momo.json");
 export default {
     computed: {
@@ -62,9 +64,9 @@ export default {
             // axes
             this.scene.add(new THREE.AxesHelper(20));
 
-            this.momo = new Sprite({texture:MomoSprite, sprites: MomoJson.sprites,w:6,h:9})
+            // this.momo = new Sprite({texture:MomoSprite, sprites: MomoJson.sprites,w:8,h:8})
+            this.momo = new Sprite(this.camera,MomoSprite, MomoJson.sprites,{wTiles: 8, hTiles: 8})
             this.scene.add(this.momo)
-            console.log(MomoJson)
 
             this.time = 0;
             this.clock = new THREE.Clock()
@@ -73,7 +75,7 @@ export default {
             this.renderer.setAnimationLoop(this.render.bind(this));
         },
         render() {
-            const delta = this.clock.getDelta() * 750;
+            const delta = this.clock.getDelta() * 1000;
             this.time += delta;
             this.momo.update(delta);
             this.renderer.render(this.scene, this.camera);
@@ -81,6 +83,31 @@ export default {
         launchSprite(id) {
             this.momo.changeState(id);
             this.currentSpriteID = id;
+        },
+        turnToWalk() {
+            this.momo.changeState('turn',()=>{
+                this.momo.changeState('walk')
+            });
+        },
+        jumpToWalk() {
+            // this.momo.changeState('jump',()=>{
+            //     this.momo.changeState('jump to walk',()=>{
+            //         this.momo.changeState('walk')
+            //     })
+            // }); 
+            // this.momo.changeState('jump')
+
+            this.momo
+                .newSprites()
+                .addState('jump')
+                .addState('jump to walk')
+                .addState('walk', {
+                    loop: true
+                })
+                .start()
+            // .then(() => this.momo.changeState('jump to walk')
+            //     .then(() => this.momo.changeState('walk'))
+            // );
         }
     },
 }
