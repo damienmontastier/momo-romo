@@ -1,4 +1,4 @@
-<template>
+ <template>
     <div ref="page">
         <div id="debugger-sprite">
             <div>sprites : {{ currentSpriteID }}</div>
@@ -75,7 +75,7 @@ export default {
             this.renderer.setAnimationLoop(this.render.bind(this));
         },
         render() {
-            const delta = this.clock.getDelta() * 1000;
+            const delta = this.clock.getDelta() * 2000;
             this.time += delta;
             this.momo.update(delta);
             this.renderer.render(this.scene, this.camera);
@@ -90,24 +90,12 @@ export default {
             });
         },
         jumpToWalk() {
-            // this.momo.changeState('jump',()=>{
-            //     this.momo.changeState('jump to walk',()=>{
-            //         this.momo.changeState('walk')
-            //     })
-            // }); 
-            // this.momo.changeState('jump')
-
             this.momo
                 .newSprites()
                 .addState('jump')
                 .addState('jump to walk')
-                .addState('walk', {
-                    // loop: true
-                })
+                .addState('walk')
                 .start()
-            // .then(() => this.momo.changeState('jump to walk')
-            //     .then(() => this.momo.changeState('walk'))
-            // );
         }
     },
 }

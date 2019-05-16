@@ -79,11 +79,11 @@ export default class Sprite extends THREE.Object3D{
     }
 
     start() {
-        console.log(this.spritesMap)
-        
+        this.changeState(this.spritesMap[0])
+        console.log(this.spritesMap[0])
     }
 
-    addState(id,opts) {
+    addState(id) {
         let sprite = this.json.find(sprite => sprite.id === id);
         if(sprite) {
             this.spritesMap.push(sprite)
@@ -106,19 +106,29 @@ export default class Sprite extends THREE.Object3D{
         
     }
 
+    changeState(sprite) {
+        this.startTile = sprite.start
+        this.endTile = sprite.end
+        this.currentTile = sprite.start
+        this.durationPerTile = sprite.durationTile
+        this.currentTime = 0;
+        this.setOffset();
+    }
+
     update(delta) {
         this.mesh.lookAt(this.camera.position)
-
-        // console.log(delta)
         
         this.currentTime += delta;
         if(this.currentTime >= this.durationPerTile) {
             this.setOffset()
             this.currentTile += 1
             this.currentTime = 0
-            if(this.currentTile > 10) {
-                console.log('end')
-                this.currentTile = 0
+            if(this.currentTile > this.endTile) {
+                if(this.spritesMap.length>1) {
+                    this.spritesMap.shift()
+                    this.start()
+                }
+                this.currentTile = this.startTile
             }
         }
         
