@@ -80,7 +80,6 @@ export default class Sprite extends THREE.Object3D{
 
     start() {
         this.changeState(this.spritesMap[0])
-        console.log(this.spritesMap[0])
     }
 
     addState(id) {

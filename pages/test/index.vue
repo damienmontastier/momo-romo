@@ -75,19 +75,25 @@ export default {
             this.renderer.setAnimationLoop(this.render.bind(this));
         },
         render() {
-            const delta = this.clock.getDelta() * 2000;
+            const delta = this.clock.getDelta() * 5000;
             this.time += delta;
             this.momo.update(delta);
             this.renderer.render(this.scene, this.camera);
         },
         launchSprite(id) {
-            this.momo.changeState(id);
+            this.momo
+                .newSprites()
+                .addState(id)
+                .start()
             this.currentSpriteID = id;
         },
         turnToWalk() {
-            this.momo.changeState('turn',()=>{
-                this.momo.changeState('walk')
-            });
+            this.momo
+                .newSprites()
+                .addState('turn')
+                .addState('jump to walk')
+                .addState('walk')
+                .start()
         },
         jumpToWalk() {
             this.momo

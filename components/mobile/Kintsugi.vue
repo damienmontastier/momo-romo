@@ -82,18 +82,31 @@ class App{
             );
             if(intersects[0]) {
                 let piece = intersects[0].object
-                console.log(piece)
                 if(
                     piece.name === 0 ||
                     this.currentFracture.children[piece.name - 1].triggered === true
                 ) {
-					piece.triggered = true;
-                    piece.material.color.set(0x00ff00);
+                    this.triggerFracturePiece(piece)
                     if(piece.name === this.currentFracture.children[this.currentFracture.children.length-1].name) {
                         this.endFracture()
                     }
                 }
             }
+    }
+
+    triggerFracturePiece(piece) {
+		piece.triggered = true;
+        piece.material.color.set(0x00ff00);
+        if(this.socket){
+            this.socket.emit('custom-event',{
+                name: 'kintsugi mini-game',
+                in: this.roomID,
+                args: {
+                    id:"piece triggered",
+                    index: piece.name
+                }
+            })
+        }
     }
     
     loadBowl() {
@@ -171,15 +184,12 @@ class App{
     lauchFracture(fracture) {
         if(this.fractures[fracture]) {
             this.currentFracture = this.fractures[fracture]
-            console.log(this.currentFracture)
         }
         
     }
 
     endFracture() {
-        console.log('fracture ended')
         if(this.socket){
-            console.log('emit next fracture')
             this.socket.emit('custom-event',{
                 name: 'kintsugi mini-game',
                 in: this.roomID,
@@ -253,7 +263,6 @@ export default {
                     }
                     if(params.id === "bring closer") {
                         this.app.bringCloser(params.fragments, params.step)
-                        console.log('bring closer')
                     }
                     if(params.id === "cancel fracture") {
                         this.app.spread(params.fragments)
@@ -278,11 +287,9 @@ export default {
             // }
         },
         onMouseDown(event) {
-            console.log('mousedown')
             this.isMouseDown = true
         },
         onMouseUp(event) {
-            console.log('mouseup')
             this.isMouseDown = false
         }
     },
