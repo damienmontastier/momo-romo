@@ -16,8 +16,8 @@
 <script>
 import * as THREE from 'three'
 import OrbitControls from 'orbit-controls-es6';
-import Sprite from '@/assets/js/objects/asprite';
-import MomoSprite from '~/static/sprites/momo/momo12.png';
+import Sprite from '@/assets/js/objects/Sprite';
+import MomoSprite from '~/static/sprites/momo/momo.png';
 const MomoJson = require("~/static/sprites/momo/momo.json");
 export default {
     computed: {
