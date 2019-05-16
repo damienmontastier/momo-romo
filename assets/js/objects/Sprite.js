@@ -1,151 +1,135 @@
-import * as THREE from "three";
+import * as THREE from 'three'
 
-var callback = null
+export default class Sprite extends THREE.Object3D{
+    constructor(camera,texture,json,{wTiles,hTiles}) {
+        super()
+        this.camera = camera
+        this.texture = new THREE.TextureLoader().load(texture);
+        this.texture.wrapS = this.texture.wrapT = THREE.RepeatWrapping;
+        this.json = json;
 
-class TileTextureAnimator {
-  constructor(
-    sprite,
-    texture,
-    hTiles,
-    vTiles,
-    durationTile,
-    tileStart = 0,
-    tileEnd = hTiles * vTiles
-  ) {
-    this.sprite = sprite;
-    this.texture = texture;
-    this.tileStart = tileStart;
-    this.tileEnd = parseInt(tileEnd) + 1;
-    // current tile number
-    this.currentTile = tileStart;
-    // duration of every tile
-    this.durationTile = durationTile;
-    // internal time counter
-    this.currentTime = 0;
-    // amount of horizontal and vertical tiles, and total count of tiles
-    this.hTiles = hTiles;
-    this.vTiles = vTiles;
-    this.cntTiles = this.hTiles * this.vTiles;
-    this.texture.wrapS = this.texture.wrapT = THREE.RepeatWrapping;
-    this.texture.flipY = this.texture.flipX = false;
-    this.texture.repeat.set(1 / this.hTiles, -1 / this.vTiles);
-
-    // this.setOffset();
-  }
-
-  setOffset() {
-    let indexColumn = this.currentTile % this.hTiles;
-    let indexRow = Math.floor(this.currentTile / this.hTiles) +1;
-    this.texture.offset.x = indexColumn / this.hTiles;
-    this.texture.offset.y = indexRow / this.vTiles;
-  }
-
-  update(delta) {
-    this.currentTime += delta;
-    while (this.currentTime > this.durationTile) {
-      this.currentTime -= this.durationTile;
-      if (this.currentTile == this.tileEnd) {
-        this.currentTile = this.tileStart;
-      }
-
-      this.setOffset();
-      this.currentTile++;
-    }
-    if(this.currentTile === this.tileEnd) {
-      console.log('Should change', this);
-      if (this.sprite.promiser) {
-        console.log('Should resolve');
-        this.sprite.promiser.resolve();
-        this.sprite.promiser = null;
-      }
-      //END
-      
-      // if(callback != null) {
-      //   callback()
-      //   callback = null
-      // }
-    }
-    
-  }
-  
-}
-
-export default class Sprite extends THREE.Object3D {
-  constructor(opts = {}) {
-    super()
-    this.options = opts;
-    this.spriteMaps = [];
-    this.texture = new THREE.TextureLoader().load(opts.texture);
-    this.options.sprites.forEach(sprite => {
-      let animator = new TileTextureAnimator(
-        this,
-        this.texture,
-        opts.w,
-        opts.h,
-        sprite.durationTile,
-        parseInt(sprite.start),
-        parseInt(sprite.end)
-      );
-      // animator.on('end', () => {
+        this.wTiles = wTiles;
+        this.hTiles = hTiles;
         
-      // })
-      let material = new THREE.SpriteMaterial({
-        // map: sprite.texture,
-        // color: 0xffffff,
-        // useScreenCoordinates: false,
-        // side: THREE.DoubleSide,
-        transparent: true,
-      });
-
-      this.spriteMaps.push({
-        id: sprite.id,
-        animator: animator,
-        material: material,
-        // texture: texture,
-      });
-    });
-
-    this.spriteMaterial = new THREE.SpriteMaterial({
-      map: this.texture,
-      // color: 0xffffff,
-      // useScreenCoordinates: false,
-      // side: THREE.DoubleSide,
-      transparent: true,
-      alphaTest: 0.5,
-    });
-
-    this.add(new THREE.Sprite(this.spriteMaterial));
-  }
-
-  update(t) {
-    if(this.animation) {
-      this.animation.update(t);
+        this.texture.flipY = true
+        this.texture.flipX = true
+        this.init()
     }
-    
-  }
 
-  changeState(id,cback) {
-    this.promiser = new Promise(()=>{
-      let sprite = this.spriteMaps.find(sprite => sprite.id === id);
+    init() {
+        this.currentTile = 0;
+        this.currentTime = 0;
+        this.durationPerTile = 500;
+        this.spritesMap = [];
+        this.geometry = new THREE.PlaneGeometry( 1,1,1 );
 
-      if(sprite){
-        this.currentSpriteID = id
-  
-        console.log(id)
-  
-        this.animation = sprite.animator;
-        this.animation.currentTile = this.animation.tileStart;
-        this.animation.currentTime = 0;
-        this.animation.setOffset();
-        // if(cback) {
-        //   console.log('OUI CLL',cback)
-        //   callback = cback
-        //   console.log(callback,Date.now())
-        // } 
-      }
-    })
+        this.uniforms = {
+            time: {
+                value: 0
+            },
+            texture: {
+                value: this.texture
+            },
+            tiles: {
+               value: new THREE.Vector2(this.wTiles,this.hTiles)
+            },
+            offset: {
+                value: new THREE.Vector2(0,0)
+            }
+        }
+        
 
-    console.log(this, this.promiser)
-    return this.promiser;
-  }
+        this.material = new THREE.ShaderMaterial({
+            uniforms: this.uniforms,
+            vertexShader: `
+                varying vec2 vUv;
+
+                void main() {
+                    vUv = uv;
+                    gl_Position = projectionMatrix * modelViewMatrix * vec4( vec3(position), 1.0 );
+                }
+            `,
+            fragmentShader: `
+                uniform sampler2D texture;
+                uniform float time;
+                uniform vec2 tiles;
+                uniform vec2 offset;
+
+                varying vec2 vUv;
+
+                void main() {
+                    vec2 o = vec2(offset.x,-offset.y + (tiles.y-1.));
+                    vec2 t = vUv * vec2(1./tiles.x,1./tiles.y) + (o/tiles);
+                    gl_FragColor = texture2D(texture,t);
+                }
+            `,
+            transparent:true
+        });
+
+        this.mesh = new THREE.Mesh( this.geometry, this.material );
+        this.render()
+
+        this.currentTile = 0;
+        this.setOffset()
+    }
+
+    newSprites() {
+        this.spritesMap = []
+        return this
+    }
+
+    start() {
+        this.changeState(this.spritesMap[0])
+    }
+
+    addState(id) {
+        let sprite = this.json.find(sprite => sprite.id === id);
+        if(sprite) {
+            this.spritesMap.push(sprite)
+        }
+        return this
+    }
+
+    setOffset() {
+        // console.log(this.currentTile)
+        let indexRow = Math.floor(this.currentTile / this.hTiles);
+        let indexColumn = this.currentTile % this.hTiles;
+        
+        // console.log(indexRow,indexColumn)
+        this.uniforms.offset.value.x = indexColumn;
+        this.uniforms.offset.value.y = indexRow%this.hTiles;
+    }
+
+    render() {
+        this.add( this.mesh );
+        
+    }
+
+    changeState(sprite) {
+        this.startTile = sprite.start
+        this.endTile = sprite.end
+        this.currentTile = sprite.start
+        this.durationPerTile = sprite.durationTile
+        this.currentTime = 0;
+        this.setOffset();
+    }
+
+    update(delta) {
+        this.mesh.lookAt(this.camera.position)
+        
+        this.currentTime += delta;
+        if(this.currentTime >= this.durationPerTile) {
+            this.setOffset()
+            this.currentTile += 1
+            this.currentTime = 0
+            if(this.currentTile > this.endTile) {
+                if(this.spritesMap.length>1) {
+                    this.spritesMap.shift()
+                    this.start()
+                }
+                this.currentTile = this.startTile
+            }
+        }
+        
+    }
 }
