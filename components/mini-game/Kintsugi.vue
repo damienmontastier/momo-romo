@@ -138,6 +138,11 @@ class App{
             TweenLite.to(target2.position, 0.5, {x:p2.x,y:p2.y,z:p2.z})
         }
     }
+
+    triggerFracturePiece(piece) {
+		piece.triggered = true;
+        piece.material.color.set(0x00ff00);
+    }
 }
 
 export default {
@@ -180,17 +185,22 @@ export default {
             this.createSocketEvents()
         },
         createSocketEvents() {
-            console.log(this.socket)
             if(this.socket){
-                console.log('on')
                 this.socket.on('kintsugi mini-game',(params)=>{
-                    console.log('kintsugi mini-game',params)
                     if(params.id === 'next fracture') {
-                        console.log('next')
                         this.nextFracture()
+                    }
+                    if(params.id === 'piece triggered') {
+                        // console.log(params.index)
+                        let fracture = this.app.fractures[this.currentFracture]
+                        // console.log(fracture.children[params.index])
+                        this.app.triggerFracturePiece(fracture.children[params.index])
                     }
                 })
             }
+        },
+        triggerFracturePiece() {
+
         },
         nextFracture() {
             this.currentStep = 0
