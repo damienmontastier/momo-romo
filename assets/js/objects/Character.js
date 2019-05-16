@@ -8,8 +8,7 @@ export default class Character {
 
         this.forceValue = new THREE.Vector3();
 
-        // this.canMove = false
-        // this.canJump = false
+        this.canJump = false
 
         this.addBody()
 
@@ -35,13 +34,12 @@ export default class Character {
 
     onCollide(e) {
         if (e.contact.enabled) {
-            // this.canMove = true
-            // this.canJump = true
+            this.canMove = true
+            this.canJump = true
         }
     }
 
     onInput(key, value) {
-        console.log(key)
         switch (key) {
             case "ARROWLEFT":
                 this.moveLeft = value
@@ -50,8 +48,7 @@ export default class Character {
                 this.moveRight = value
                 break;
             case " ":
-                this.jump(value)
-                // this.canJump && this.jump(value)
+                this.canJump && this.jump(value)
                 break;
             default:
                 break;
@@ -59,11 +56,9 @@ export default class Character {
     }
 
     jump(value) {
-        console.log('yes')
         if (value) {
-            this.body.force.y += 500
-            // this.canJump = false
-            // this.canMove = false;
+            this.body.velocity.y = 10
+            this.canJump = false
         }
     }
 
@@ -71,20 +66,18 @@ export default class Character {
         this.forceValue.set(0, 0, 0)
 
         if (this.moveLeft) {
-            this.forceValue.x += -20;
+            this.forceValue.x = -20;
         }
         if (this.moveRight) {
-            this.forceValue.x += 20;
+            this.forceValue.x = 20;
         }
     }
 
     move() {
-        // if (this.canMove) {
         if (this.moveLeft || this.moveRight) {
             let accelerationValue = new CANNON.Vec3(this.forceValue.x, 0, 0);
             this.body.force = accelerationValue
         }
-        // }
     }
 
     update() {

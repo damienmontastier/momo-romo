@@ -26,18 +26,22 @@ export default {
   },
   data: () => {
     return {
-      renderComponent: true,
+      renderComponent: true
     };
   },
   computed: {
     ...mapState({}),
     ...mapGetters({})
   },
-  mounted() {
-  },
+  mounted() {},
   created() {},
   methods: {
-    ...mapMutations({})
+    ...mapMutations({
+      resetLoaded: "game/resetLoaded"
+    })
+  },
+  beforeDestroy() {
+    this.resetLoaded();
   }
 };
 </script>
