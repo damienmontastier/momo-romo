@@ -1,7 +1,10 @@
 import * as THREE from "three";
 
+var callback = null
+
 class TileTextureAnimator {
   constructor(
+    sprite,
     texture,
     hTiles,
     vTiles,
@@ -9,6 +12,7 @@ class TileTextureAnimator {
     tileStart = 0,
     tileEnd = hTiles * vTiles
   ) {
+    this.sprite = sprite;
     this.texture = texture;
     this.tileStart = tileStart;
     this.tileEnd = parseInt(tileEnd) + 1;
@@ -23,6 +27,7 @@ class TileTextureAnimator {
     this.vTiles = vTiles;
     this.cntTiles = this.hTiles * this.vTiles;
     this.texture.wrapS = this.texture.wrapT = THREE.RepeatWrapping;
+    this.texture.flipY = this.texture.flipX = false;
     this.texture.repeat.set(1 / this.hTiles, -1 / this.vTiles);
 
     // this.setOffset();
@@ -30,7 +35,7 @@ class TileTextureAnimator {
 
   setOffset() {
     let indexColumn = this.currentTile % this.hTiles;
-    let indexRow = Math.floor(this.currentTile / this.hTiles) + 1;
+    let indexRow = Math.floor(this.currentTile / this.hTiles) +1;
     this.texture.offset.x = indexColumn / this.hTiles;
     this.texture.offset.y = indexRow / this.vTiles;
   }
@@ -46,18 +51,34 @@ class TileTextureAnimator {
       this.setOffset();
       this.currentTile++;
     }
+    if(this.currentTile === this.tileEnd) {
+      console.log('Should change', this);
+      if (this.sprite.promiser) {
+        console.log('Should resolve');
+        this.sprite.promiser.resolve();
+        this.sprite.promiser = null;
+      }
+      //END
+      
+      // if(callback != null) {
+      //   callback()
+      //   callback = null
+      // }
+    }
+    
   }
+  
 }
 
-export default class Sprite extends THREE.Object3D{
+export default class Sprite extends THREE.Object3D {
   constructor(opts = {}) {
-      super()
+    super()
     this.options = opts;
     this.spriteMaps = [];
     this.texture = new THREE.TextureLoader().load(opts.texture);
     this.options.sprites.forEach(sprite => {
-      // let texture = new THREE.TextureLoader().load(sprite.texture);
       let animator = new TileTextureAnimator(
+        this,
         this.texture,
         opts.w,
         opts.h,
@@ -65,6 +86,9 @@ export default class Sprite extends THREE.Object3D{
         parseInt(sprite.start),
         parseInt(sprite.end)
       );
+      // animator.on('end', () => {
+        
+      // })
       let material = new THREE.SpriteMaterial({
         // map: sprite.texture,
         // color: 0xffffff,
@@ -81,8 +105,6 @@ export default class Sprite extends THREE.Object3D{
       });
     });
 
-    // this.spriteMap = new THREE.TextureLoader().load(opts.texture);
-    // this.animation = new TileTextureAnimator(this.spriteMap, 16, 16, 1000);
     this.spriteMaterial = new THREE.SpriteMaterial({
       map: this.texture,
       // color: 0xffffff,
@@ -93,38 +115,37 @@ export default class Sprite extends THREE.Object3D{
     });
 
     this.add(new THREE.Sprite(this.spriteMaterial));
-    this.changeState("default");
   }
 
   update(t) {
-    this.animation.update(t);
+    if(this.animation) {
+      this.animation.update(t);
+    }
+    
   }
 
-  changeState(id) {
-    let sprite = this.spriteMaps.find(sprite => {
-      return sprite.id == id;
-    });
+  changeState(id,cback) {
+    this.promiser = new Promise(()=>{
+      let sprite = this.spriteMaps.find(sprite => sprite.id === id);
 
-    this.currentSpriteID = id
-    console.log(this.currentSpriteID)
+      if(sprite){
+        this.currentSpriteID = id
+  
+        console.log(id)
+  
+        this.animation = sprite.animator;
+        this.animation.currentTile = this.animation.tileStart;
+        this.animation.currentTime = 0;
+        this.animation.setOffset();
+        // if(cback) {
+        //   console.log('OUI CLL',cback)
+        //   callback = cback
+        //   console.log(callback,Date.now())
+        // } 
+      }
+    })
 
-    this.animation = sprite.animator;
-    this.animation.currentTile = this.animation.tileStart;
-    this.animation.currentTime = 0;
-    this.animation.setOffset();
-    //init le offset de la texture
-
-    // if (!this.sprite.material) {
-    //   this.spriteMaterial = new THREE.SpriteMaterial({
-    //     map: sprite.texture,
-    //     // color: 0xffffff,
-    //     useScreenCoordinates: false,
-    //     side: THREE.DoubleSide,
-    //     transparent: true,
-    //   });
-    // } else {
-    //   this.sprite.material.map = sprite.texture;
-    // }
-    // this.sprite.material.needsUpdate = true;
+    console.log(this, this.promiser)
+    return this.promiser;
   }
 }
