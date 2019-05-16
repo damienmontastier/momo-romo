@@ -18,6 +18,8 @@ export default class Level {
 
         this.character = new Character()
 
+        this.momo = this.character.momo
+
         this.eventAnimate = new Event('launchAnimated');
 
         this.eventAnimate.props = new Object();
@@ -35,9 +37,14 @@ export default class Level {
             0.1,
             1000
         );
-        this.camera.position.z = 20;
+        // this.camera = new THREE.OrthographicCamera(
+        //     window.innerWidth / - 20, window.innerWidth / 20, window.innerHeight / 20, window.innerHeight / - 20, .1, 1000
+        // );
+        this.camera.position.z = 50;
 
         this.controls = new OrbitControls(this.camera);
+
+        this.controls.enablePan = false
 
         this.scene = new THREE.Scene();
 
@@ -117,7 +124,8 @@ export default class Level {
     }
 
     addCharactere() {
-        this.world.add(this.character.body)
+        this.scene.add(this.momo)
+        this.world.add(this.momo.body)
     }
 
     addPlatforms(platform) {
@@ -182,6 +190,10 @@ export default class Level {
     }
 
     render() {
+        // this.camera.lookAt(this.momo.position)
+
+        this.camera.position.set(this.momo.position.x, 2, 20)
+
         this.cannonDebugRenderer.update()
 
         this.character.update()
