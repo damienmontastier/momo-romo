@@ -22,6 +22,9 @@ export const mutations = {
     setLoaded(state, value) {
         state.loaded = value
     },
+    resetLoaded(state) {
+        state.loaded = false
+    },
 }
 
 export const getters = {
