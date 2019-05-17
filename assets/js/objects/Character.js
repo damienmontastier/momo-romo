@@ -20,6 +20,8 @@ export default class Character {
 
         this.addBody()
 
+        this.walking = true;
+
         this.addSprite()
 
         this.KeyboardManager = new KeyboardManager(this.onInput.bind(this));
@@ -108,9 +110,11 @@ export default class Character {
             let accelerationValue = new CANNON.Vec3(this.forceValue.x, 0, 0);
             this.body.force = accelerationValue
         } else {
-            console.log('wait')
-            this.walking = false
-            this.launchSprite("wait")
+            if (this.walking) {
+                console.log('wait')
+                this.walking = false
+                this.launchSprite("wait")
+            }
         }
     }
 
@@ -142,6 +146,7 @@ export default class Character {
     updateSpritePosition() {
         if (this.momo) {
             this.momo.position.copy(this.momo.body.position)
+            // this.momo.position.y -= .5
             // this.momo.quaternion.copy(this.momo.body.quaternion)
         }
     }

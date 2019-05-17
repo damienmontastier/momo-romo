@@ -198,7 +198,7 @@ export default class Level {
 
         this.camera.position.set(this.momo.position.x, 2, 20)
 
-        // this.cannonDebugRenderer.update()
+        this.cannonDebugRenderer.update()
 
         this.character.update()
 
