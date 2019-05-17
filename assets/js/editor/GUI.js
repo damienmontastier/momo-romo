@@ -21,6 +21,11 @@ if (process.client) {
         }
 
         init() {
+            let params = {
+                alignOnGrid: () => {
+                    this.target.position.y = this.target.scale.y / 2
+                }
+            }
             this.position = this.addFolder('position');
             this.position.open();
             this.position.add(this.target.position, 'x');
@@ -45,6 +50,7 @@ if (process.client) {
                     this.target.scale.x
                 });
             }
+            this.position.add(params, 'alignOnGrid')
         }
     }
 
