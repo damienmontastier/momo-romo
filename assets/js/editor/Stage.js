@@ -7,6 +7,11 @@ export default class Stage extends THREE.Object3D {
     constructor(opts) {
         super()
 
+        if (opts.model) {
+            this.modelIMG = opts.model
+            this.addModelToScene()
+        }
+
         this.textureAtlas = opts.textureAtlas;
         // this.fixedProps = [ ...opts.pressets.props.fixed ];
         this.fixedPropsGroup = new THREE.Group()
@@ -45,7 +50,7 @@ export default class Stage extends THREE.Object3D {
         this.loadTextureAtlas()
     }
 
-    export() {
+    export () {
         //export fixed props
         let fixedprops = [];
         this.fixedProps.filter(prop => prop.visible).forEach((prop) => {
@@ -138,6 +143,37 @@ export default class Stage extends THREE.Object3D {
             target: target,
             copy: {}
         })
+    }
+
+    addModelToScene() {
+        this.modelTexture = new THREE.TextureLoader().load(
+            this.modelIMG,
+            (texture) => {
+                let width = texture.image.width;
+                let height = texture.image.height;
+                let ratio = width / height
+                let geometry = new THREE.PlaneGeometry(5 * ratio, 5, 1);
+                let material = new THREE.MeshBasicMaterial({
+                    // color: 0xffff00,
+                    side: THREE.DoubleSide,
+                    map: texture,
+                    opacity: 0.25,
+                    transparent: true
+                });
+                this.model = new THREE.Mesh(geometry, material);
+                this.model.position.set((5 * ratio) / 2, 1.5, -0.1)
+                this.model.scale.set(1, -1, 1)
+                this.add(this.model)
+            }, );
+
+        // let geometry = new THREE.PlaneGeometry(5, 20, 1);
+        // let material = new THREE.MeshBasicMaterial({
+        //     // color: 0xffff00,
+        //     side: THREE.DoubleSide,
+        //     map: this.modelTexture
+        // });
+        // this.model = new THREE.Mesh(geometry, material);
+        // this.add(this.model)
     }
 
     addPlatform(params) {
