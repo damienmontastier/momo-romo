@@ -54,7 +54,6 @@ export default {
   },
   watch: {
     minigame() {},
-    // TODO: FIX IT
     loaded() {
       this.game.start({
         currentLevelParams: this.stage,

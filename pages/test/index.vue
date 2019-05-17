@@ -65,7 +65,7 @@ export default {
             this.scene.add(new THREE.AxesHelper(20));
 
             // this.momo = new Sprite({texture:MomoSprite, sprites: MomoJson.sprites,w:8,h:8})
-            this.momo = new Sprite(this.camera,MomoSprite, MomoJson.sprites,{wTiles: 8, hTiles: 8})
+            this.momo = new Sprite(null,MomoSprite, MomoJson.sprites,{wTiles: 8, hTiles: 8})
             this.scene.add(this.momo)
 
             this.time = 0;
