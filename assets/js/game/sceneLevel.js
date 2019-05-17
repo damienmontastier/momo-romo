@@ -22,6 +22,8 @@ export default class Level {
 
         this.eventAnimate = new Event('launchAnimated');
 
+        this.eventMinigame = new Event('launchMiniGame');
+
         this.eventAnimate.props = new Object();
 
         this.isMiniGameLaunched = false
@@ -154,17 +156,15 @@ export default class Level {
 
 
     nextToMinigame(value) {
-        var event = new Event('launchMiniGame');
-
         if (value && !this.isMiniGameLaunched) {
             this.isMiniGameLaunched = true
-            event.minigame = value
+            this.eventMinigame.minigame = value
         } else {
             this.isMiniGameLaunched = false
-            event.minigame = value
+            this.eventMinigame.minigame = value
         }
 
-        window.dispatchEvent(event);
+        window.dispatchEvent(this.eventMinigame);
     }
 
     nextToAnimated(value, elementId) {
@@ -210,8 +210,7 @@ export default class Level {
             this.checkpointAnimatedGroup.forEach((element) => {
                 if (this.character.body.position.x >= element.position.x - 2 && this.character.body.position.x <= element.position.x + 2) {
                     this.nextToAnimated(true, element._id)
-                }
-                else {
+                } else {
                     this.nextToAnimated(false, element._id)
                 }
             });
