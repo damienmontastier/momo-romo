@@ -1,10 +1,11 @@
 import sceneLevel from "@/assets/js/game/sceneLevel.js";
 import TextureAtlas from '@/assets/js/utils/TextureAtlas.js';
-import { throws } from "assert";
+import {
+    throws
+} from "assert";
 
 export default class Game {
-    constructor() {
-    }
+    constructor() {}
     start(opts) {
         this.currentLevelParams = opts.currentLevelParams
         this.currentAltlas = opts.currentAltlas
@@ -13,5 +14,9 @@ export default class Game {
             levelParams: this.currentLevelParams,
             textureAtlas: new TextureAtlas(this.currentAltlas)
         })
+
+    }
+    reset() {
+        this.sceneLevel.reset()
     }
 }

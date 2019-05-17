@@ -26,7 +26,10 @@ export default class Character {
     }
 
     addSprite() {
-        this.momo = new Sprite(null, MomoSprite, MomoJson.sprites, { wTiles: 8, hTiles: 8 })
+        this.momo = new Sprite(null, MomoSprite, MomoJson.sprites, {
+            wTiles: 8,
+            hTiles: 8
+        })
 
         this.momo.body = this.body
 
@@ -73,7 +76,7 @@ export default class Character {
 
     jump(value) {
         if (value) {
-            this.body.velocity.y = 10
+            this.body.velocity.y = 5
             this.canJump = false
         }
     }
@@ -86,7 +89,7 @@ export default class Character {
                 this.walking = true
                 this.launchSprite("walk")
             }
-            this.forceValue.x = -20;
+            this.forceValue.x = -8;
         }
         if (this.moveRight) {
 
@@ -96,7 +99,7 @@ export default class Character {
                 this.launchSprite("walk")
 
             }
-            this.forceValue.x = 20;
+            this.forceValue.x = 8;
         }
     }
 
@@ -105,9 +108,9 @@ export default class Character {
             let accelerationValue = new CANNON.Vec3(this.forceValue.x, 0, 0);
             this.body.force = accelerationValue
         } else {
+            console.log('wait')
             this.walking = false
             this.launchSprite("wait")
-
         }
     }
 
