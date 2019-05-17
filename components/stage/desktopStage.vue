@@ -66,6 +66,9 @@ export default {
   },
   components: {
     MiniGame
+  },
+  beforeDestroy() {
+    this.game.reset();
   }
 };
 </script>

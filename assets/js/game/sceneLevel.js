@@ -189,12 +189,16 @@ export default class Level {
         window.dispatchEvent(this.eventAnimate);
     }
 
+    reset() {
+        this.scene = null
+    }
+
     render() {
         // this.camera.lookAt(this.momo.position)
 
         this.camera.position.set(this.momo.position.x, 2, 20)
 
-        this.cannonDebugRenderer.update()
+        // this.cannonDebugRenderer.update()
 
         this.character.update()
 
