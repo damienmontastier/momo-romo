@@ -1,7 +1,7 @@
 import * as THREE from 'three'
 
-export default class Sprite extends THREE.Object3D{
-    constructor(camera,texture,json,{wTiles,hTiles}) {
+export default class Sprite extends THREE.Object3D {
+    constructor(camera, texture, json, { wTiles, hTiles }) {
         super()
         this.camera = camera
         this.texture = new THREE.TextureLoader().load(texture);
@@ -10,7 +10,7 @@ export default class Sprite extends THREE.Object3D{
 
         this.wTiles = wTiles;
         this.hTiles = hTiles;
-        
+
         this.texture.flipY = true
         this.texture.flipX = true
         this.init()
@@ -21,7 +21,7 @@ export default class Sprite extends THREE.Object3D{
         this.currentTime = 0;
         this.durationPerTile = 500;
         this.spritesMap = [];
-        this.geometry = new THREE.PlaneGeometry( 1,1,1 );
+        this.geometry = new THREE.PlaneGeometry(1, 1, 1);
 
         this.uniforms = {
             time: {
@@ -31,13 +31,13 @@ export default class Sprite extends THREE.Object3D{
                 value: this.texture
             },
             tiles: {
-               value: new THREE.Vector2(this.wTiles,this.hTiles)
+                value: new THREE.Vector2(this.wTiles, this.hTiles)
             },
             offset: {
-                value: new THREE.Vector2(0,0)
+                value: new THREE.Vector2(0, 0)
             }
         }
-        
+
 
         this.material = new THREE.ShaderMaterial({
             uniforms: this.uniforms,
@@ -63,10 +63,14 @@ export default class Sprite extends THREE.Object3D{
                     gl_FragColor = texture2D(texture,t);
                 }
             `,
-            transparent:true
+            transparent: true,
+            depthWrite: false,
+            depthTest: false,
+            // depthWrite: false,
+            // alphaTest:0
         });
 
-        this.mesh = new THREE.Mesh( this.geometry, this.material );
+        this.mesh = new THREE.Mesh(this.geometry, this.material);
         this.render()
 
         this.currentTile = 0;
@@ -84,7 +88,7 @@ export default class Sprite extends THREE.Object3D{
 
     addState(id) {
         let sprite = this.json.find(sprite => sprite.id === id);
-        if(sprite) {
+        if (sprite) {
             this.spritesMap.push(sprite)
         }
         return this
@@ -94,15 +98,15 @@ export default class Sprite extends THREE.Object3D{
         // console.log(this.currentTile)
         let indexRow = Math.floor(this.currentTile / this.hTiles);
         let indexColumn = this.currentTile % this.hTiles;
-        
+
         // console.log(indexRow,indexColumn)
         this.uniforms.offset.value.x = indexColumn;
-        this.uniforms.offset.value.y = indexRow%this.hTiles;
+        this.uniforms.offset.value.y = indexRow % this.hTiles;
     }
 
     render() {
-        this.add( this.mesh );
-        
+        this.add(this.mesh);
+
     }
 
     changeState(sprite) {
@@ -115,21 +119,23 @@ export default class Sprite extends THREE.Object3D{
     }
 
     update(delta) {
-        this.mesh.lookAt(this.camera.position)
-        
+        if (this.camera) {
+            this.mesh.lookAt(this.camera.position)
+        }
+
         this.currentTime += delta;
-        if(this.currentTime >= this.durationPerTile) {
+        if (this.currentTime >= this.durationPerTile) {
             this.setOffset()
             this.currentTile += 1
             this.currentTime = 0
-            if(this.currentTile > this.endTile) {
-                if(this.spritesMap.length>1) {
+            if (this.currentTile > this.endTile) {
+                if (this.spritesMap.length > 1) {
                     this.spritesMap.shift()
                     this.start()
                 }
                 this.currentTile = this.startTile
             }
         }
-        
+
     }
 }

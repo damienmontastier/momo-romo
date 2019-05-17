@@ -6,22 +6,20 @@
 </template>
 
 <script>
-import Debugger from '@/components/debugger/debugger'
+import Debugger from "@/components/debugger/debugger";
 export default {
   components: {
     Debugger
   },
-  mounted() {
-    console.log(this.$route)
-  }
-  
-}
+  mounted() {}
+};
 </script>
 
 
 <style>
 html {
-  font-family: "Source Sans Pro", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-family: "Source Sans Pro", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, sans-serif;
   font-size: 16px;
   word-spacing: 1px;
   -ms-text-size-adjust: 100%;
@@ -31,7 +29,9 @@ html {
   box-sizing: border-box;
 }
 
-*, *:before, *:after {
+*,
+*:before,
+*:after {
   box-sizing: border-box;
   margin: 0;
 }
@@ -69,7 +69,7 @@ html {
   position: absolute;
   right: 0px;
   top: 0px;
-  background: rgba(0,0,0,0.75);
+  background: rgba(0, 0, 0, 0.75);
   color: #fff;
   padding: 16px;
   z-index: 10000;
