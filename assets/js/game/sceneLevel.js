@@ -148,16 +148,13 @@ export default class Level {
 
         body.quaternion.setFromAxisAngle(axis, rotation.z)
 
-        console.log(this.character)
         let platform_cm = new CANNON.ContactMaterial(this.character.body.material, platform_material, {
             friction: 0.1,
-            restitution: .5,
-            contactEquationStiffness: 1e2,
-            contactEquationRelaxation: -5
+            restitution: 0,
+            // frictionEquationStiffness: 1e9,
+            // frictionEquationRelaxation: 10
         });
         this.world.addContactMaterial(platform_cm);
-
-        console.log(body)
 
         this.world.add(body);
     }

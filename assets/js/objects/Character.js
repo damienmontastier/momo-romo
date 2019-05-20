@@ -3,6 +3,9 @@ import CANNON from 'cannon'
 import KeyboardManager from "../utils/KeyboardManager";
 import Sprite from "@/assets/js/objects/Sprite";
 import MomoSprite from '~/static/sprites/momo/momo.png';
+import {
+    timingSafeEqual
+} from "crypto";
 const MomoJson = require("~/static/sprites/momo/momo.json");
 
 export default class Character {
@@ -20,7 +23,11 @@ export default class Character {
 
         this.addBody()
 
-        this.walking = true;
+        this.movementState = {
+            walking: false,
+            jump: false,
+            wait: false
+        }
 
         this.addSprite()
 
@@ -82,8 +89,9 @@ export default class Character {
 
     jump(value) {
         if (value) {
-            this.body.velocity.y = 5
+            this.body.velocity.y = 8
             this.canJump = false
+            this.movementState.jump = true
         }
     }
 
@@ -91,21 +99,14 @@ export default class Character {
         this.forceValue.set(0, 0, 0)
 
         if (this.moveLeft) {
-            if (!this.walking) {
-                this.walking = true
-                this.launchSprite("walk")
-            }
-            this.forceValue.x = -5;
+            this.forceValue.x = -8;
+            this.movementState.walking = true
         }
+
         if (this.moveRight) {
+            this.forceValue.x = 8;
+            this.movementState.walking = true
 
-            if (!this.walking) {
-
-                this.walking = true
-                this.launchSprite("walk")
-
-            }
-            this.forceValue.x = 5;
         }
     }
 
@@ -113,12 +114,10 @@ export default class Character {
         if (this.moveLeft || this.moveRight) {
             let accelerationValue = new CANNON.Vec3(this.forceValue.x, 0, 0);
             this.body.force = accelerationValue
+            this.movementState.wait = false
         } else {
-            if (this.walking) {
-                console.log('wait')
-                this.walking = false
-                this.launchSprite("wait")
-            }
+            // waiting animation
+            this.movementState.wait = true
         }
     }
 
@@ -156,6 +155,15 @@ export default class Character {
     }
 
     update() {
+
+        // if (this.movementState.wait && !this.movementState.jump) {
+        //     console.log('wait')
+        // } else if (this.movementState.jump) {
+        //     console.log('jump')
+        // } else if (this.movementState.walking && !this.movementState.jump) {
+        //     console.log('walking')
+        // }
+
         const delta = this.clock.getDelta() * 5000;
         this.time += delta;
         this.momo.update(delta)
