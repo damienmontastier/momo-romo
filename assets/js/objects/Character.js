@@ -40,13 +40,17 @@ export default class Character {
 
     addBody() {
         var radius = .5;
+
+        var character_material = new CANNON.Material("character_material");
+
         var body = new CANNON.Body({
             mass: 1,
-            position: new CANNON.Vec3(2, 5, 3 - radius),
-            shape: new CANNON.Sphere(radius)
+            position: new CANNON.Vec3(2, 3, 3 - radius),
+            shape: new CANNON.Sphere(radius),
+            material: character_material
         });
         body.angularDamping = 0
-        body.linearDamping = .8
+        body.linearDamping = .98
 
         body.addEventListener('collide', this.onCollide.bind(this))
 
@@ -91,7 +95,7 @@ export default class Character {
                 this.walking = true
                 this.launchSprite("walk")
             }
-            this.forceValue.x = -8;
+            this.forceValue.x = -5;
         }
         if (this.moveRight) {
 
@@ -101,7 +105,7 @@ export default class Character {
                 this.launchSprite("walk")
 
             }
-            this.forceValue.x = 8;
+            this.forceValue.x = 5;
         }
     }
 

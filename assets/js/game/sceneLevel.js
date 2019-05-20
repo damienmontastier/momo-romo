@@ -137,13 +137,27 @@ export default class Level {
         let rotation = platform.rotation
         var axis = new CANNON.Vec3(0, 0, 1);
 
+        let platform_material = new CANNON.Material("platform_material")
+
         let body = new CANNON.Body({
             mass: 0,
             shape: new CANNON.Box(new CANNON.Vec3(size.x / 2, size.y / 10, size.z / 2)),
-            material: new CANNON.Material(),
+            material: platform_material,
             position: new CANNON.Vec3(position.x, position.y, position.z),
         });
+
         body.quaternion.setFromAxisAngle(axis, rotation.z)
+
+        console.log(this.character)
+        let platform_cm = new CANNON.ContactMaterial(this.character.body.material, platform_material, {
+            friction: 0.1,
+            restitution: .5,
+            contactEquationStiffness: 1e2,
+            contactEquationRelaxation: -5
+        });
+        this.world.addContactMaterial(platform_cm);
+
+        console.log(body)
 
         this.world.add(body);
     }
