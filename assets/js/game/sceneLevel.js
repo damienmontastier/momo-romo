@@ -205,7 +205,7 @@ export default class Level {
     }
 
     render() {
-        // this.camera.lookAt(this.momo.position)
+        // this.camera.lookAt(this.camera.position)
 
         this.camera.position.set(this.momo.position.x, 2, 20)
 

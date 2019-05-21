@@ -52,12 +52,13 @@ export default class Character {
 
         var body = new CANNON.Body({
             mass: 1,
-            position: new CANNON.Vec3(2, 3, 3 - radius),
+            position: new CANNON.Vec3(2, 2, 3 - radius),
             shape: new CANNON.Sphere(radius),
-            material: character_material
+            material: character_material,
+            sleepSpeedLimit: .1,
+            angularDamping: 0,
+            linearDamping: .99
         });
-        body.angularDamping = 0
-        body.linearDamping = .98
 
         body.addEventListener('collide', this.onCollide.bind(this))
 
@@ -66,8 +67,11 @@ export default class Character {
 
     onCollide(e) {
         if (e.contact.enabled) {
-            this.canMove = true
             this.canJump = true
+            this.movementState.jump = false;
+            if (!this.movementState.jump) {
+                this.launchSprite("walk")
+            }
         }
     }
 
@@ -91,7 +95,7 @@ export default class Character {
         if (value) {
             this.body.velocity.y = 8
             this.canJump = false
-            this.movementState.jump = true
+            this.launchSprite("jump")
         }
     }
 
@@ -100,23 +104,43 @@ export default class Character {
 
         if (this.moveLeft) {
             this.forceValue.x = -8;
-            this.movementState.walking = true
+            if (!this.movementState.walking) {
+                if (this.momo.scale.x == 1) {
+                    this.turnToWalk()
+                    this.momo.scale.set(-1, 1, 1)
+                } else {
+                    this.launchSprite("walk")
+                }
+                this.movementState.walking = true
+            }
         }
 
         if (this.moveRight) {
             this.forceValue.x = 8;
-            this.movementState.walking = true
-
+            if (!this.movementState.walking) {
+                if (this.momo.scale.x == -1) {
+                    this.turnToWalk()
+                    this.momo.scale.set(1, 1, 1)
+                } else {
+                    this.launchSprite("walk")
+                }
+                this.movementState.walking = true
+            }
         }
     }
 
     move() {
-        if (this.moveLeft || this.moveRight) {
+        if (this.moveLeft || this.moveRight || !this.canJump) {
             let accelerationValue = new CANNON.Vec3(this.forceValue.x, 0, 0);
             this.body.force = accelerationValue
             this.movementState.wait = false
+
         } else {
-            // waiting animation
+            if (!this.movementState.wait) {
+                this.launchSprite("wait")
+                this.movementState.wait = false;
+            }
+            this.movementState.walking = false
             this.movementState.wait = true
         }
     }
@@ -155,15 +179,6 @@ export default class Character {
     }
 
     update() {
-
-        // if (this.movementState.wait && !this.movementState.jump) {
-        //     console.log('wait')
-        // } else if (this.movementState.jump) {
-        //     console.log('jump')
-        // } else if (this.movementState.walking && !this.movementState.jump) {
-        //     console.log('walking')
-        // }
-
         const delta = this.clock.getDelta() * 5000;
         this.time += delta;
         this.momo.update(delta)
