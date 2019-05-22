@@ -62,6 +62,7 @@ class App {
 
     // scene
     this.scene = new THREE.Scene();
+    this.scene.background = new THREE.Color(0xcccccc);
 
     // camera
     this.camera = new THREE.PerspectiveCamera(
@@ -70,7 +71,7 @@ class App {
       1,
       10000
     );
-    this.camera.position.set(0, 0, 100);
+    this.camera.position.set(0, 0, 200);
 
     // controls
     this.controls = new OrbitControls(this.camera);
@@ -109,8 +110,6 @@ class App {
         c.position.multiplyScalar(3);
         c._maxPosition = c.position.clone();
         // c.children[1].rotation.z = THREE.Math.degToRad(index*10)
-
-        console.log(c);
       });
 
       //fragments
@@ -194,6 +193,8 @@ export default {
     return {
       //   app: new App(),
       controls: ["q", "m", "d", "l", "g", "h"],
+      interval: 2,
+      runningInterval: this.interval,
       gameModel: [
         {
           fragments: [0, 1],
@@ -218,6 +219,7 @@ export default {
       this.app.init(this.$refs.canvas);
       this.app.loadBowl();
       this.createSocketEvents();
+      this.startMiniGame();
     },
     createSocketEvents() {
       if (this.socket) {
@@ -295,7 +297,28 @@ export default {
       }
       // this.currentFracture--
     },
-    startGame() {}
+    startMiniGame() {
+      this.startKeyPressInterval();
+    },
+    onKeyPess(event) {
+      if (!event.repeat) {
+        if (event.key === this.controls[this.currentStep]) {
+          console.log("next");
+          this.nextStep();
+        }
+        // console.log(event.key);
+      }
+    },
+    startKeyPressInterval() {
+      console.log("interval start");
+      TweenLite.to(this, this.interval, {
+        runningInterval: 0,
+        onComplete: () => {
+          console.log("interval end");
+          this.runningInterval = this.interval;
+        }
+      });
+    }
   },
   computed: {
     ...mapState({
@@ -313,6 +336,10 @@ export default {
   },
   mounted() {
     this.init();
+    window.addEventListener("keydown", this.onKeyPess.bind(this));
+  },
+  beforeDestroy() {
+    window.removeEventListener("keydown", this.onKeyPess.bind(this));
   }
 };
 </script>
@@ -354,7 +381,7 @@ export default {
       flex-direction: column;
       margin: auto;
       .keys {
-        background: green;
+        // background: green;
         // width: 100%;
         display: flex;
         margin-bottom: 32px;
@@ -430,7 +457,7 @@ export default {
     }
 
     .steps {
-      background: yellow;
+      // background: yellow;
       //   width: 100%;
       display: flex;
       flex-direction: row;
