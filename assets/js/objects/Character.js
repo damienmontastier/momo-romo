@@ -3,6 +3,9 @@ import CANNON from 'cannon'
 import KeyboardManager from "../utils/KeyboardManager";
 import Sprite from "@/assets/js/objects/Sprite";
 import MomoSprite from '~/static/sprites/momo/momo.png';
+import {
+    timingSafeEqual
+} from "crypto";
 const MomoJson = require("~/static/sprites/momo/momo.json");
 
 export default class Character {
@@ -16,11 +19,18 @@ export default class Character {
 
         this.canJump = false
 
+        this.moveLeftBlock = false
+        this.moveRightBlock = false
+
         this.sprites = MomoJson.sprites
 
         this.addBody()
 
-        this.walking = true;
+        this.movementState = {
+            walking: false,
+            jump: false,
+            wait: false
+        }
 
         this.addSprite()
 
@@ -40,13 +50,18 @@ export default class Character {
 
     addBody() {
         var radius = .5;
+
+        var character_material = new CANNON.Material("character_material");
+
         var body = new CANNON.Body({
             mass: 1,
-            position: new CANNON.Vec3(2, 5, 3 - radius),
-            shape: new CANNON.Sphere(radius)
+            position: new CANNON.Vec3(2, 2, 3 - radius),
+            shape: new CANNON.Sphere(radius),
+            material: character_material,
+            sleepSpeedLimit: .1,
+            angularDamping: 0,
+            linearDamping: .99
         });
-        body.angularDamping = 0
-        body.linearDamping = .8
 
         body.addEventListener('collide', this.onCollide.bind(this))
 
@@ -55,8 +70,11 @@ export default class Character {
 
     onCollide(e) {
         if (e.contact.enabled) {
-            this.canMove = true
             this.canJump = true
+            this.movementState.jump = false;
+            if (!this.movementState.jump) {
+                this.launchSprite("walk")
+            }
         }
     }
 
@@ -78,8 +96,9 @@ export default class Character {
 
     jump(value) {
         if (value) {
-            this.body.velocity.y = 5
+            this.body.velocity.y = 8
             this.canJump = false
+            this.launchSprite("jump")
         }
     }
 
@@ -87,34 +106,60 @@ export default class Character {
         this.forceValue.set(0, 0, 0)
 
         if (this.moveLeft) {
-            if (!this.walking) {
-                this.walking = true
-                this.launchSprite("walk")
-            }
             this.forceValue.x = -8;
-        }
-        if (this.moveRight) {
-
-            if (!this.walking) {
-
-                this.walking = true
-                this.launchSprite("walk")
-
+            if (!this.movementState.walking) {
+                if (this.momo.scale.x == 1) {
+                    this.turnToWalk()
+                    this.momo.scale.set(-1, 1, 1)
+                } else {
+                    this.launchSprite("walk")
+                }
+                this.movementState.walking = true
             }
+        } else {
+            if (!this.moveLeftBlock) {
+                console.log('oooook')
+                this.moveLeftBlock = true
+                this.forceValue.x = 0
+            }
+        }
+
+        if (this.moveRight) {
+            this.test = false;
             this.forceValue.x = 8;
+            if (!this.movementState.walking) {
+                if (this.momo.scale.x == -1) {
+                    this.turnToWalk()
+                    this.momo.scale.set(1, 1, 1)
+                } else {
+                    this.launchSprite("walk")
+                }
+                this.movementState.walking = true
+            }
+        } else {
+            if (!this.moveRightBlock) {
+                console.log('oooook')
+                this.moveRightBlock = true
+                this.forceValue.x = 0
+            }
         }
     }
 
     move() {
-        if (this.moveLeft || this.moveRight) {
+        if (this.moveLeft || this.moveRight || !this.canJump) {
             let accelerationValue = new CANNON.Vec3(this.forceValue.x, 0, 0);
             this.body.force = accelerationValue
+            this.movementState.wait = false
+
         } else {
-            if (this.walking) {
-                console.log('wait')
-                this.walking = false
+            let accelerationValue = new CANNON.Vec3(this.forceValue.x, 0, 0);
+            this.body.velocity = accelerationValue
+            if (!this.movementState.wait) {
                 this.launchSprite("wait")
+                this.movementState.wait = false;
             }
+            this.movementState.walking = false
+            this.movementState.wait = true
         }
     }
 

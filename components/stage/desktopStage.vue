@@ -1,16 +1,14 @@
 <template>
   <div id="desktopStage">
-    <h1>desktopStage</h1>
-
     <div id="canvas"></div>
-    <!-- <mini-game :uid="$route.params.level" v-if="minigame"></mini-game> -->
-    <mini-game :uid="$route.params.level"></mini-game>
+    <mini-game :uid="$route.params.level" v-if="minigame"></mini-game>
+    <!-- <mini-game :uid="$route.params.level"></mini-game> -->
   </div>
 </template>
 
 <script>
 import { mapGetters, mapMutations, mapState } from "vuex";
-import Game from "@/assets/js/game/Game";
+import Game from "@/assets/js/game/game";
 import TextureAtlas from "@/assets/js/utils/TextureAtlas";
 import MiniGame from "@/components/mini-game/MiniGame.vue";
 

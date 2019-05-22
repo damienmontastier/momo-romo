@@ -4,7 +4,7 @@ import FixedProp from '../objects/FixedProp'
 import CANNON from 'cannon'
 import physicParams from '../physics/physicParams';
 import Character from '../objects/Character';
-import '../physics/CannonDebugRenderer'
+import cannonDebugRenderer from '../physics/CannonDebugRenderer'
 
 export default class Level {
     constructor(opts) {
@@ -73,7 +73,7 @@ export default class Level {
         this.physicParams = new physicParams()
         this.world = this.physicParams.world
 
-        this.cannonDebugRenderer = new THREE.CannonDebugRenderer(
+        this.cannonDebugRenderer = new cannonDebugRenderer(
             this.scene,
             this.world
         )
@@ -137,13 +137,24 @@ export default class Level {
         let rotation = platform.rotation
         var axis = new CANNON.Vec3(0, 0, 1);
 
+        let platform_material = new CANNON.Material("platform_material")
+
         let body = new CANNON.Body({
             mass: 0,
             shape: new CANNON.Box(new CANNON.Vec3(size.x / 2, size.y / 10, size.z / 2)),
-            material: new CANNON.Material(),
+            material: platform_material,
             position: new CANNON.Vec3(position.x, position.y, position.z),
         });
+
         body.quaternion.setFromAxisAngle(axis, rotation.z)
+
+        let platform_cm = new CANNON.ContactMaterial(this.character.body.material, platform_material, {
+            friction: 0.1,
+            restitution: 0,
+            // frictionEquationStiffness: 1e9,
+            // frictionEquationRelaxation: 10
+        });
+        this.world.addContactMaterial(platform_cm);
 
         this.world.add(body);
     }
@@ -194,7 +205,7 @@ export default class Level {
     }
 
     render() {
-        // this.camera.lookAt(this.momo.position)
+        // this.camera.lookAt(this.camera.position)
 
         this.camera.position.set(this.momo.position.x, 2, 20)
 

@@ -1,7 +1,10 @@
 import * as THREE from 'three'
 
 export default class Sprite extends THREE.Object3D {
-    constructor(camera, texture, json, { wTiles, hTiles }) {
+    constructor(camera, texture, json, {
+        wTiles,
+        hTiles
+    }) {
         super()
         this.camera = camera
         this.texture = new THREE.TextureLoader().load(texture);

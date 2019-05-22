@@ -6,7 +6,7 @@
 </template>
 
 <script>
-import Debugger from "@/components/debugger/debugger";
+import Debugger from "@/components/debugger/Debugger";
 export default {
   components: {
     Debugger
