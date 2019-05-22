@@ -7,7 +7,7 @@
 
 <script>
 import { mapGetters, mapMutations, mapState } from "vuex";
-import Game from "@/assets/js/game/Game";
+import Game from "@/assets/js/game/game";
 import TextureAtlas from "@/assets/js/utils/TextureAtlas";
 import MiniGame from "@/components/mini-game/MiniGame.vue";
 
