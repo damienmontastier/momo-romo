@@ -4,7 +4,7 @@ import FixedProp from '../objects/FixedProp'
 import CANNON from 'cannon'
 import physicParams from '../physics/physicParams';
 import Character from '../objects/Character';
-import '../physics/CannonDebugRenderer'
+import cannonDebugRenderer from '../physics/CannonDebugRenderer'
 
 export default class Level {
     constructor(opts) {
@@ -73,7 +73,7 @@ export default class Level {
         this.physicParams = new physicParams()
         this.world = this.physicParams.world
 
-        this.cannonDebugRenderer = new THREE.CannonDebugRenderer(
+        this.cannonDebugRenderer = new cannonDebugRenderer(
             this.scene,
             this.world
         )
