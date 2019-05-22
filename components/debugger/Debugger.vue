@@ -6,8 +6,8 @@
 </template>
 
 <script>
-import Stages from '@/components/debugger/stages'
-import Synchro from '@/components/debugger/synchro'
+import Stages from '@/components/debugger/Stages'
+import Synchro from '@/components/debugger/Synchro'
 export default {
   components: {
     Stages,
