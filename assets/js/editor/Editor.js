@@ -8,6 +8,7 @@ import GridsHelper from './../objects/GridsHelper';
 import KeyboardManager from '../utils/KeyboardManager';
 import History from './History';
 
+import Models from '@/static/stageModels';
 
 export default class Editor {
     constructor(opts) {
@@ -18,7 +19,8 @@ export default class Editor {
             let atlas = opts.atlases[opts.stages[key].atlas];
             this.stages[key] = new Stage({
                 textureAtlas: new TextureAtlas(atlas),
-                pressets: opts.stages[key]
+                pressets: opts.stages[key],
+                model: Models[key]
             });
             this.stagesGroup.add(this.stages[key]);
         });
@@ -153,7 +155,7 @@ export default class Editor {
         }
     }
 
-    export() {
+    export () {
         let json = {}
         Object.entries(this.stages).forEach((stage) => {
             let exprt = stage[1].export()
