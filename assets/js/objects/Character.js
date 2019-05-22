@@ -19,6 +19,9 @@ export default class Character {
 
         this.canJump = false
 
+        this.moveLeftBlock = false
+        this.moveRightBlock = false
+
         this.sprites = MomoJson.sprites
 
         this.addBody()
@@ -113,9 +116,16 @@ export default class Character {
                 }
                 this.movementState.walking = true
             }
+        } else {
+            if (!this.moveLeftBlock) {
+                console.log('oooook')
+                this.moveLeftBlock = true
+                this.forceValue.x = 0
+            }
         }
 
         if (this.moveRight) {
+            this.test = false;
             this.forceValue.x = 8;
             if (!this.movementState.walking) {
                 if (this.momo.scale.x == -1) {
@@ -125,6 +135,12 @@ export default class Character {
                     this.launchSprite("walk")
                 }
                 this.movementState.walking = true
+            }
+        } else {
+            if (!this.moveRightBlock) {
+                console.log('oooook')
+                this.moveRightBlock = true
+                this.forceValue.x = 0
             }
         }
     }
@@ -136,6 +152,8 @@ export default class Character {
             this.movementState.wait = false
 
         } else {
+            let accelerationValue = new CANNON.Vec3(this.forceValue.x, 0, 0);
+            this.body.velocity = accelerationValue
             if (!this.movementState.wait) {
                 this.launchSprite("wait")
                 this.movementState.wait = false;
