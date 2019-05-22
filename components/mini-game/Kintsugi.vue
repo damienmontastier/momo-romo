@@ -10,7 +10,13 @@
             :class="[currentStep%2 === 0 ? 'right' : 'left',currentStep+1=== controls.length ? 'last' : null]"
           >
             <div class="key current" v-if="controls[currentStep]">
-              <div class="letter">{{controls[currentStep]}}</div>
+              <div class="circle">
+                <div class="element" ref="circle" :style="circleScale"></div>
+              </div>
+              <div class="letter" ref="letter">
+                <div>{{controls[currentStep]}}</div>
+              </div>
+              <div class="border"></div>
             </div>
             <div class="key next" v-if="controls[currentStep+1]">
               <div class="letter">{{controls[currentStep+1]}}</div>
@@ -22,19 +28,21 @@
             <div class="link"></div>
             <div class="step" v-for="(step,index) in controls" :key="step">
               <div class="icon">
-                <div v-if="index+1 === currentStep" class="check"></div>
+                <div v-if="index < currentStep" class="check"></div>
                 <div v-else class="point"></div>
               </div>
+              <div class="border"></div>
             </div>
           </div>
         </div>
       </div>
     </div>
     <div id="debug">
-      <button @click="nextFracture()">Next fracture</button>
+      <button @click="startMiniGame()">START</button>
+      <!-- <button @click="nextFracture()">Next fracture</button>
       <button @click="nextStep()">Next step</button>
       <button @click="launchStep()">Start</button>
-      <button @click="cancelFracture()">Cancel</button>
+      <button @click="cancelFracture()">Cancel</button>-->
     </div>
   </div>
 </template>
@@ -44,6 +52,10 @@ import * as THREE from "three";
 import OrbitControls from "orbit-controls-es6";
 import ObjectLoader from "~/assets/js/utils/ObjectLoader";
 import { mapState } from "vuex";
+
+Number.prototype.map = function(in_min, in_max, out_min, out_max) {
+  return ((this - in_min) * (out_max - out_min)) / (in_max - in_min) + out_min;
+};
 
 class App {
   constructor() {
@@ -194,7 +206,7 @@ export default {
       //   app: new App(),
       controls: ["q", "m", "d", "l", "g", "h"],
       interval: 2,
-      runningInterval: this.interval,
+      runningInterval: 0,
       gameModel: [
         {
           fragments: [0, 1],
@@ -219,7 +231,6 @@ export default {
       this.app.init(this.$refs.canvas);
       this.app.loadBowl();
       this.createSocketEvents();
-      this.startMiniGame();
     },
     createSocketEvents() {
       if (this.socket) {
@@ -264,6 +275,7 @@ export default {
     },
     launchStep() {
       if (this.gameModel[this.currentFracture]) {
+        // this.startKeyPressInterval();
         let fragments = this.gameModel[this.currentFracture].fragments;
         this.app.bringCloser(fragments, this.currentStep);
         if (this.socket) {
@@ -302,20 +314,38 @@ export default {
     },
     onKeyPess(event) {
       if (!event.repeat) {
-        if (event.key === this.controls[this.currentStep]) {
+        if (
+          event.key === this.controls[this.currentStep] &&
+          this.runningInterval > 0
+        ) {
           console.log("next");
-          this.nextStep();
+          console.log(this.$refs.letter.style.top);
+          TweenLite.to(this.$refs.letter, 2.5, {
+            ease: Power2.easeOut,
+            y: -12,
+            onUpdate: () => {
+              console.log(this.$refs.letter);
+            }
+          });
+          // this.nextStep();
         }
         // console.log(event.key);
       }
     },
     startKeyPressInterval() {
       console.log("interval start");
-      TweenLite.to(this, this.interval, {
+      this.runningInterval = this.interval;
+      if (this.tweening) {
+        this.tweening.kill();
+      }
+      this.tweening = TweenLite.to(this, this.interval, {
         runningInterval: 0,
+        onUpdate: () => {
+          // console.log(this.runningInterval);
+        },
         onComplete: () => {
           console.log("interval end");
-          this.runningInterval = this.interval;
+          // this.runningInterval = this.interval;
         }
       });
     }
@@ -324,7 +354,12 @@ export default {
     ...mapState({
       socket: state => state.synchro.socket,
       roomID: state => state.synchro.roomID
-    })
+    }),
+    circleScale() {
+      return {
+        transform: `scale(${this.runningInterval.map(0, this.interval, 1, 2)})`
+      };
+    }
     // loaded() {
     //   return this.app.loaded;
     // }
@@ -345,6 +380,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+$border: 4px;
 #kintsugi {
   height: 680px;
   width: 800px;
@@ -384,7 +420,7 @@ export default {
         // background: green;
         // width: 100%;
         display: flex;
-        margin-bottom: 32px;
+        margin-bottom: 52px;
 
         .container {
           width: 100%;
@@ -409,38 +445,77 @@ export default {
 
           .key {
             display: flex;
-            background: #fff;
+
             border-radius: 100%;
             position: relative;
             &.current {
-              width: 100px;
-              height: 100px;
-              border: 2px #f3765a solid;
-              margin: 0 46px;
+              margin: 0 56px;
 
-              .letter {
-                font-size: 46px;
+              .circle {
+                position: absolute;
+                top: -5px;
+                left: 0px;
+                height: 100%;
+                width: 100%;
+                // background: #0f0;
+                z-index: -1;
+                .element {
+                  width: 100%;
+                  height: 100%;
+                  // border: #f3765a 1px solid;
+                  // border-radius: 100%;
+                  background-image: url("/ui/kintsugi/mini-game/circle.svg");
+                }
               }
 
-              &::after {
-                content: "";
+              .letter {
+                width: 80px;
+                height: 80px;
+                text-align: center;
+                border: 3px #f3765a solid;
+                background: #fff;
+                font-size: 46px;
+                position: relative;
+                border-radius: 100%;
+                top: -12px;
+                display: flex;
+                box-sizing: content-box;
+                div {
+                  margin: auto;
+                }
+              }
+
+              .border {
                 width: 100%;
                 height: 100%;
-                top: 12px;
+                top: 0px;
                 left: 0px;
                 position: absolute;
                 z-index: -1;
                 background-color: #f3765a;
                 border-radius: 100%;
-                transform: scale(1.05);
+                // transform: scale(1.05);
               }
+
+              // &::after {
+              //   content: "";
+              //   width: 100%;
+              //   height: 100%;
+              //   top: 12px;
+              //   left: 0px;
+              //   position: absolute;
+              //   z-index: -1;
+              //   background-color: #f3765a;
+              //   border-radius: 100%;
+              //   transform: scale(1.05);
+              // }
             }
 
             &.next {
-              border: 2px #000 solid;
+              border: $border #000 solid;
               width: 60px;
               height: 60px;
-
+              background: #fff;
               .letter {
                 font-size: 32px;
               }
@@ -457,6 +532,7 @@ export default {
     }
 
     .steps {
+      margin-bottom: 32px;
       // background: yellow;
       //   width: 100%;
       display: flex;
@@ -473,33 +549,39 @@ export default {
         .link {
           position: absolute;
           top: calc(50% - 2px);
-          height: 4px;
+          height: $border;
           width: 100%;
           background-color: #000;
         }
 
         .step {
-          height: 28px;
-          width: 28px;
-          border: 2px #000 solid;
-          border-radius: 100%;
           margin: 0 20px;
-          position: relative;
-          background-color: #fff;
           display: flex;
-
-          &::after {
-            content: "";
+          position: relative;
+          .border {
             width: 100%;
             height: 100%;
-            top: 4px;
+            top: 0px;
             left: 0px;
             position: absolute;
             z-index: -1;
             background-color: #000;
             border-radius: 100%;
-            transform: scale(1.2);
+            // transform: scale(1.2);
           }
+
+          // &::after {
+          //   content: "";
+          //   width: 100%;
+          //   height: 100%;
+          //   top: 4px;
+          //   left: 0px;
+          //   position: absolute;
+          //   z-index: -1;
+          //   background-color: #000;
+          //   border-radius: 100%;
+          //   transform: scale(1.2);
+          // }
 
           &:nth-child(2) {
             margin-left: 0;
@@ -510,17 +592,28 @@ export default {
 
           .icon {
             margin: auto;
+            top: -4px;
+            height: 28px;
+            width: 28px;
+            border: $border #000 solid;
+            border-radius: 100%;
+            position: relative;
+            background-color: #fff;
+            display: flex;
+            box-sizing: content-box;
 
             .point {
               width: 4px;
               height: 4px;
               background: #000;
+              margin: auto;
             }
 
             .check {
               width: 8px;
               height: 8px;
               background: #f00;
+              margin: auto;
             }
           }
         }
