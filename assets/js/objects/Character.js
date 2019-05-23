@@ -19,6 +19,8 @@ export default class Character {
 
         this.canJump = false
 
+        this.bothWays = false
+
         this.moveLeftBlock = false
         this.moveRightBlock = false
 
@@ -49,7 +51,7 @@ export default class Character {
     }
 
     addBody() {
-        var radius = .5;
+        var radius = .25;
 
         var character_material = new CANNON.Material("character_material");
 
@@ -105,53 +107,69 @@ export default class Character {
     movement() {
         this.forceValue.set(0, 0, 0)
 
-        if (this.moveLeft) {
-            this.forceValue.x = -8;
-            if (!this.movementState.walking) {
-                if (this.momo.scale.x == 1) {
-                    this.turnToWalk()
-                    this.momo.scale.set(-1, 1, 1)
-                } else {
-                    this.launchSprite("walk")
-                }
-                this.movementState.walking = true
-            }
-        } else {
-            if (!this.moveLeftBlock) {
-                console.log('oooook')
-                this.moveLeftBlock = true
+        if (this.moveLeft !== undefined || this.moveRight !== undefined) {
+            if (this.moveLeft && this.moveRight) {
+                this.bothWays = true
                 this.forceValue.x = 0
-            }
-        }
+            } else {
+                this.bothWays = false
 
-        if (this.moveRight) {
-            this.test = false;
-            this.forceValue.x = 8;
-            if (!this.movementState.walking) {
-                if (this.momo.scale.x == -1) {
-                    this.turnToWalk()
-                    this.momo.scale.set(1, 1, 1)
+                if (this.moveLeft) {
+                    this.forceValue.x = -8;
+                    if (!this.movementState.walking) {
+                        if (this.momo.scale.x == 1) {
+                            this.turnToWalk()
+                            this.momo.scale.set(-1, 1, 1)
+                        } else {
+                            this.launchSprite("walk")
+                        }
+                        this.movementState.walking = true
+                    }
                 } else {
-                    this.launchSprite("walk")
+                    if (!this.moveLeftBlock) {
+                        this.moveLeftBlock = true
+                        this.forceValue.x = 0
+                    }
                 }
-                this.movementState.walking = true
-            }
-        } else {
-            if (!this.moveRightBlock) {
-                console.log('oooook')
-                this.moveRightBlock = true
-                this.forceValue.x = 0
+
+                if (this.moveRight) {
+                    this.forceValue.x = 8;
+                    if (!this.movementState.walking) {
+                        if (this.momo.scale.x == -1) {
+                            this.turnToWalk()
+                            this.momo.scale.set(1, 1, 1)
+                        } else {
+                            this.launchSprite("walk")
+                        }
+                        this.movementState.walking = true
+                    }
+                } else {
+                    if (!this.moveRightBlock) {
+                        this.moveRightBlock = true
+                        this.forceValue.x = 0
+                    }
+                }
             }
         }
     }
 
     move() {
-        if (this.moveLeft || this.moveRight || !this.canJump) {
+        if (this.moveLeft || this.moveRight || !this.canJump && !this.bothWays) {
             let accelerationValue = new CANNON.Vec3(this.forceValue.x, 0, 0);
             this.body.force = accelerationValue
             this.movementState.wait = false
-
         } else {
+            let accelerationValue = new CANNON.Vec3(this.forceValue.x, 0, 0);
+            this.body.velocity = accelerationValue
+            if (!this.movementState.wait) {
+                this.launchSprite("wait")
+                this.movementState.wait = false;
+            }
+            this.movementState.walking = false
+            this.movementState.wait = true
+        }
+
+        if (this.bothWays) {
             let accelerationValue = new CANNON.Vec3(this.forceValue.x, 0, 0);
             this.body.velocity = accelerationValue
             if (!this.movementState.wait) {
@@ -191,8 +209,6 @@ export default class Character {
     updateSpritePosition() {
         if (this.momo) {
             this.momo.position.copy(this.momo.body.position)
-            // this.momo.position.y -= .5
-            // this.momo.quaternion.copy(this.momo.body.quaternion)
         }
     }
 
