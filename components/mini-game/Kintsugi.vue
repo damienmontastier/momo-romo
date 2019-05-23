@@ -1,6 +1,8 @@
 <template>
   <div id="kintsugi">
-    <div class="title">kintsugi mini game</div>
+    <div
+      class="title"
+    >kintsugi, fracture:{{this.currentFracture}}, step:{{this.currentStep}}, {{controls.length}}</div>
     <div ref="canvas" id="canvas"></div>
     <div class="controls">
       <div class="container">
@@ -14,7 +16,11 @@
                 <div class="element" ref="circle" :style="circleScale"></div>
               </div>
               <div class="letter" ref="letter">
-                <div>{{controls[currentStep]}}</div>
+                <div class="l">{{controls[currentStep]}}</div>
+                <div class="svgs" ref="svgs">
+                  <div class="svg1"></div>
+                  <div class="svg2"></div>
+                </div>
               </div>
               <div class="border"></div>
             </div>
@@ -27,9 +33,10 @@
           <div class="container">
             <div class="link"></div>
             <div class="step" v-for="(step,index) in controls" :key="step">
-              <div class="icon">
+              <div class="icon" ref="step">
                 <div v-if="index < currentStep" class="check"></div>
                 <div v-else class="point"></div>
+                <div class="svg"></div>
               </div>
               <div class="border"></div>
             </div>
@@ -39,8 +46,8 @@
     </div>
     <div id="debug">
       <button @click="startMiniGame()">START</button>
-      <!-- <button @click="nextFracture()">Next fracture</button>
-      <button @click="nextStep()">Next step</button>
+      <button @click="nextFracture()">Next fracture</button>
+      <!-- <button @click="nextStep()">Next step</button>
       <button @click="launchStep()">Start</button>
       <button @click="cancelFracture()">Cancel</button>-->
     </div>
@@ -161,7 +168,7 @@ class App {
       .sub(target1._originPosition.clone())
       .multiplyScalar(ratio)
       .add(target1._originPosition.clone());
-    TweenLite.to(target1.position, 0.5, { x: p1.x, y: p1.y, z: p1.z });
+    TweenMax.to(target1.position, 0.5, { x: p1.x, y: p1.y, z: p1.z });
 
     if (targets[1]) {
       let target2 = this.fragments[targets[1]];
@@ -170,19 +177,19 @@ class App {
         .sub(target2._originPosition.clone())
         .multiplyScalar(ratio)
         .add(target2._originPosition.clone());
-      TweenLite.to(target2.position, 0.5, { x: p2.x, y: p2.y, z: p2.z });
+      TweenMax.to(target2.position, 0.5, { x: p2.x, y: p2.y, z: p2.z });
     }
   }
 
   spread(targets) {
     let target1 = this.fragments[targets[0]];
     let p1 = target1._maxPosition.clone();
-    TweenLite.to(target1.position, 0.5, { x: p1.x, y: p1.y, z: p1.z });
+    TweenMax.to(target1.position, 0.5, { x: p1.x, y: p1.y, z: p1.z });
 
     if (targets[1]) {
       let target2 = this.fragments[targets[1]];
       let p2 = target2._maxPosition.clone();
-      TweenLite.to(target2.position, 0.5, { x: p2.x, y: p2.y, z: p2.z });
+      TweenMax.to(target2.position, 0.5, { x: p2.x, y: p2.y, z: p2.z });
     }
   }
 
@@ -196,8 +203,11 @@ export default {
   head: {
     script: [
       {
+        src: "https://cdnjs.cloudflare.com/ajax/libs/gsap/2.1.2/TweenMax.min.js"
+      },
+      {
         src:
-          "https://cdnjs.cloudflare.com/ajax/libs/gsap/2.1.2/TweenLite.min.js"
+          "https://cdnjs.cloudflare.com/ajax/libs/gsap/2.1.2/TimelineMax.min.js"
       }
     ]
   },
@@ -222,7 +232,9 @@ export default {
         }
       ],
       currentFracture: 0,
-      currentStep: 0
+      currentStep: 0,
+      MinigameStarted: false,
+      fractureEnded: false
     };
   },
   methods: {
@@ -251,10 +263,15 @@ export default {
     nextFracture() {
       this.currentStep = 0;
       this.currentFracture++;
+      this.fractureEnded = true;
       // this.launchStep()
     },
     nextStep() {
-      if (this.currentStep === this.controls.length) {
+      if (this.currentStep === this.controls.length - 1) {
+        console.log("stop");
+        this.launchStep();
+        this.currentStep++;
+        this.fractureEnded = true;
         if (this.socket) {
           this.socket.emit("custom-event", {
             name: "kintsugi mini-game",
@@ -265,13 +282,17 @@ export default {
             }
           });
         }
-      }
-      if (this.currentStep > this.controls.length) {
-        // this.nextFracture()
       } else {
         this.launchStep();
+        this.currentStep++;
       }
-      this.currentStep++;
+      // if (this.currentStep >= this.controls.length) {
+      //   // this.nextFracture();
+      //   console.log("next fracture");
+      // } else {
+      //   this.launchStep();
+      // }
+      // this.currentStep++;
     },
     launchStep() {
       if (this.gameModel[this.currentFracture]) {
@@ -306,45 +327,84 @@ export default {
           });
         }
         this.currentStep = 0;
+        //STOP la fracture vient de se cancel -> ecran TODO
+        this.startKeyPressInterval();
+        //STOP
+        this.$refs.step.forEach(step => {
+          step.style.transform = "translateY(0px)";
+        });
       }
       // this.currentFracture--
     },
     startMiniGame() {
       this.startKeyPressInterval();
+      this.MinigameStarted = true;
     },
-    onKeyPess(event) {
-      if (!event.repeat) {
-        if (
-          event.key === this.controls[this.currentStep] &&
-          this.runningInterval > 0
-        ) {
-          console.log("next");
-          console.log(this.$refs.letter.style.top);
-          TweenLite.to(this.$refs.letter, 2.5, {
-            ease: Power2.easeOut,
-            y: -12,
-            onUpdate: () => {
-              console.log(this.$refs.letter);
-            }
-          });
-          // this.nextStep();
+    onKeyPress(event) {
+      if (this.MinigameStarted) {
+        if (!event.repeat) {
+          if (
+            event.key.toLowerCase() === this.controls[this.currentStep] &&
+            this.runningInterval > 0
+          ) {
+            console.log("next");
+            let tl = new TimelineMax();
+            tl.to(this.$refs.letter, 0.1, {
+              // ease: Power4.easeIn,
+              y: 12,
+              onStart: () => {
+                this.$refs.svgs.style.opacity = "0";
+                this.$refs.circle.style.opacity = "0";
+              },
+              onComplete: () => {
+                this.$refs.letter.classList.add("down");
+              }
+            })
+              .to(
+                this.$refs.step[this.currentStep],
+                0.1,
+                {
+                  y: 4
+                },
+                0
+              )
+              .to(this.$refs.svgs, 0.1, {
+                scale: 2,
+                onStart: () => {
+                  this.$refs.svgs.style.opacity = "1";
+                },
+                onComplete: () => {
+                  this.nextStep();
+                  this.startKeyPressInterval();
+                  this.$refs.svgs.style.opacity = "1";
+                  this.$refs.circle.style.opacity = "1";
+                  this.$refs.letter.classList.remove("down");
+                  this.$refs.letter.style.transform = "translateY(0)";
+                  this.$refs.svgs.style.opacity = "0";
+                }
+              });
+          } else {
+            console.log("wrong");
+            this.cancelFracture();
+          }
         }
-        // console.log(event.key);
       }
     },
     startKeyPressInterval() {
-      console.log("interval start");
       this.runningInterval = this.interval;
       if (this.tweening) {
         this.tweening.kill();
       }
-      this.tweening = TweenLite.to(this, this.interval, {
+      this.tweening = TweenMax.to(this, this.interval, {
         runningInterval: 0,
         onUpdate: () => {
           // console.log(this.runningInterval);
         },
         onComplete: () => {
-          console.log("interval end");
+          if (!this.fractureEnded) {
+            console.log("wrong");
+            this.cancelFracture();
+          }
           // this.runningInterval = this.interval;
         }
       });
@@ -371,10 +431,10 @@ export default {
   },
   mounted() {
     this.init();
-    window.addEventListener("keydown", this.onKeyPess.bind(this));
+    window.addEventListener("keydown", this.onKeyPress.bind(this));
   },
   beforeDestroy() {
-    window.removeEventListener("keydown", this.onKeyPess.bind(this));
+    window.removeEventListener("keydown", this.onKeyPress.bind(this));
   }
 };
 </script>
@@ -449,11 +509,11 @@ $border: 4px;
             border-radius: 100%;
             position: relative;
             &.current {
-              margin: 0 56px;
+              margin: 0 76px;
 
               .circle {
                 position: absolute;
-                top: -5px;
+                top: 0px;
                 left: 0px;
                 height: 100%;
                 width: 100%;
@@ -480,8 +540,35 @@ $border: 4px;
                 top: -12px;
                 display: flex;
                 box-sizing: content-box;
-                div {
+                &.down {
+                  background: #f3765a;
+                  color: #fff;
+                }
+                .l {
                   margin: auto;
+                }
+                .svgs {
+                  position: absolute;
+                  top: 0px;
+                  left: 0px;
+                  width: 100%;
+                  height: 100%;
+                  transform: scale(0.9);
+                  z-index: -1;
+                }
+                .svg1,
+                .svg2 {
+                  position: absolute;
+                  top: 0px;
+                  left: 0px;
+                  width: 100%;
+                  height: 100%;
+                }
+                .svg1 {
+                  background-image: url("/ui/kintsugi/mini-game/keydown1.svg");
+                }
+                .svg2 {
+                  background-image: url("/ui/kintsugi/mini-game/keydown2.svg");
                 }
               }
 
@@ -602,18 +689,30 @@ $border: 4px;
             display: flex;
             box-sizing: content-box;
 
+            .svg {
+              position: absolute;
+              top: 0px;
+              left: 0px;
+              width: 100%;
+              height: 100%;
+              // background-image: url("/ui/kintsugi/mini-game/step_win.svg");
+              // transform: scale(2);
+            }
+
             .point {
               width: 4px;
               height: 4px;
               background: #000;
               margin: auto;
+              border-radius: 100%;
             }
 
             .check {
-              width: 8px;
-              height: 8px;
-              background: #f00;
+              width: 50%;
+              height: 40%;
+              // background: #f00;
               margin: auto;
+              background-image: url("/ui/kintsugi/mini-game/check.svg");
             }
           }
         }

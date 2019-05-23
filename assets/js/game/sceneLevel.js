@@ -56,7 +56,9 @@ export default class Level {
 
         this.worldPhysic();
 
-        this.renderer = new THREE.WebGLRenderer();
+        this.renderer = new THREE.WebGLRenderer({
+            antialias: true
+        });
 
         this.renderer.setSize(window.innerWidth, window.innerHeight);
 
