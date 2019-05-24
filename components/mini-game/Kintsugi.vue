@@ -540,6 +540,8 @@ $border: 4px;
                 top: -12px;
                 display: flex;
                 box-sizing: content-box;
+                font-family: "Jost-Book";
+                color: #f3765a;
                 &.down {
                   background: #f3765a;
                   color: #fff;
