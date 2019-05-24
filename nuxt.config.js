@@ -24,10 +24,10 @@ module.exports = {
     }],
   },
   generate: {
-    routes: [
-      '/kanso',
-      '/kintsugi',
-    ]
+    // routes: [
+    //   '/kanso',
+    //   '/kintsugi',
+    // ]
   },
   mode: 'spa',
   css: [{
