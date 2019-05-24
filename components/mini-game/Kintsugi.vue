@@ -36,7 +36,7 @@
               <div class="icon" ref="step">
                 <div v-if="index < currentStep" class="check"></div>
                 <div v-else class="point"></div>
-                <div class="svg"></div>
+                <div class="svg" ref="svgstep"></div>
               </div>
               <div class="border"></div>
             </div>
@@ -59,6 +59,7 @@ import * as THREE from "three";
 import OrbitControls from "orbit-controls-es6";
 import ObjectLoader from "~/assets/js/utils/ObjectLoader";
 import { mapState } from "vuex";
+import { TweenMax } from "gsap";
 
 Number.prototype.map = function(in_min, in_max, out_min, out_max) {
   return ((this - in_min) * (out_max - out_min)) / (in_max - in_min) + out_min;
@@ -93,8 +94,8 @@ class App {
     this.camera.position.set(0, 0, 200);
 
     // controls
-    this.controls = new OrbitControls(this.camera);
-    this.controls.enabled = true;
+    // this.controls = new OrbitControls(this.camera);
+    // this.controls.enabled = true;
 
     // ambient light
     this.scene.add(new THREE.AmbientLight(0x222222));
@@ -200,17 +201,6 @@ class App {
 }
 
 export default {
-  head: {
-    script: [
-      {
-        src: "https://cdnjs.cloudflare.com/ajax/libs/gsap/2.1.2/TweenMax.min.js"
-      },
-      {
-        src:
-          "https://cdnjs.cloudflare.com/ajax/libs/gsap/2.1.2/TimelineMax.min.js"
-      }
-    ]
-  },
   data() {
     return {
       //   app: new App(),
@@ -264,6 +254,7 @@ export default {
       this.currentStep = 0;
       this.currentFracture++;
       this.fractureEnded = true;
+      this.resetUI();
       // this.launchStep()
     },
     nextStep() {
@@ -312,6 +303,15 @@ export default {
         }
       }
     },
+    resetUI() {
+      this.$refs.step.forEach(step => {
+        step.style.transform = "translateY(0px)";
+      });
+
+      this.$refs.svgstep.forEach(svgstep => {
+        svgstep.style.opacity = "0";
+      });
+    },
     cancelFracture() {
       if (this.gameModel[this.currentFracture]) {
         let fragments = this.gameModel[this.currentFracture].fragments;
@@ -330,13 +330,12 @@ export default {
         //STOP la fracture vient de se cancel -> ecran TODO
         this.startKeyPressInterval();
         //STOP
-        this.$refs.step.forEach(step => {
-          step.style.transform = "translateY(0px)";
-        });
+        this.resetUI();
       }
       // this.currentFracture--
     },
     startMiniGame() {
+      this.resetUI();
       this.startKeyPressInterval();
       this.MinigameStarted = true;
     },
@@ -365,6 +364,17 @@ export default {
                 0.1,
                 {
                   y: 4
+                },
+                0
+              )
+              .to(
+                this.$refs.svgstep[this.currentStep],
+                0.1,
+                {
+                  scale: 2.2,
+                  onStart: () => {
+                    this.$refs.svgstep[this.currentStep].style.opacity = 1;
+                  }
                 },
                 0
               )
@@ -656,6 +666,7 @@ $border: 4px;
             z-index: -1;
             background-color: #000;
             border-radius: 100%;
+
             // transform: scale(1.2);
           }
 
@@ -697,8 +708,11 @@ $border: 4px;
               left: 0px;
               width: 100%;
               height: 100%;
-              // background-image: url("/ui/kintsugi/mini-game/step_win.svg");
+              background-image: url("/ui/kintsugi/mini-game/step_win.svg");
               // transform: scale(2);
+              opacity: 0;
+              background-repeat: no-repeat;
+              z-index: -1;
             }
 
             .point {
