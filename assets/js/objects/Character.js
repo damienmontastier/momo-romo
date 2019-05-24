@@ -51,7 +51,7 @@ export default class Character {
     }
 
     addBody() {
-        var radius = .25;
+        var radius = .5;
 
         var character_material = new CANNON.Material("character_material");
 
@@ -62,7 +62,7 @@ export default class Character {
             material: character_material,
             sleepSpeedLimit: .1,
             angularDamping: 0,
-            linearDamping: .99
+            linearDamping: .90
         });
 
         body.addEventListener('collide', this.onCollide.bind(this))
