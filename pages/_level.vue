@@ -1,7 +1,7 @@
 <template>
   <div>
     <section class="container">
-      <room v-if="$route.query.room"></room>
+      <room v-if="isRoom"></room>
       <level v-else></level>
     </section>
   </div>
@@ -13,7 +13,7 @@ import level from "@/components/level";
 import room from "@/components/room";
 
 export default {
-  middleware: "loadStage",
+  // middleware: "loadStage",
 
   // async validate({ params, store, redirect }) {
   //   let list = await store.dispatch("loadStagesList");
@@ -26,7 +26,8 @@ export default {
   },
   data: () => {
     return {
-      renderComponent: true
+      renderComponent: true,
+      isRoom: false
     };
   },
   computed: {
@@ -34,7 +35,13 @@ export default {
     ...mapGetters({})
   },
   mounted() {},
-  created() {},
+  created() {
+    this.$store.dispatch("loadStagesList").then(stages => {
+      if (!Object.values(stages).includes(this.$route.params.level)) {
+        this.isRoom = true;
+      }
+    });
+  },
   methods: {
     ...mapMutations({
       resetLoaded: "game/resetLoaded"
