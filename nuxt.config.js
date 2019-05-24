@@ -29,7 +29,7 @@ module.exports = {
       '/kintsugi',
     ]
   },
-  // mode: 'spa',
+  mode: 'spa',
   css: [{
     src: '~/assets/scss/main.scss',
     lang: 'scss'
