@@ -1,7 +1,7 @@
 import io from "socket.io-client";
 
 const serverURL = 'https://blooming-garden-58138.herokuapp.com/'
-const URL = 'http://localhost:3000/'
+const URL = 'https://momo-romo.netlify.com/'
 
 export const state = () => ({
     socket: null,
@@ -18,7 +18,7 @@ export const getters = {
 
 export const mutations = {
     connection(state) {
-        console.log('connection',state.device,state.roomID)
+        console.log('connection', state.device, state.roomID)
         state.socket = io(serverURL, {
             query: {
                 device: state.device,
@@ -49,18 +49,18 @@ export const mutations = {
         })
 
         state.socket.on('disconnect', (reason) => {
-            console.log('disconnect',reason)
-            setTimeout(()=> {
+            console.log('disconnect', reason)
+            setTimeout(() => {
                 state.socket.io.opts.query = {
                     device: state.device,
                     roomID: state.roomID
                 }
                 state.socket.connect()
-            },2000)
-              
+            }, 2000)
+
         });
 
-        state.socket.on('connect',()=>{
+        state.socket.on('connect', () => {
             console.log('connect')
         })
 
@@ -77,13 +77,20 @@ export const mutations = {
 }
 
 export const actions = {
-    connect({commit}, {device,roomID}) {
+    connect({
+        commit
+    }, {
+        device,
+        roomID
+    }) {
         commit('setDevice', device);
         commit('setRoomID', roomID);
         commit('connection');
         commit('init');
     },
-    disconnect({commit},{}) {
+    disconnect({
+        commit
+    }, {}) {
         commit('disconnection');
     }
 }
