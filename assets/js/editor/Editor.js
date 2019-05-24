@@ -130,12 +130,11 @@ export default class Editor {
     }
 
     onInput(key) {
-        // console.log(key)
         switch (key) {
             case 'Delete':
             case 'DELETE':
-            case 'Backspace':
-            case 'BACKSPACE':
+            case 'Shift+Backspace':
+            case 'Shift+BACKSPACE':
                 if (ArrowsHelper.target) {
 
                     this.stages[this.currentStageId].removeElement(ArrowsHelper.target)

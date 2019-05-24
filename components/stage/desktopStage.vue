@@ -16,7 +16,6 @@ export default {
   data() {
     return {
       isLevelCompleted: false,
-      // game: new Game(),
       minigame: null,
       coucou: null
     };
@@ -35,7 +34,7 @@ export default {
     this.$store.dispatch("game/loadStage", this.$route.params.level);
   },
   mounted() {
-    // this.game = new Game();
+    this.game = new Game();
     window.addEventListener(
       "launchMiniGame",
       e => {
@@ -55,10 +54,10 @@ export default {
   watch: {
     minigame() {},
     loaded() {
-      // this.game.start({
-      //   currentLevelParams: this.stage,
-      //   currentAltlas: this.currentAtlas
-      // });
+      this.game.start({
+        currentLevelParams: this.stage,
+        currentAltlas: this.currentAtlas
+      });
     }
   },
   methods: {

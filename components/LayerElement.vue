@@ -34,21 +34,22 @@
     <ul class="layer">
       <p>Checkpoint Minigame</p>
       <li
-        v-for="(prop,index) in currentStageRef.fixedProps"
+        v-for="(prop,index) in currentStageProps.fixedProps"
         :key="index"
+        v-if="prop.visible"
         @mouseover="hover(prop)"
         @mouseleave="out(prop)"
       >
-          <input
-            :id="prop._id+index"
-            @click="minigame(prop, index)"
-            :ref="prop._id+index"
-            name="radio"
-            type="radio"
-            :value="prop._id+index || false"
-            :checked="prop.checkpointMinigame"
-          >
-          {{prop._id+index}}
+        <input
+          :id="prop._id+index"
+          @click="minigame(prop, index)"
+          :ref="prop._id+index"
+          name="radio"
+          type="radio"
+          :value="prop._id+index || false"
+          :checked="prop.checkpointMinigame"
+        >
+        {{prop._id+index}}
       </li>
     </ul>
     <ul class="layer">
@@ -56,6 +57,7 @@
       <li
         v-for="(prop,index) in currentStageRef.fixedProps"
         :key="index"
+        v-if="prop.visible"
         @mouseover="hover(prop)"
         @mouseleave="out(prop)"
       >
@@ -92,8 +94,8 @@ export default {
     }),
     currentStageProps() {
       return {
-        fixedProps: this.currentStageRef.fixedProps.length,
-        platforms: this.currentStageRef.platforms.length
+        fixedProps: this.currentStageRef.fixedProps,
+        platforms: this.currentStageRef.platforms
       };
     }
   },
@@ -131,7 +133,6 @@ export default {
       target.checkpointMinigame = true;
     },
     animate(target) {
-      console.log(target);
       target.checkpointAnimate = true;
     }
   },
@@ -139,9 +140,7 @@ export default {
     currentStageProps() {},
     animateProps() {}
   },
-  mounted() {
-    console.log(this.currentStageRef);
-  }
+  mounted() {}
 };
 </script>
 <style lang="scss" scoped>

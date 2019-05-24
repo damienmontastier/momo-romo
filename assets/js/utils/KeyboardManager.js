@@ -12,10 +12,11 @@ export default class KeyboardManager {
     if (e.metaKey || e.ctrlKey) {
       ctrl = "CTRL+";
     }
-    if (e.altKey) {
+    if (e.altKey || e.shiftKey) {
       shift = "Shift+";
     }
     key = ctrl + shift + e.key.toUpperCase();
+
     if (!e.repeat) {
       this.callback(key, true);
     }
@@ -27,7 +28,7 @@ export default class KeyboardManager {
     if (e.metaKey || e.ctrlKey) {
       ctrl = "CTRL+";
     }
-    if (e.altKey) {
+    if (e.altKey || e.shiftKey) {
       shift = "Shift+";
     }
     key = ctrl + shift + e.key.toUpperCase();
