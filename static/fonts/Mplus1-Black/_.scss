@@ -1,0 +1,17 @@
+@font-face {
+    font-family: "Mplus1p-Black";
+    src: url("./MPLUS1p-Black.eot");
+    /* IE9 Compat Modes */
+    src: url("./MPLUS1p-Black.eot?#iefix") format("embedded-opentype"),
+        /* IE6-IE8 */
+        url("./MPLUS1p-Black.otf") format("opentype"),
+        /* Open Type Font */
+        url("./MPLUS1p-Black.ttf") format("truetype"),
+        /* Safari, Android, iOS */
+        url("./MPLUS1p-Black.woff") format("woff"),
+        /* Modern Browsers */
+        url("./MPLUS1p-Black.woff2") format("woff2");
+    /* Modern Browsers */
+    font-weight: normal;
+    font-style: normal;
+}
