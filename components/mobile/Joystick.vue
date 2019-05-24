@@ -88,6 +88,7 @@ export default {
 <style lang="scss" scoped>
 #joystick {
   background: transparent;
+  border: 1px solid yellow;
   width: 100px;
   height: 100px;
   border-radius: 100px;
