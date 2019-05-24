@@ -8,6 +8,8 @@ export default function ({
   route,
   redirect
 }) {
+  console.log(route)
+  alert(route)
   return new Promise((resolve, reject) => {
     store.dispatch("loadStagesList").then((stages) => {
       if (!Object.values(stages).includes(route.params.level)) {
