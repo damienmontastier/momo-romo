@@ -108,8 +108,21 @@ class App {
     // axes
     this.scene.add(new THREE.AxesHelper(20));
 
+    this.addStageSet();
+
     //animation loop
     this.renderer.setAnimationLoop(this.render.bind(this));
+  }
+
+  addStageSet() {
+    var geometry = new THREE.PlaneGeometry(180, 60, 1);
+    var material = new THREE.MeshBasicMaterial({
+      color: 0xffff00,
+      side: THREE.DoubleSide
+    });
+    var plane = new THREE.Mesh(geometry, material);
+    plane.position.y = -50;
+    this.scene.add(plane);
   }
 
   render() {
