@@ -7,14 +7,20 @@
       :key="index"
       :to="{ name: 'level', params: {level: index}}"
     >{{index}}</nuxt-link>
+
+    <Joystick></Joystick>
   </section>
 </template>
 
 <script>
 import { mapMutations, mapState } from "vuex";
+import Joystick from "@/components/mobile/Joystick";
+
 
 export default {
-  components: {},
+  components: {
+    Joystick
+  },
   watch: {
     // loaded() {
     //   this.init();
