@@ -23,6 +23,12 @@ module.exports = {
       href: '/favicon.ico'
     }],
   },
+  generate: {
+    routes: [
+      '/kanso',
+      '/kintsugi',
+    ]
+  },
   // mode: 'spa',
   css: [{
     src: '~/assets/scss/main.scss',
