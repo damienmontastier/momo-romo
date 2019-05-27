@@ -98,6 +98,7 @@ export default {
       margin: auto;
       display: flex;
       flex-direction: column;
+      opacity: 0;
       .inline {
         display: inline-block;
         font-family: "Jost-Book";
@@ -142,10 +143,16 @@ export default {
     // min-width: 50px;
     // height: 50px;
     // background: #f00;
+    width: 100%;
+    left: 0px;
     position: absolute;
     bottom: 108px;
-    left: calc(50% - 25px);
     z-index: 11;
+    display: flex;
+    .container{
+      margin: auto;
+      display: flex;
+    }
   }
 }
 </style>

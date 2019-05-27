@@ -3,7 +3,7 @@
     <div
       class="title"
     >kintsugi, fracture:{{this.currentFracture}}, step:{{this.currentStep}}, {{controls.length}}</div>
-    <intro v-on:startfracture="startFracture"></intro>
+    <intro v-on:startfracture="startFracture" ref="intro"></intro>
     <div ref="canvas" id="canvas"></div>
     <div class="controls">
       <div class="container">
@@ -48,6 +48,8 @@
     <div id="debug">
       <button @click="startFracture()">START</button>
       <button @click="nextFracture()">Next fracture</button>
+      <div>{{fractureEnded}}</div>
+      <!-- <button @click="()=>{$refs.intro.launchCountdown()}">tet</button> -->
       <!-- <button @click="nextStep()">Next step</button>
       <button @click="launchStep()">Start</button>
       <button @click="cancelFracture()">Cancel</button>-->
@@ -346,9 +348,9 @@ export default {
     nextFracture() {
       this.currentStep = 0;
       this.currentFracture++;
-      this.fractureEnded = true;
+      this.fractureEnded = false;
       this.resetUI();
-      // this.launchStep()
+      this.$refs.intro.launchCountdown()
     },
     nextStep() {
       if (this.currentStep === this.controls.length - 1) {
@@ -406,6 +408,7 @@ export default {
       });
     },
     cancelFracture() {
+      console.log('cancel')
       if (this.gameModel[this.currentFracture]) {
         let fragments = this.gameModel[this.currentFracture].fragments;
         this.app.spread(fragments);
@@ -420,7 +423,10 @@ export default {
           });
         }
         this.currentStep = 0;
+
+        
         //STOP la fracture vient de se cancel -> ecran TODO
+        this.$refs.intro.launchCountdown()
         // this.startKeyPressInterval();
         //STOP
         this.resetUI();
