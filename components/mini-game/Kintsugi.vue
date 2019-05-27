@@ -60,6 +60,7 @@ import OrbitControls from "orbit-controls-es6";
 import ObjectLoader from "~/assets/js/utils/ObjectLoader";
 import { mapState } from "vuex";
 import { TweenMax } from "gsap";
+import GroundTexture from "~/static/ui/kintsugi/mini-game/kintsugi_ground_texture_white.png";
 
 Number.prototype.map = function(in_min, in_max, out_min, out_max) {
   return ((this - in_min) * (out_max - out_min)) / (in_max - in_min) + out_min;
@@ -78,6 +79,10 @@ class App {
     // renderer
     this.renderer = new THREE.WebGLRenderer({ antialias: true });
     this.renderer.setSize(this.WIDTH, this.HEIGHT);
+    this.renderer.setPixelRatio(
+      window.devicePixelRatio,
+      window.devicePixelRatio
+    );
     this.ref.appendChild(this.renderer.domElement);
 
     // scene
@@ -99,6 +104,7 @@ class App {
 
     // ambient light
     this.scene.add(new THREE.AmbientLight(0x222222));
+    this.scene.background = new THREE.Color("#fefbf0");
 
     // directional light
     this.light = new THREE.DirectionalLight(0xffffff, 1);
@@ -106,7 +112,7 @@ class App {
     this.scene.add(this.light);
 
     // axes
-    this.scene.add(new THREE.AxesHelper(20));
+    // this.scene.add(new THREE.AxesHelper(20));
 
     this.addStageSet();
 
@@ -115,13 +121,33 @@ class App {
   }
 
   addStageSet() {
-    var geometry = new THREE.PlaneGeometry(180, 60, 1);
-    var material = new THREE.MeshBasicMaterial({
-      color: 0xffff00,
-      side: THREE.DoubleSide
+    new THREE.TextureLoader().load(GroundTexture, texture => {
+      let geometryT = new THREE.PlaneGeometry(
+        texture.image.width / 7.5,
+        texture.image.height / 7.5,
+        1
+      );
+      let materialT = new THREE.MeshBasicMaterial({
+        // color: 0xffff00,
+        map: texture,
+        transparent: true
+      });
+      let planeT = new THREE.Mesh(geometryT, materialT);
+
+      planeT.scale.set(1, -1, 1);
+      planeT.position.y = -40;
+      planeT.position.z = -1;
+      this.scene.add(planeT);
     });
-    var plane = new THREE.Mesh(geometry, material);
-    plane.position.y = -50;
+    let geometry = new THREE.PlaneGeometry(200, 150, 1);
+    let material = new THREE.MeshBasicMaterial({
+      color: 0xffffff,
+      transparent: true
+    });
+    let plane = new THREE.Mesh(geometry, material);
+    plane.position.y = -90;
+    plane.position.z = -1;
+    // plane.scale.set(0.25, 0.25, 0.25);
     this.scene.add(plane);
   }
 
@@ -463,7 +489,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-$border: 4px;
+$border: 3px;
 #kintsugi {
   height: 680px;
   width: 800px;
@@ -555,7 +581,7 @@ $border: 4px;
                 width: 80px;
                 height: 80px;
                 text-align: center;
-                border: 3px #f3765a solid;
+                border: $border #f3765a solid;
                 background: #fff;
                 font-size: 46px;
                 position: relative;
@@ -667,7 +693,7 @@ $border: 4px;
         }
 
         .step {
-          margin: 0 20px;
+          margin: 0 16px;
           display: flex;
           position: relative;
           .border {
@@ -706,8 +732,8 @@ $border: 4px;
           .icon {
             margin: auto;
             top: -4px;
-            height: 28px;
-            width: 28px;
+            height: 20px;
+            width: 20px;
             border: $border #000 solid;
             border-radius: 100%;
             position: relative;
