@@ -16,6 +16,7 @@
     "cannon": "^0.6.2",
     "dat.gui": "^0.7.6",
     "detect-browser": "^4.2.0",
+    "detect-gpu": "^1.0.0",
     "firebase": "^5.9.4",
     "gsap": "^2.1.2",
     "howler": "^2.1.1",

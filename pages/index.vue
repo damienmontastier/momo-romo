@@ -1,66 +1,57 @@
 <template>
-  <section class="container">
-    <h1 class="title">momoo-romo</h1>
-
-    <nuxt-link
-      v-for="(level, index) in stages"
-      :key="index"
-      :to="{ name: 'level', params: {level: index}}"
-    >{{index}}</nuxt-link>
-
-    <Joystick></Joystick>
-  </section>
+  <div v-if="components[value] != null" id="home">
+    <component v-on:increment="increment" v-bind:is="components[value]"></component>
+    <!-- <button v-if="components[value] != 'chooseQuality'" @click="increment">Next (choose quality)</button> -->
+  </div>
 </template>
 
 <script>
 import { mapMutations, mapState } from "vuex";
-import Joystick from "@/components/mobile/Joystick";
-
+import Motion from "@/components/ui/Motion";
+import chooseQuality from "@/components/ui/chooseQuality";
+import Homepage from "@/components/ui/Homepage";
 
 export default {
+  data() {
+    return {
+      components: ["Homepage", "chooseQuality", "Motion"],
+      value: 0
+    };
+  },
   components: {
-    Joystick
+    Motion,
+    chooseQuality,
+    Homepage
   },
-  watch: {
-    // loaded() {
-    //   this.init();
-    // }
-  },
+  watch: {},
   computed: {
     ...mapState({
       stages: state => state.stages,
-      loaded: state => state.loaded
+      loaded: state => state.loaded,
+      quality: state => state.quality
     })
   },
-  created() {
-    // this.$store.dispatch("get");
+  watch: {
+    quality() {}
   },
-  mounted() {
-    // console.log("index", this.stages);
-  },
+  created() {},
+  mounted() {},
   methods: {
-    // init() {
-    //   // console.log(this.stages);
-    // }
+    increment() {
+      if (this.value === this.components.length - 1) {
+        console.log("SYNCHRO");
+        this.$router.push("/synchro");
+      } else {
+        this.value++;
+      }
+    }
   }
 };
 </script>
 
 <style lang="scss" scoped>
-.container {
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-}
-
-.title {
-  font-family: "Quicksand", "Source Sans Pro", -apple-system, BlinkMacSystemFont,
-    "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; /* 1 */
-  display: block;
-  font-weight: 300;
-  font-size: 100px;
-  letter-spacing: 1px;
+#home {
+  height: 100%;
+  width: 100%;
 }
 </style>
