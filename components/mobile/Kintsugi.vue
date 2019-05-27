@@ -11,6 +11,7 @@ import * as THREE from "three";
 import OrbitControls from "orbit-controls-es6";
 import ObjectLoader from "~/assets/js/utils/ObjectLoader";
 import { mapState } from "vuex";
+import { TweenMax } from "gsap";
 
 class App {
   constructor() {
@@ -80,6 +81,7 @@ class App {
     );
     if (intersects[0]) {
       let piece = intersects[0].object;
+      console.log(piece);
       if (
         piece.name === 0 ||
         this.currentFracture.children[piece.name - 1].triggered === true
@@ -126,8 +128,6 @@ class App {
         c.position.multiplyScalar(3);
         c._maxPosition = c.position.clone();
         // c.children[1].rotation.z = THREE.Math.degToRad(index*10)
-
-        console.log(c);
       });
 
       //fragments
@@ -168,7 +168,7 @@ class App {
       .sub(target1._originPosition.clone())
       .multiplyScalar(ratio)
       .add(target1._originPosition.clone());
-    TweenLite.to(target1.position, 0.5, { x: p1.x, y: p1.y, z: p1.z });
+    TweenMax.to(target1.position, 0.5, { x: p1.x, y: p1.y, z: p1.z });
 
     if (targets[1]) {
       let target2 = this.fragments[targets[1]];
@@ -177,23 +177,23 @@ class App {
         .sub(target2._originPosition.clone())
         .multiplyScalar(ratio)
         .add(target2._originPosition.clone());
-      TweenLite.to(target2.position, 0.5, { x: p2.x, y: p2.y, z: p2.z });
+      TweenMax.to(target2.position, 0.5, { x: p2.x, y: p2.y, z: p2.z });
     }
   }
 
   spread(targets) {
     let target1 = this.fragments[targets[0]];
     let p1 = target1._maxPosition.clone();
-    TweenLite.to(target1.position, 0.5, { x: p1.x, y: p1.y, z: p1.z });
+    TweenMax.to(target1.position, 0.5, { x: p1.x, y: p1.y, z: p1.z });
 
     if (targets[1]) {
       let target2 = this.fragments[targets[1]];
       let p2 = target2._maxPosition.clone();
-      TweenLite.to(target2.position, 0.5, { x: p2.x, y: p2.y, z: p2.z });
+      TweenMax.to(target2.position, 0.5, { x: p2.x, y: p2.y, z: p2.z });
     }
   }
 
-  lauchFracture(fracture) {
+  launchFracture(fracture) {
     if (this.fractures[fracture]) {
       this.currentFracture = this.fractures[fracture];
     }
@@ -215,18 +215,7 @@ class App {
 }
 
 export default {
-  head: {
-    script: [
-      {
-        src:
-          "https://cdnjs.cloudflare.com/ajax/libs/gsap/2.1.2/TweenLite.min.js"
-      },
-      {
-        src:
-          "https://cdn.rawgit.com/hammerjs/touchemulator/0.0.2/touch-emulator.js"
-      }
-    ]
-  },
+  head: {},
   data() {
     return {
       app: new App(),
@@ -271,7 +260,7 @@ export default {
       if (this.socket) {
         this.socket.on("kintsugi mini-game", params => {
           if (params.id === "launch fracture") {
-            this.app.lauchFracture(params.fracture);
+            this.app.launchFracture(params.fracture);
           }
           if (params.id === "bring closer") {
             this.app.bringCloser(params.fragments, params.step);
@@ -285,15 +274,20 @@ export default {
     init() {
       this.app.init(this.$refs.canvas, this.socket, this.roomID);
       this.app.loadBowl();
+      // setTimeout(() => {
+      //   this.app.launchFracture(0);
+      // }, 2000);
     },
     onMouseMove(event) {
       if (this.isMouseDown) {
+        console.log("mouse move");
         this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
         this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
       }
     },
     onTouchMove(event) {
       // if(event){
+      console.log("touch move");
       this.mouse.x = (event.touches[0].clientX / window.innerWidth) * 2 - 1;
       this.mouse.y = -(event.touches[0].clientY / window.innerHeight) * 2 + 1;
       // }
