@@ -3,6 +3,7 @@
     <div
       class="title"
     >kintsugi, fracture:{{this.currentFracture}}, step:{{this.currentStep}}, {{controls.length}}</div>
+    <intro v-on:startfracture="startFracture"></intro>
     <div ref="canvas" id="canvas"></div>
     <div class="controls">
       <div class="container">
@@ -45,7 +46,7 @@
       </div>
     </div>
     <div id="debug">
-      <button @click="startMiniGame()">START</button>
+      <button @click="startFracture()">START</button>
       <button @click="nextFracture()">Next fracture</button>
       <!-- <button @click="nextStep()">Next step</button>
       <button @click="launchStep()">Start</button>
@@ -61,6 +62,9 @@ import ObjectLoader from "~/assets/js/utils/ObjectLoader";
 import { mapState } from "vuex";
 import { TweenMax } from "gsap";
 import GroundTexture from "~/static/ui/kintsugi/mini-game/kintsugi_ground_texture_white.png";
+import Rosace from "~/static/ui/kintsugi/mini-game/rosace.png";
+import Gradient from "~/static/ui/kintsugi/mini-game/gradient.png";
+import Intro from "./Kintsugi/Intro";
 
 Number.prototype.map = function(in_min, in_max, out_min, out_max) {
   return ((this - in_min) * (out_max - out_min)) / (in_max - in_min) + out_min;
@@ -115,13 +119,62 @@ class App {
     // this.scene.add(new THREE.AxesHelper(20));
 
     this.addStageSet();
+    this.addTitle();
 
     //animation loop
     this.renderer.setAnimationLoop(this.render.bind(this));
   }
 
+  addTitle() {
+    this.titleGroup = new THREE.Group();
+    this.scene.add(this.titleGroup);
+    new THREE.TextureLoader().load(Rosace, texture => {
+      // texture.anisotropy = 0;
+      texture.magFilter = THREE.NearestFilter;
+      texture.minFilter = THREE.NearestFilter;
+      let geometryR = new THREE.PlaneGeometry(
+        texture.image.width / 10,
+        texture.image.height / 10,
+        1
+      );
+      let materialR = new THREE.MeshBasicMaterial({
+        // color: 0xffff00,
+        map: texture,
+        transparent: true
+      });
+      let planeR = new THREE.Mesh(geometryR, materialR);
+      this.titleGroup.add(planeR);
+      planeR.position.z = -0.5;
+    });
+
+    new THREE.TextureLoader().load(Gradient, texture => {
+      // texture.anisotropy = 0;
+      texture.magFilter = THREE.NearestFilter;
+      texture.minFilter = THREE.NearestFilter;
+      let geometryG = new THREE.PlaneGeometry(
+        texture.image.width / 10,
+        texture.image.height / 10,
+        1
+      );
+      let materialG = new THREE.MeshBasicMaterial({
+        // color: 0xffff00,
+        map: texture,
+        transparent: true
+      });
+      let planeG = new THREE.Mesh(geometryG, materialG);
+      this.titleGroup.add(planeG);
+      planeG.position.z = -0.4;
+    });
+  }
+
   addStageSet() {
+    this.stageSet = new THREE.Group();
+    this.scene.add(this.stageSet);
+
     new THREE.TextureLoader().load(GroundTexture, texture => {
+      // texture.anisotropy = 0;
+      texture.magFilter = THREE.NearestFilter;
+      texture.minFilter = THREE.NearestFilter;
       let geometryT = new THREE.PlaneGeometry(
         texture.image.width / 7.5,
         texture.image.height / 7.5,
@@ -134,10 +187,10 @@ class App {
       });
       let planeT = new THREE.Mesh(geometryT, materialT);
 
-      planeT.scale.set(1, -1, 1);
+      // planeT.scale.set(1, -1, 1);
       planeT.position.y = -40;
       planeT.position.z = -1;
-      this.scene.add(planeT);
+      this.stageSet.add(planeT);
     });
     let geometry = new THREE.PlaneGeometry(200, 150, 1);
     let material = new THREE.MeshBasicMaterial({
@@ -148,7 +201,7 @@ class App {
     plane.position.y = -90;
     plane.position.z = -1;
     // plane.scale.set(0.25, 0.25, 0.25);
-    this.scene.add(plane);
+    this.stageSet.add(plane);
   }
 
   render() {
@@ -240,6 +293,7 @@ class App {
 }
 
 export default {
+  components: { Intro },
   data() {
     return {
       //   app: new App(),
@@ -262,7 +316,7 @@ export default {
       ],
       currentFracture: 0,
       currentStep: 0,
-      MinigameStarted: false,
+      isMiniGameStarted: false,
       fractureEnded: false
     };
   },
@@ -367,19 +421,20 @@ export default {
         }
         this.currentStep = 0;
         //STOP la fracture vient de se cancel -> ecran TODO
-        this.startKeyPressInterval();
+        // this.startKeyPressInterval();
         //STOP
         this.resetUI();
       }
       // this.currentFracture--
     },
-    startMiniGame() {
+    startFracture() {
+      console.log("startFracture");
+      this.isMiniGameStarted = true;
       this.resetUI();
       this.startKeyPressInterval();
-      this.MinigameStarted = true;
     },
     onKeyPress(event) {
-      if (this.MinigameStarted) {
+      if (this.isMiniGameStarted) {
         if (!event.repeat) {
           if (
             event.key.toLowerCase() === this.controls[this.currentStep] &&
@@ -509,6 +564,9 @@ $border: 3px;
   }
 
   #canvas {
+    position: absolute;
+    top: 0px;
+    left: 0px;
     width: 100%;
     height: 100%;
   }
@@ -782,6 +840,7 @@ $border: 3px;
     width: 100%;
     display: flex;
     flex-direction: row;
+    z-index: 20;
   }
 }
 </style>
