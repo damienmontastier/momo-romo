@@ -5,7 +5,7 @@
       <div class="tuto" ref="tuto">
         <div class="text">
           <span class="t skew">
-            <div class="inline fill-fr">hit the keys in time</div>
+            <div class="inline fill-en">hit the keys in time</div>
           </span>
           <span class="skew">
             <div class="inline book">Get the pieces back together</div>
@@ -18,12 +18,12 @@
       </div>
     </div>
     <div class="launchButton" @click="launchCountdown">go</div>
-    <div class="countdown" @click="launchCountdown">
+    <div class="countdown" @click="launchCountdown" ref="countdown">
       <Countdown :countdown="countdown"/>
     </div>
     <div class="isPlaying">
       <span class="title skew">
-        <div class="inline fill-fr">romo is playing</div>
+        <div class="inline fill-en">romo is playing</div>
       </span>
       <span class="skew">
         <div class="inline book">Stay ready for the next step!</div>
@@ -40,6 +40,7 @@
 <script>
 import TitleSVG from "./Title";
 import Countdown from "./Countdown";
+import { TweenMax } from "gsap";
 export default {
   components: {
     TitleSVG,
@@ -52,7 +53,7 @@ export default {
   },
   methods: {
     launchCountdown() {
-      console.log("launchCountdown");
+      this.$refs.countdown.style.opacity = "1";
       let interval = setInterval(() => {
         if (this.countdown == 0) {
           this.countdown = 4;

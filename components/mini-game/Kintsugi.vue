@@ -46,10 +46,10 @@
       </div>
     </div>
     <div id="debug">
-      <button @click="startFracture()">START</button>
-      <button @click="nextFracture()">Next fracture</button>
-      <div>{{fractureEnded}}</div>
-      <!-- <button @click="()=>{$refs.intro.launchCountdown()}">tet</button> -->
+      <!-- <button @click="startFracture()">START</button> -->
+      <!-- <button @click="nextFracture()">Next fracture</button> -->
+      <!-- <div>{{fractureEnded}}</div> -->
+      <button @click="launchCountdown()">START coutdown</button>
       <!-- <button @click="nextStep()">Next step</button>
       <button @click="launchStep()">Start</button>
       <button @click="cancelFracture()">Cancel</button>-->
@@ -119,8 +119,8 @@ class App {
     this.camera.position.set(0, 0, 200);
 
     // controls
-    // this.controls = new OrbitControls(this.camera);
-    // this.controls.enabled = true;
+    this.controls = new OrbitControls(this.camera);
+    this.controls.enabled = true;
 
     // ambient light
     this.scene.add(new THREE.AmbientLight(0x222222));
@@ -302,8 +302,22 @@ class App {
         c._originRotation = c.rotation;
         c._originScale = c.scale;
 
-        c.position.multiplyScalar(3);
+        if (index === 0) {
+          c.position.add(new THREE.Vector3(-3.952, 1.889, 0));
+          c.rotation.set(0, 0, THREE.Math.degToRad(29.7));
+        } else if (index === 1) {
+          c.position.add(new THREE.Vector3(21.144, 15.423, 0));
+          c.rotation.set(0, 0, THREE.Math.degToRad(-18.05));
+        } else if (index === 2) {
+          c.position.add(new THREE.Vector3(-12.159, 19.624, 0));
+          c.rotation.set(0, 0, THREE.Math.degToRad(-21.57));
+        } else if (index === 3) {
+          c.position.add(new THREE.Vector3(11.707, 27.608, 0));
+          c.rotation.set(0, 0, THREE.Math.degToRad(12.69));
+        }
+        // c.position.multiplyScalar(3);
         c._maxPosition = c.position.clone();
+        c._maxRotation = c.rotation.clone();
         // c.children[1].rotation.z = THREE.Math.degToRad(index*10)
       });
 
@@ -346,6 +360,9 @@ class App {
       .add(target1._originPosition.clone());
     TweenMax.to(target1.position, 0.5, { x: p1.x, y: p1.y, z: p1.z });
 
+    let r1 = target1._maxRotation.clone();
+    TweenMax.to(target1.rotation, 0.5, { z: r1.z * ratio });
+
     if (targets[1]) {
       let target2 = this.fragments[targets[1]];
       let p2 = target2._maxPosition
@@ -354,6 +371,9 @@ class App {
         .multiplyScalar(ratio)
         .add(target2._originPosition.clone());
       TweenMax.to(target2.position, 0.5, { x: p2.x, y: p2.y, z: p2.z });
+
+      let r2 = target2._maxRotation.clone();
+      TweenMax.to(target2.rotation, 0.5, { z: r2.z * ratio });
     }
   }
 
@@ -362,10 +382,16 @@ class App {
     let p1 = target1._maxPosition.clone();
     TweenMax.to(target1.position, 0.5, { x: p1.x, y: p1.y, z: p1.z });
 
+    let r1 = target1._maxRotation.clone();
+    TweenMax.to(target1.rotation, 0.5, { z: r1.z });
+
     if (targets[1]) {
       let target2 = this.fragments[targets[1]];
       let p2 = target2._maxPosition.clone();
       TweenMax.to(target2.position, 0.5, { x: p2.x, y: p2.y, z: p2.z });
+
+      let r2 = target2._maxRotation.clone();
+      TweenMax.to(target2.rotation, 0.5, { z: r2.z });
     }
   }
 
@@ -699,7 +725,7 @@ export default {
   mounted() {
     this.init();
     window.addEventListener("keydown", this.onKeyPress.bind(this));
-    this.appearToTitle();
+    // this.appearToTitle();
   },
   beforeDestroy() {
     window.removeEventListener("keydown", this.onKeyPress.bind(this));
@@ -750,7 +776,7 @@ $border: 3px;
       flex-direction: column;
       margin: auto;
       .keys {
-        opacity: 0;
+        // opacity: 0;
         // background: green;
         // width: 100%;
         display: flex;
@@ -974,7 +1000,7 @@ $border: 3px;
               height: 100%;
               background-image: url("/ui/kintsugi/mini-game/step_win.svg");
               // transform: scale(2);
-              opacity: 0;
+              // opacity: 0;
               background-repeat: no-repeat;
               z-index: -1;
             }
