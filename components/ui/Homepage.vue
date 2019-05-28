@@ -1,7 +1,7 @@
 <template>
   <div id="homepage">
     <h1>Homepage blanc</h1>
-    <button @click="$emit('increment')">Next (choose quality)</button>
+    <button @click="$emit('increment')">Next</button>
   </div>
 </template>
 

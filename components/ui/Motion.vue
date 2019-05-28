@@ -23,8 +23,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-#choose-quality {
-  background: yellow;
+#motion {
+  background: green;
   height: 100px;
   width: 100px;
 }
