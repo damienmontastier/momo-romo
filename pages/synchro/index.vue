@@ -3,16 +3,16 @@
     <div id="top">
       <div id="momo">
         <div class="center">
-          <p class="skew">Desktop player</p>
+          <h5 class="skew stroke">Desktop player</h5>
           <momoTitle></momoTitle>
-          <span class="skew">モモ</span>
+          <h5 class="skew fill-jap">モモ</h5>
         </div>
       </div>
       <div id="romo">
         <div class="center">
-          <p class="skew">Mobile player</p>
+          <h5 class="skew stroke">Mobile player</h5>
           <romoTitle></romoTitle>
-          <span class="skew">ロモ</span>
+          <h5 class="skew fill-jap">ロモ</h5>
         </div>
       </div>
     </div>
@@ -110,7 +110,7 @@ export default {
   top: 50%;
   transform: translateY(-50%);
   background: #fefbf0;
-  border: 2px solid $frame-border-color;
+  border: 2px solid $black;
   background-image: url("~static/ui/synchro/intro-fin.jpg");
   background-size: cover;
   background-repeat: no-repeat;
@@ -125,38 +125,19 @@ export default {
     #momo,
     #romo {
       width: 50%;
-      display: inline-flex;
-      flex-direction: column;
-      // align-items: center;
-      position: relative;
 
-      .center{
-        margin:0 auto;
+      .center {
+        margin: 0 auto;
         width: 80%;
+        display: flex;
+        flex-direction: column;
       }
 
-      p {
+      h5.stroke {
         align-self: flex-start;
-        position: relative;
-        // left: 15%;
-        -webkit-text-stroke-width: 1px;
-        -webkit-text-stroke-color: black;
-        text-transform: uppercase;
-        font-size: 50px;
-        color: white;
       }
-      span {
-        background: black;
-        color: white;
-        font-size: 30px;
+      h5.fill-jap {
         align-self: flex-end;
-        position: relative;
-        float: right;
-        padding: 0 25px;
-      }
-
-      svg {
-        // width: 120%;
       }
     }
   }
