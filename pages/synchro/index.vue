@@ -2,14 +2,18 @@
   <div id="synchro">
     <div id="top">
       <div id="momo">
-        <p class="skew">Desktop player</p>
-        <momoTitle></momoTitle>
-        <span class="skew">モモ</span>
+        <div class="center">
+          <p class="skew">Desktop player</p>
+          <momoTitle></momoTitle>
+          <span class="skew">モモ</span>
+        </div>
       </div>
       <div id="romo">
-        <p class="skew">Mobile player</p>
-        <romoTitle></romoTitle>
-        <span class="skew">ロモ</span>
+        <div class="center">
+          <p class="skew">Mobile player</p>
+          <romoTitle></romoTitle>
+          <span class="skew">ロモ</span>
+        </div>
       </div>
     </div>
     <div id="bottom">
@@ -123,13 +127,18 @@ export default {
       width: 50%;
       display: inline-flex;
       flex-direction: column;
-      align-items: center;
+      // align-items: center;
       position: relative;
+
+      .center{
+        margin:0 auto;
+        width: 80%;
+      }
 
       p {
         align-self: flex-start;
         position: relative;
-        left: 15%;
+        // left: 15%;
         -webkit-text-stroke-width: 1px;
         -webkit-text-stroke-color: black;
         text-transform: uppercase;
@@ -142,12 +151,12 @@ export default {
         font-size: 30px;
         align-self: flex-end;
         position: relative;
-        right: 15%;
+        float: right;
         padding: 0 25px;
       }
 
       svg {
-        width: 75%;
+        // width: 120%;
       }
     }
   }
