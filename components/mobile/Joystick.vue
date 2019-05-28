@@ -5,8 +5,6 @@
 </template>
 
 <script>
-import * as THREE from "three";
-import OrbitControls from "orbit-controls-es6";
 import { mapState } from "vuex";
 import { TweenMax } from "gsap";
 

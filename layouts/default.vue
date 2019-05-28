@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div id="default">
     <nuxt/>
     <debugger id="debugger" v-if="$route.name != 'editor'"></debugger>
   </div>
@@ -27,6 +27,20 @@ html {
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
   box-sizing: border-box;
+  height: 100%;
+  width: 100%;
+}
+
+#__nuxt,
+#__layout,
+#default {
+  height: 100%;
+  width: 100%;
+}
+
+body {
+  height: 100%;
+  width: 100%;
 }
 
 *,
