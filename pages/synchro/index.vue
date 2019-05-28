@@ -1,5 +1,5 @@
 <template>
-  <div id="synchro">
+  <div class="frame" id="synchro">
     <div id="top">
       <!-- <buttonCircleRed letter="A" en="Open Map" jpn="ホームマップ"></buttonCircleRed> -->
       <!-- <buttonCircle letter="A" en="Open Map" jpn="ホームマップ"></buttonCircle> -->
@@ -110,14 +110,6 @@ export default {
 }
 
 #synchro {
-  width: 90vw;
-  height: 80vh;
-  position: relative;
-  margin: 0 auto;
-  top: 50%;
-  transform: translateY(-50%);
-  background: #fefbf0;
-  border: 2px solid $black;
   background-image: url("~static/ui/synchro/intro-fin.jpg");
   background-size: cover;
   background-repeat: no-repeat;

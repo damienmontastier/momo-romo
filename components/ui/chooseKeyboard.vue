@@ -28,7 +28,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-#choose-quality {
+#choose-keyboard {
   background: pink;
   height: 100%;
   width: 100%;

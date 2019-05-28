@@ -25,7 +25,7 @@ export default {
 <style lang="scss" scoped>
 #motion {
   background: green;
-  height: 100px;
-  width: 100px;
+  height: 100%;
+  width: 100%;
 }
 </style>

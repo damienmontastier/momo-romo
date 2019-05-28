@@ -139,7 +139,7 @@ $M1-Black : M1Black;
     font-style: normal;
 }
 
-.fill-fr {
+.fill-en {
     background: black;
     padding: 0 25px;
     font-family: $Jost-Book;
@@ -188,42 +188,4 @@ a {
     font-family: $Jost-Book;
     font-size: 22px;
     color: $a;
-}
-
-.button-red-curved-jpn,
-.button-red-curved-en,
-.button-red-letter-center {
-    fill: $a;
-}
-
-.button-curved-jpn,
-.button-curved-en,
-.button-letter-center {
-    fill: $black;
-}
-
-.button-red-curved-jpn,
-.button-red-curved-en {
-    font-size: 22px;
-}
-
-.button-red-curved-jpn,
-.button-curved-jpn {
-    font-family: $M1-Black;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-}
-
-.button-red-letter-center,
-.button-letter-center {
-    font-size: 50px;
-    letter-spacing: 1px;
-    font-family: $M1-Light;
-    text-transform: uppercase;
-}
-
-.button-red-curved-en, .button-curved-en{
-    font-family: $Jost-Heavy;
-    letter-spacing: 1px;
-    text-transform: uppercase;
 }
