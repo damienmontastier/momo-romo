@@ -9,18 +9,20 @@
 import { mapMutations, mapState } from "vuex";
 import Motion from "@/components/ui/Motion";
 import chooseQuality from "@/components/ui/chooseQuality";
+import chooseKeyboard from "@/components/ui/chooseKeyboard";
 import Homepage from "@/components/ui/Homepage";
 
 export default {
   data() {
     return {
-      components: ["Homepage", "chooseQuality", "Motion"],
+      components: ["Homepage", "chooseQuality", "chooseKeyboard", "Motion"],
       value: 0
     };
   },
   components: {
     Motion,
     chooseQuality,
+    chooseKeyboard,
     Homepage
   },
   watch: {},
@@ -28,11 +30,13 @@ export default {
     ...mapState({
       stages: state => state.stages,
       loaded: state => state.loaded,
-      quality: state => state.quality
+      quality: state => state.quality,
+      keyboard: state => state.keyboard
     })
   },
   watch: {
-    quality() {}
+    quality() {},
+    keyboard() {}
   },
   created() {},
   mounted() {},

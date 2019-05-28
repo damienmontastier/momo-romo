@@ -23,9 +23,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-#choose-quality {
-  background: yellow;
-  height: 100px;
-  width: 100px;
+#motion {
+  background: green;
+  height: 100%;
+  width: 100%;
 }
 </style>
