@@ -1,7 +1,14 @@
 <template>
   <div id="choose-keyboard">
-    <h1 ref="azerty" @click="changeKeyboard('azerty')">Azerty</h1>
-    <h1 ref="qwerty" @click="changeKeyboard('qwerty')">Qwerty</h1>
+    <div class="choose">
+      <div>
+        <span class="skew fill-en">Select your keyboard</span>
+      </div>
+      <ul>
+        <li class="stroke skew" ref="azerty" @click="changeKeyboard('azerty')">Azerty</li>
+        <li class="stroke skew" ref="qwerty" @click="changeKeyboard('qwerty')">Qwerty</li>
+      </ul>
+    </div>
   </div>
 </template>
 
@@ -29,7 +36,7 @@ export default {
 
 <style lang="scss" scoped>
 #choose-keyboard {
-  background: pink;
+  background: white;
   height: 100%;
   width: 100%;
 }

@@ -1,5 +1,5 @@
 <template>
-  <div id="motion">
+  <div class="frame" id="motion">
     <h1>Motion wait 1 seconde</h1>
   </div>
 </template>
@@ -25,7 +25,5 @@ export default {
 <style lang="scss" scoped>
 #motion {
   background: green;
-  height: 100%;
-  width: 100%;
 }
 </style>

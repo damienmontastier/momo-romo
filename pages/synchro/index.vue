@@ -22,7 +22,7 @@
     <div id="bottom">
       <div id="desktop">
         <div id="momo-chara"></div>
-        <span></span>
+        <div id="keyboard-indicator"></div>
       </div>
       <div id="mobile">
         <div v-if="!isSynchro">
@@ -46,8 +46,6 @@ import buttonCircleRed from "@/components/svg/button-circle-red";
 import buttonCircle from "@/components/svg/button-circle";
 
 export default {
-  // layout: "frame",
-
   components: {
     momoTitle,
     romoTitle,
@@ -151,6 +149,7 @@ export default {
       display: flex;
       justify-content: center;
       position: relative;
+      align-items: center;
     }
 
     #desktop {
@@ -160,15 +159,29 @@ export default {
         background-image: url("~static/ui/synchro/momo.png");
         animation: play 1s steps(6) infinite;
       }
-      span {
-        width: 200px;
-        height: 100px;
-        border-radius: 60px;
-        background: blue;
+      #keyboard-indicator {
+        width: 160px;
+        height: 110px;
+        border-radius: 35px;
+        background: white;
+        border: 2px solid $a;
         position: relative;
-        float: right;
-        top: 50%;
-        transform: translateY(-50%);
+
+        // &::after {
+        //   content: "";
+        //   width: 30px;
+        //   height: 30px;
+        //   background: white;
+        //   // border: 2px solid $a;
+        //   border-bottom: 2px solid $a;
+        //   border-left: 2px solid $a;
+        //   display: block;
+        //   top: 50%;
+        //   // z-index: -2;
+        //   position: absolute;
+        //   left: -30px;
+        //   transform: rotate(45deg) translateY(-50%);
+        // }
       }
     }
 

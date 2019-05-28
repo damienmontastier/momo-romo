@@ -65,6 +65,33 @@ canvas {
 
 .skew {
   transform: skewY(-3deg);
+  display: inline-block;
+}
+
+.choose {
+  top: 50%;
+  position: relative;
+  text-align: center;
+  transform: translateY(-50%);
+  width: 80%;
+  margin: 0 auto;
+
+  ul {
+    display: inline-flex;
+    align-items: center;
+    align-content: center;
+    justify-content: center;
+    margin-top: 120px;
+
+    li {
+      margin-right: 120px;
+
+      &:last-child {
+        margin-right: 0;
+      }
+    }
+  }
+
 }
 
 // SVG BUTTON STYLE
