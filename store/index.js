@@ -7,7 +7,8 @@ export const strict = false
 
 export const state = () => ({
     loaded: false,
-    stagesList: null
+    stagesList: null,
+    quality: null
 })
 
 export const mutations = {
@@ -16,6 +17,10 @@ export const mutations = {
     },
     setStagesList(state, data) {
         state.stagesList = data
+    },
+    setQuality(state, data) {
+        state.quality = data
+        console.log(data)
     }
 }
 

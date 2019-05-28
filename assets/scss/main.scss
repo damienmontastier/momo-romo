@@ -2,7 +2,7 @@
 @import 'fonts';
 
 body {
-  background: red;
+  // background: red;
 }
 
 html {
@@ -49,4 +49,8 @@ video {
 
 canvas {
   display: block;
+}
+
+.skew {
+  transform: skewY(-3deg);
 }
