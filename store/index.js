@@ -8,7 +8,8 @@ export const strict = false
 export const state = () => ({
     loaded: false,
     stagesList: null,
-    quality: null
+    quality: null,
+    keyboard: null
 })
 
 export const mutations = {
@@ -20,7 +21,9 @@ export const mutations = {
     },
     setQuality(state, data) {
         state.quality = data
-        console.log(data)
+    },
+    setKeyboard(state, data) {
+        state.keyboard = data
     }
 }
 

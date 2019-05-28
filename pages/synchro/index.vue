@@ -1,18 +1,21 @@
 <template>
-  <div id="synchro">
+  <div class="frame" id="synchro">
     <div id="top">
+      <!-- <buttonCircleRed letter="A" en="Open Map" jpn="ホームマップ"></buttonCircleRed> -->
+      <!-- <buttonCircle letter="A" en="Open Map" jpn="ホームマップ"></buttonCircle> -->
+
       <div id="momo">
         <div class="center">
           <h5 class="skew stroke">Desktop player</h5>
           <momoTitle></momoTitle>
-          <h5 class="skew fill-jap">モモ</h5>
+          <h5 class="skew fill-jpn">モモ</h5>
         </div>
       </div>
       <div id="romo">
         <div class="center">
           <h5 class="skew stroke">Mobile player</h5>
           <romoTitle></romoTitle>
-          <h5 class="skew fill-jap">ロモ</h5>
+          <h5 class="skew fill-jpn">ロモ</h5>
         </div>
       </div>
     </div>
@@ -39,13 +42,17 @@ import { mapMutations, mapActions, mapState } from "vuex";
 import QRCode from "qrcode";
 import momoTitle from "@/components/svg/momo";
 import romoTitle from "@/components/svg/romo";
+import buttonCircleRed from "@/components/svg/button-circle-red";
+import buttonCircle from "@/components/svg/button-circle";
 
 export default {
   // layout: "frame",
 
   components: {
     momoTitle,
-    romoTitle
+    romoTitle,
+    buttonCircleRed,
+    buttonCircle
   },
   data() {
     return {
@@ -103,14 +110,6 @@ export default {
 }
 
 #synchro {
-  width: 90vw;
-  height: 80vh;
-  position: relative;
-  margin: 0 auto;
-  top: 50%;
-  transform: translateY(-50%);
-  background: #fefbf0;
-  border: 2px solid $black;
   background-image: url("~static/ui/synchro/intro-fin.jpg");
   background-size: cover;
   background-repeat: no-repeat;
@@ -136,7 +135,7 @@ export default {
       h5.stroke {
         align-self: flex-start;
       }
-      h5.fill-jap {
+      h5.fill-jpn {
         align-self: flex-end;
       }
     }

@@ -1,7 +1,7 @@
 <template>
-  <div id="homepage">
+  <div class="frame" id="homepage">
     <h1>Homepage blanc</h1>
-    <button @click="$emit('increment')">Next (choose quality)</button>
+    <button @click="$emit('increment')">Next</button>
   </div>
 </template>
 
@@ -20,10 +20,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-
 #homepage {
   background: yellow;
-  height: 100%;
-  width: 100%;
 }
 </style>
