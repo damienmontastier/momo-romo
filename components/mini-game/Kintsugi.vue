@@ -3,6 +3,7 @@
     <div
       class="title"
     >kintsugi, fracture:{{this.currentFracture}}, step:{{this.currentStep}}, {{controls.length}}</div>
+    <intro v-on:startfracture="startFracture" ref="intro"></intro>
     <div ref="canvas" id="canvas"></div>
     <div class="controls">
       <div class="container">
@@ -45,8 +46,10 @@
       </div>
     </div>
     <div id="debug">
-      <button @click="startMiniGame()">START</button>
+      <button @click="startFracture()">START</button>
       <button @click="nextFracture()">Next fracture</button>
+      <div>{{fractureEnded}}</div>
+      <!-- <button @click="()=>{$refs.intro.launchCountdown()}">tet</button> -->
       <!-- <button @click="nextStep()">Next step</button>
       <button @click="launchStep()">Start</button>
       <button @click="cancelFracture()">Cancel</button>-->
@@ -60,6 +63,10 @@ import OrbitControls from "orbit-controls-es6";
 import ObjectLoader from "~/assets/js/utils/ObjectLoader";
 import { mapState } from "vuex";
 import { TweenMax } from "gsap";
+import GroundTexture from "~/static/ui/kintsugi/mini-game/kintsugi_ground_texture_white.png";
+import Rosace from "~/static/ui/kintsugi/mini-game/rosace.png";
+import Gradient from "~/static/ui/kintsugi/mini-game/gradient.png";
+import Intro from "./Kintsugi/Intro";
 
 Number.prototype.map = function(in_min, in_max, out_min, out_max) {
   return ((this - in_min) * (out_max - out_min)) / (in_max - in_min) + out_min;
@@ -78,6 +85,10 @@ class App {
     // renderer
     this.renderer = new THREE.WebGLRenderer({ antialias: true });
     this.renderer.setSize(this.WIDTH, this.HEIGHT);
+    this.renderer.setPixelRatio(
+      window.devicePixelRatio,
+      window.devicePixelRatio
+    );
     this.ref.appendChild(this.renderer.domElement);
 
     // scene
@@ -99,6 +110,7 @@ class App {
 
     // ambient light
     this.scene.add(new THREE.AmbientLight(0x222222));
+    this.scene.background = new THREE.Color("#fefbf0");
 
     // directional light
     this.light = new THREE.DirectionalLight(0xffffff, 1);
@@ -106,23 +118,92 @@ class App {
     this.scene.add(this.light);
 
     // axes
-    this.scene.add(new THREE.AxesHelper(20));
+    // this.scene.add(new THREE.AxesHelper(20));
 
     this.addStageSet();
+    this.addTitle();
 
     //animation loop
     this.renderer.setAnimationLoop(this.render.bind(this));
   }
 
-  addStageSet() {
-    var geometry = new THREE.PlaneGeometry(180, 60, 1);
-    var material = new THREE.MeshBasicMaterial({
-      color: 0xffff00,
-      side: THREE.DoubleSide
+  addTitle() {
+    this.titleGroup = new THREE.Group();
+    this.scene.add(this.titleGroup);
+    new THREE.TextureLoader().load(Rosace, texture => {
+      // texture.anisotropy = 0;
+      texture.magFilter = THREE.NearestFilter;
+      texture.minFilter = THREE.NearestFilter;
+      let geometryR = new THREE.PlaneGeometry(
+        texture.image.width / 10,
+        texture.image.height / 10,
+        1
+      );
+      let materialR = new THREE.MeshBasicMaterial({
+        // color: 0xffff00,
+        map: texture,
+        transparent: true
+      });
+      let planeR = new THREE.Mesh(geometryR, materialR);
+      this.titleGroup.add(planeR);
+      planeR.position.z = -0.5;
     });
-    var plane = new THREE.Mesh(geometry, material);
-    plane.position.y = -50;
-    this.scene.add(plane);
+
+    new THREE.TextureLoader().load(Gradient, texture => {
+      // texture.anisotropy = 0;
+      texture.magFilter = THREE.NearestFilter;
+      texture.minFilter = THREE.NearestFilter;
+      let geometryG = new THREE.PlaneGeometry(
+        texture.image.width / 10,
+        texture.image.height / 10,
+        1
+      );
+      let materialG = new THREE.MeshBasicMaterial({
+        // color: 0xffff00,
+        map: texture,
+        transparent: true
+      });
+      let planeG = new THREE.Mesh(geometryG, materialG);
+      this.titleGroup.add(planeG);
+      planeG.position.z = -0.4;
+    });
+  }
+
+  addStageSet() {
+    this.stageSet = new THREE.Group();
+    this.scene.add(this.stageSet);
+
+    new THREE.TextureLoader().load(GroundTexture, texture => {
+      // texture.anisotropy = 0;
+      texture.magFilter = THREE.NearestFilter;
+      texture.minFilter = THREE.NearestFilter;
+      let geometryT = new THREE.PlaneGeometry(
+        texture.image.width / 7.5,
+        texture.image.height / 7.5,
+        1
+      );
+      let materialT = new THREE.MeshBasicMaterial({
+        // color: 0xffff00,
+        map: texture,
+        transparent: true
+      });
+      let planeT = new THREE.Mesh(geometryT, materialT);
+
+      // planeT.scale.set(1, -1, 1);
+      planeT.position.y = -40;
+      planeT.position.z = -1;
+      this.stageSet.add(planeT);
+    });
+    let geometry = new THREE.PlaneGeometry(200, 150, 1);
+    let material = new THREE.MeshBasicMaterial({
+      color: 0xffffff,
+      transparent: true
+    });
+    let plane = new THREE.Mesh(geometry, material);
+    plane.position.y = -90;
+    plane.position.z = -1;
+    // plane.scale.set(0.25, 0.25, 0.25);
+    this.stageSet.add(plane);
   }
 
   render() {
@@ -214,6 +295,7 @@ class App {
 }
 
 export default {
+  components: { Intro },
   data() {
     return {
       //   app: new App(),
@@ -236,7 +318,7 @@ export default {
       ],
       currentFracture: 0,
       currentStep: 0,
-      MinigameStarted: false,
+      isMiniGameStarted: false,
       fractureEnded: false
     };
   },
@@ -266,9 +348,9 @@ export default {
     nextFracture() {
       this.currentStep = 0;
       this.currentFracture++;
-      this.fractureEnded = true;
+      this.fractureEnded = false;
       this.resetUI();
-      // this.launchStep()
+      this.$refs.intro.launchCountdown()
     },
     nextStep() {
       if (this.currentStep === this.controls.length - 1) {
@@ -326,6 +408,7 @@ export default {
       });
     },
     cancelFracture() {
+      console.log('cancel')
       if (this.gameModel[this.currentFracture]) {
         let fragments = this.gameModel[this.currentFracture].fragments;
         this.app.spread(fragments);
@@ -340,20 +423,24 @@ export default {
           });
         }
         this.currentStep = 0;
+
+        
         //STOP la fracture vient de se cancel -> ecran TODO
-        this.startKeyPressInterval();
+        this.$refs.intro.launchCountdown()
+        // this.startKeyPressInterval();
         //STOP
         this.resetUI();
       }
       // this.currentFracture--
     },
-    startMiniGame() {
+    startFracture() {
+      console.log("startFracture");
+      this.isMiniGameStarted = true;
       this.resetUI();
       this.startKeyPressInterval();
-      this.MinigameStarted = true;
     },
     onKeyPress(event) {
-      if (this.MinigameStarted) {
+      if (this.isMiniGameStarted) {
         if (!event.repeat) {
           if (
             event.key.toLowerCase() === this.controls[this.currentStep] &&
@@ -463,7 +550,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-$border: 4px;
+$border: 3px;
 #kintsugi {
   height: 680px;
   width: 800px;
@@ -483,6 +570,9 @@ $border: 4px;
   }
 
   #canvas {
+    position: absolute;
+    top: 0px;
+    left: 0px;
     width: 100%;
     height: 100%;
   }
@@ -555,7 +645,7 @@ $border: 4px;
                 width: 80px;
                 height: 80px;
                 text-align: center;
-                border: 3px #f3765a solid;
+                border: $border #f3765a solid;
                 background: #fff;
                 font-size: 46px;
                 position: relative;
@@ -667,7 +757,7 @@ $border: 4px;
         }
 
         .step {
-          margin: 0 20px;
+          margin: 0 16px;
           display: flex;
           position: relative;
           .border {
@@ -706,8 +796,8 @@ $border: 4px;
           .icon {
             margin: auto;
             top: -4px;
-            height: 28px;
-            width: 28px;
+            height: 20px;
+            width: 20px;
             border: $border #000 solid;
             border-radius: 100%;
             position: relative;
@@ -756,6 +846,7 @@ $border: 4px;
     width: 100%;
     display: flex;
     flex-direction: row;
+    z-index: 20;
   }
 }
 </style>
