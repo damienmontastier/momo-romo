@@ -1,25 +1,38 @@
 <template>
   <div class="intro">
-    <div class="title">
-      <TitleSVG/>
-      <div class="tuto">
+    <div class="title" ref="title">
+      <!-- <TitleSVG/> -->
+      <div class="tuto" ref="tuto">
         <div class="text">
           <span class="t skew">
-            <div class="inline">hit the keys in time</div>
+            <div class="inline fill-fr">hit the keys in time</div>
           </span>
           <span class="skew">
-            <div class="inline">Get the pieces back together</div>
+            <div class="inline book">Get the pieces back together</div>
           </span>
           <span class="skew">
-            <div class="inline">So Romo can applay golden glue</div>
+            <div class="inline book">So Romo can applay golden glue</div>
           </span>
         </div>
         <div class="gif"></div>
       </div>
     </div>
-    <div class="launchButton" @click="launchCountdown"></div>
+    <div class="launchButton" @click="launchCountdown">go</div>
     <div class="countdown" @click="launchCountdown">
       <Countdown :countdown="countdown"/>
+    </div>
+    <div class="isPlaying">
+      <span class="title skew">
+        <div class="inline fill-fr">romo is playing</div>
+      </span>
+      <span class="skew">
+        <div class="inline book">Stay ready for the next step!</div>
+      </span>
+    </div>
+    <div class="tryAgain">
+      <span class="title skew">
+        <div class="inline book">try again!</div>
+      </span>
     </div>
   </div>
 </template>
@@ -39,6 +52,7 @@ export default {
   },
   methods: {
     launchCountdown() {
+      console.log("launchCountdown");
       let interval = setInterval(() => {
         if (this.countdown == 0) {
           this.countdown = 4;
@@ -62,6 +76,7 @@ export default {
 
 
 <style lang="scss" scoped>
+@import "~assets/scss/main.scss";
 .intro {
   position: absolute;
   top: 0px;
@@ -70,7 +85,7 @@ export default {
   height: 100%;
   z-index: 10;
 
-  .title {
+  > .title {
     position: absolute;
     top: 0px;
     left: 0px;
@@ -94,37 +109,26 @@ export default {
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    opacity: 0;
     .text {
       margin: auto;
       display: flex;
       flex-direction: column;
-      opacity: 0;
+      padding-bottom: 112px;
       .inline {
-        display: inline-block;
-        font-family: "Jost-Book";
-        font-size: 30px;
         margin-left: 32px;
-        letter-spacing: 1px;
       }
       .t {
         color: #fff;
         .inline {
-          background: #000;
-          padding: 2px 16px;
-          font-family: "Jost-Medium";
-          text-transform: uppercase;
           margin-left: 0px;
-          letter-spacing: 1px;
         }
-      }
-      span {
-        transform: skewY(-3deg);
       }
     }
     .gif {
       width: 50px;
       height: 50px;
-      background: #000;
+      background: $black;
       position: absolute;
       bottom: 108px;
       left: calc(50% - 25px);
@@ -138,8 +142,11 @@ export default {
     bottom: 108px;
     left: calc(50% - 25px);
     z-index: 10;
+    opacity: 0;
   }
-  .countdown {
+  .countdown,
+  .isPlaying,
+  .tryAgain {
     // min-width: 50px;
     // height: 50px;
     // background: #f00;
@@ -149,11 +156,23 @@ export default {
     bottom: 108px;
     z-index: 11;
     display: flex;
-    .container{
-      margin: auto;
-      display: flex;
-    }
+    opacity: 0;
   }
+
+  .isPlaying,
+  .tryAgain {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    // opacity: 0;
+    // display: none;
+  }
+  // span.title {
+  .inline {
+    display: inline;
+  }
+  // }
 }
 </style>
 

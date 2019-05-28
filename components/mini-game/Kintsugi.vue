@@ -7,7 +7,7 @@
     <div ref="canvas" id="canvas"></div>
     <div class="controls">
       <div class="container">
-        <div class="keys">
+        <div class="keys" ref="keys">
           <div
             class="container"
             :class="[currentStep%2 === 0 ? 'right' : 'left',currentStep+1=== controls.length ? 'last' : null]"
@@ -65,8 +65,19 @@ import { mapState } from "vuex";
 import { TweenMax } from "gsap";
 import GroundTexture from "~/static/ui/kintsugi/mini-game/kintsugi_ground_texture_white.png";
 import Rosace from "~/static/ui/kintsugi/mini-game/rosace.png";
+import Title from "~/static/ui/kintsugi/mini-game/repair_the_bowl.png";
 import Gradient from "~/static/ui/kintsugi/mini-game/gradient.png";
 import Intro from "./Kintsugi/Intro";
+import Sprite from "@/assets/js/objects/Sprite";
+
+//sprites
+import MomoSprite from "~/static/ui/kintsugi/mini-game/sprites/momo/power_momo.png";
+const MomoSpriteJson = require("~/static/ui/kintsugi/mini-game/sprites/momo/power_momo.json");
+
+import MomoMoodSprite from "~/static/ui/kintsugi/mini-game/sprites/moods/face_momo.png";
+const MomoMoodSpriteJson = require("~/static/ui/kintsugi/mini-game/sprites/moods/face_momo.json");
+
+console.log(MomoSpriteJson);
 
 Number.prototype.map = function(in_min, in_max, out_min, out_max) {
   return ((this - in_min) * (out_max - out_min)) / (in_max - in_min) + out_min;
@@ -81,6 +92,9 @@ class App {
     this.ref = ref;
     this.WIDTH = this.ref.offsetWidth;
     this.HEIGHT = this.ref.offsetHeight;
+
+    this.time = 0;
+    this.clock = new THREE.Clock();
 
     // renderer
     this.renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -121,52 +135,114 @@ class App {
     // this.scene.add(new THREE.AxesHelper(20));
 
     this.addStageSet();
-    this.addTitle();
+    // this.addTitle();
+    // this.addMomo();
 
     //animation loop
     this.renderer.setAnimationLoop(this.render.bind(this));
   }
 
+  addMomo() {
+    this.momoGroup = new THREE.Group();
+    this.scene.add(this.momoGroup);
+
+    this.momo = new Sprite(null, MomoSprite, MomoSpriteJson.sprites, {
+      wTiles: 16,
+      hTiles: 2
+    });
+    this.momoGroup.add(this.momo);
+    console.log(this.momo);
+    this.momo
+      .newSprites()
+      .addState("wait")
+      .start();
+
+    this.momo.scale.set(50, 50, 50);
+    this.momo.position.z = 2;
+    this.momo.position.x = -65;
+    this.momo.position.y = -20;
+  }
+
   addTitle() {
     this.titleGroup = new THREE.Group();
     this.scene.add(this.titleGroup);
-    new THREE.TextureLoader().load(Rosace, texture => {
-      // texture.anisotropy = 0;
-      texture.magFilter = THREE.NearestFilter;
-      texture.minFilter = THREE.NearestFilter;
-      let geometryR = new THREE.PlaneGeometry(
-        texture.image.width / 10,
-        texture.image.height / 10,
-        1
-      );
-      let materialR = new THREE.MeshBasicMaterial({
-        // color: 0xffff00,
-        map: texture,
-        transparent: true
-      });
-      let planeR = new THREE.Mesh(geometryR, materialR);
-      this.titleGroup.add(planeR);
-      planeR.position.z = -0.5;
-    });
 
-    new THREE.TextureLoader().load(Gradient, texture => {
-      // texture.anisotropy = 0;
-      texture.magFilter = THREE.NearestFilter;
-      texture.minFilter = THREE.NearestFilter;
-      let geometryG = new THREE.PlaneGeometry(
-        texture.image.width / 10,
-        texture.image.height / 10,
-        1
-      );
-      let materialG = new THREE.MeshBasicMaterial({
-        // color: 0xffff00,
-        map: texture,
-        transparent: true
-      });
-      let planeG = new THREE.Mesh(geometryG, materialG);
-      this.titleGroup.add(planeG);
-      planeG.position.z = -0.4;
-    });
+    let promises = [];
+    promises.push(
+      new Promise((resolve, reject) => {
+        new THREE.TextureLoader().load(Rosace, texture => {
+          // texture.anisotropy = 0;
+          texture.magFilter = THREE.NearestFilter;
+          texture.minFilter = THREE.NearestFilter;
+          let geometryR = new THREE.PlaneGeometry(
+            texture.image.width / 10,
+            texture.image.height / 10,
+            1
+          );
+          let materialR = new THREE.MeshBasicMaterial({
+            opacity: 0,
+            map: texture,
+            transparent: true
+          });
+          let planeR = new THREE.Mesh(geometryR, materialR);
+          this.titleGroup.add(planeR);
+          planeR.position.z = -0.5;
+          planeR.scale.set(0.01, 0.01, 0.01);
+          resolve(planeR);
+        });
+      })
+    );
+
+    promises.push(
+      new Promise((resolve, reject) => {
+        new THREE.TextureLoader().load(Gradient, texture => {
+          // texture.anisotropy = 0;
+          texture.magFilter = THREE.NearestFilter;
+          texture.minFilter = THREE.NearestFilter;
+          let geometryG = new THREE.PlaneGeometry(
+            texture.image.width / 10,
+            texture.image.height / 10,
+            1
+          );
+          let materialG = new THREE.MeshBasicMaterial({
+            opacity: 0,
+            map: texture,
+            transparent: true
+          });
+          let planeG = new THREE.Mesh(geometryG, materialG);
+          this.titleGroup.add(planeG);
+          planeG.position.z = 0.3;
+          planeG.scale.set(0.01, 0.01, 0.01);
+          resolve(planeG);
+        });
+      })
+    );
+
+    promises.push(
+      new Promise((resolve, reject) => {
+        new THREE.TextureLoader().load(Title, texture => {
+          // texture.anisotropy = 0;
+          texture.magFilter = THREE.NearestFilter;
+          texture.minFilter = THREE.NearestFilter;
+          let geometryT = new THREE.PlaneGeometry(
+            texture.image.width / 6,
+            texture.image.height / 6,
+            1
+          );
+          let materialT = new THREE.MeshBasicMaterial({
+            opacity: 0,
+            map: texture,
+            transparent: true
+          });
+          let planeT = new THREE.Mesh(geometryT, materialT);
+          this.titleGroup.add(planeT);
+          planeT.position.z = 1;
+          planeT.scale.set(0.01, 0.01, 0.01);
+          resolve(planeT);
+        });
+      })
+    );
+    return promises;
   }
 
   addStageSet() {
@@ -207,6 +283,11 @@ class App {
   }
 
   render() {
+    const delta = this.clock.getDelta() * 5000;
+    this.time += delta;
+    if (this.momo) {
+      this.momo.update(delta);
+    }
     this.renderer.render(this.scene, this.camera);
   }
 
@@ -344,13 +425,92 @@ export default {
         });
       }
     },
-    triggerFracturePiece() {},
+    appearToTitle() {
+      console.log("appearToTitle");
+      Promise.all(this.app.addTitle()).then(meshes => {
+        let tl = new TimelineMax();
+        tl.delay(1)
+          .add("titleAppear", 0)
+          .add("titleDisappear", 3)
+          .to(
+            meshes[2].scale,
+            0.5,
+            {
+              ease: Power4.easeOut,
+              x: 1,
+              y: 1,
+              z: 1
+            },
+            "titleAppear"
+          )
+          .to(
+            meshes[2].material,
+            0.5,
+            {
+              ease: Power4.easeOut,
+              // delay: -0.5,
+              opacity: 1
+            },
+            "titleAppear"
+          )
+          .to(
+            [meshes[0].scale, meshes[1].scale],
+            0.5,
+            {
+              ease: Power4.easeOut,
+              delay: 0.2,
+              x: 1,
+              y: 1,
+              z: 1
+            },
+            "titleAppear"
+          )
+          .to(
+            [meshes[0].material, meshes[1].material],
+            0.5,
+            {
+              ease: Power4.easeOut,
+              delay: 0.2,
+              opacity: 1
+            },
+            "titleAppear"
+          )
+          .to(
+            [meshes[0].scale, meshes[1].scale, meshes[2].scale],
+            0.5,
+            {
+              ease: Power4.easeOut,
+              x: 0.001,
+              y: 0.001,
+              z: 0.001
+            },
+            "titleDisappear"
+          )
+          .to(
+            [meshes[0].material, meshes[1].material, meshes[2].material],
+            0.5,
+            {
+              ease: Power4.easeOut,
+              opacity: 0
+            },
+            "titleDisappear"
+          )
+          .to(this.$refs.intro.$refs.tuto, 1, {
+            ease: Power4.easeOut,
+            opacity: 1
+          });
+      });
+      this.app.addMomo();
+    },
     nextFracture() {
       this.currentStep = 0;
       this.currentFracture++;
       this.fractureEnded = false;
       this.resetUI();
-      this.$refs.intro.launchCountdown()
+      this.launchCountdown();
+    },
+    launchCountdown() {
+      this.$refs.intro.launchCountdown();
     },
     nextStep() {
       if (this.currentStep === this.controls.length - 1) {
@@ -408,7 +568,6 @@ export default {
       });
     },
     cancelFracture() {
-      console.log('cancel')
       if (this.gameModel[this.currentFracture]) {
         let fragments = this.gameModel[this.currentFracture].fragments;
         this.app.spread(fragments);
@@ -424,9 +583,8 @@ export default {
         }
         this.currentStep = 0;
 
-        
         //STOP la fracture vient de se cancel -> ecran TODO
-        this.$refs.intro.launchCountdown()
+        this.launchCountdown();
         // this.startKeyPressInterval();
         //STOP
         this.resetUI();
@@ -434,7 +592,6 @@ export default {
       // this.currentFracture--
     },
     startFracture() {
-      console.log("startFracture");
       this.isMiniGameStarted = true;
       this.resetUI();
       this.startKeyPressInterval();
@@ -542,6 +699,7 @@ export default {
   mounted() {
     this.init();
     window.addEventListener("keydown", this.onKeyPress.bind(this));
+    this.appearToTitle();
   },
   beforeDestroy() {
     window.removeEventListener("keydown", this.onKeyPress.bind(this));
@@ -550,6 +708,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import "~assets/scss/main.scss";
 $border: 3px;
 #kintsugi {
   height: 680px;
@@ -566,7 +725,7 @@ $border: 3px;
     top: 0px;
     left: 0px;
     color: #fff;
-    background-color: #000;
+    background-color: $black;
   }
 
   #canvas {
@@ -584,12 +743,14 @@ $border: 3px;
     width: 100%;
     display: flex;
     flex-direction: column;
+    opacity: 0;
 
     .container {
       display: flex;
       flex-direction: column;
       margin: auto;
       .keys {
+        opacity: 0;
         // background: green;
         // width: 100%;
         display: flex;
@@ -622,7 +783,7 @@ $border: 3px;
             border-radius: 100%;
             position: relative;
             &.current {
-              margin: 0 76px;
+              margin: 0 48px;
 
               .circle {
                 position: absolute;
@@ -714,7 +875,7 @@ $border: 3px;
             }
 
             &.next {
-              border: $border #000 solid;
+              border: $border $black solid;
               width: 60px;
               height: 60px;
               background: #fff;
@@ -753,11 +914,11 @@ $border: 3px;
           top: calc(50% - 2px);
           height: $border;
           width: 100%;
-          background-color: #000;
+          background-color: $black;
         }
 
         .step {
-          margin: 0 16px;
+          margin: 0 20px;
           display: flex;
           position: relative;
           .border {
@@ -767,7 +928,7 @@ $border: 3px;
             left: 0px;
             position: absolute;
             z-index: -1;
-            background-color: #000;
+            background-color: $black;
             border-radius: 100%;
 
             // transform: scale(1.2);
@@ -781,7 +942,7 @@ $border: 3px;
           //   left: 0px;
           //   position: absolute;
           //   z-index: -1;
-          //   background-color: #000;
+          //   background-color: $black;
           //   border-radius: 100%;
           //   transform: scale(1.2);
           // }
@@ -798,7 +959,7 @@ $border: 3px;
             top: -4px;
             height: 20px;
             width: 20px;
-            border: $border #000 solid;
+            border: $border $black solid;
             border-radius: 100%;
             position: relative;
             background-color: #fff;
@@ -821,7 +982,7 @@ $border: 3px;
             .point {
               width: 4px;
               height: 4px;
-              background: #000;
+              background: $black;
               margin: auto;
               border-radius: 100%;
             }
