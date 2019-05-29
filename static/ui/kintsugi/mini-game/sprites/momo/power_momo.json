@@ -1,0 +1,23 @@
+{
+    "sprites": [{
+            "id": "loop",
+            "durationTile": "700",
+            "start": 0,
+            "end": 19
+        },
+
+        {
+            "id": "default",
+            "durationTile": "700",
+            "start": 20,
+            "end": 31
+        },
+        {
+            "id": "wait",
+            "durationTile": "700",
+            "start": 20,
+            "end": 23
+        }
+
+    ]
+}

@@ -951,6 +951,8 @@ export default {
 <style lang="scss" scoped>
 .container {
   height: 50px;
+  margin: auto;
+  display: flex;
 }
 svg {
   height: 100%;
