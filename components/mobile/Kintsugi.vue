@@ -302,5 +302,12 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
+@media screen and (orientation: portrait) {
+  // CSS applied when the device is in portrait mode
+}
+
+@media screen and (orientation: landscape) {
+  // CSS applied when the device is in landscape mode
+}
 </style>

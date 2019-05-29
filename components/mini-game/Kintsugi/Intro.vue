@@ -34,6 +34,20 @@
         <div class="inline book">try again!</div>
       </span>
     </div>
+    <div class="synchro">
+      <div class="container">
+        <div class="states">
+          <div class="momo skew">
+            <span class="stroke" v-if="momoIsReady">go?</span>
+            <span class="stroke" v-else>wait</span>
+          </div>
+          <div class="romo skew">
+            <span class="stroke" v-if="romoIsReady">Ready!</span>
+            <span class="stroke" v-else>Ready?</span>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -54,6 +68,7 @@ export default {
   methods: {
     launchCountdown() {
       this.$refs.countdown.style.opacity = "1";
+      this.countdown = 3;
       let interval = setInterval(() => {
         if (this.countdown == 0) {
           this.countdown = 4;
@@ -166,14 +181,36 @@ export default {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    // opacity: 0;
-    // display: none;
   }
-  // span.title {
   .inline {
     display: inline;
   }
-  // }
+
+  .synchro {
+    position: absolute;
+    bottom: 120px;
+    left: 0px;
+    width: 100%;
+
+    .container {
+      width: 100%;
+      display: flex;
+      flex-direction: row;
+      .states {
+        width: 100%;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        > div {
+          width: 200px;
+          display: flex;
+          span {
+            margin: auto;
+          }
+        }
+      }
+    }
+  }
 }
 </style>
 

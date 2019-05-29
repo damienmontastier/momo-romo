@@ -30,7 +30,7 @@
             </div>
           </div>
         </div>
-        <div class="steps">
+        <div class="steps" ref="steps">
           <div class="container">
             <div class="link"></div>
             <div class="step" v-for="(step,index) in controls" :key="step">
@@ -47,7 +47,7 @@
     </div>
     <div id="debug">
       <!-- <button @click="startFracture()">START</button> -->
-      <!-- <button @click="nextFracture()">Next fracture</button> -->
+      <button @click="nextFracture()">Next fracture</button>
       <!-- <div>{{fractureEnded}}</div> -->
       <button @click="launchCountdown()">START coutdown</button>
       <!-- <button @click="nextStep()">Next step</button>
@@ -160,7 +160,7 @@ class App {
     this.momo.scale.set(50, 50, 50);
     this.momo.position.z = 2;
     this.momo.position.x = -65;
-    this.momo.position.y = -20;
+    this.momo.position.y = -10;
   }
 
   addTitle() {
@@ -186,7 +186,7 @@ class App {
           });
           let planeR = new THREE.Mesh(geometryR, materialR);
           this.titleGroup.add(planeR);
-          planeR.position.z = -0.5;
+          planeR.position.z = 0.1;
           planeR.scale.set(0.01, 0.01, 0.01);
           resolve(planeR);
         });
@@ -292,59 +292,64 @@ class App {
   }
 
   loadBowl() {
-    ObjectLoader.load({
-      url: "https://rocheclement.fr/momoromo/bol/_.glb",
-      format: "glb"
-    }).then(object => {
-      this.model = object.scene.children[0].children[0].children[0];
-      this.model.children.forEach((c, index) => {
-        c._originPosition = c.getWorldPosition(new THREE.Vector3());
-        c._originRotation = c.rotation;
-        c._originScale = c.scale;
+    return new Promise((resolve, reject) => {
+      ObjectLoader.load({
+        url: "https://rocheclement.fr/momoromo/bol/_.glb",
+        format: "glb"
+      }).then(object => {
+        this.model = object.scene.children[0].children[0].children[0];
+        this.model.scale.set(0.00001, 0.00001, 0.00001);
+        this.model.children.forEach((c, index) => {
+          c._originPosition = c.getWorldPosition(new THREE.Vector3());
+          c._originRotation = c.rotation;
+          c._originScale = c.scale;
 
-        if (index === 0) {
-          c.position.add(new THREE.Vector3(-3.952, 1.889, 0));
-          c.rotation.set(0, 0, THREE.Math.degToRad(29.7));
-        } else if (index === 1) {
-          c.position.add(new THREE.Vector3(21.144, 15.423, 0));
-          c.rotation.set(0, 0, THREE.Math.degToRad(-18.05));
-        } else if (index === 2) {
-          c.position.add(new THREE.Vector3(-12.159, 19.624, 0));
-          c.rotation.set(0, 0, THREE.Math.degToRad(-21.57));
-        } else if (index === 3) {
-          c.position.add(new THREE.Vector3(11.707, 27.608, 0));
-          c.rotation.set(0, 0, THREE.Math.degToRad(12.69));
-        }
-        // c.position.multiplyScalar(3);
-        c._maxPosition = c.position.clone();
-        c._maxRotation = c.rotation.clone();
-        // c.children[1].rotation.z = THREE.Math.degToRad(index*10)
-      });
-
-      //fragments
-      this.fragments = [];
-      this.fragments.push(this.model.getObjectByName("bowlpart_0"));
-      this.fragments.push(this.model.getObjectByName("bowlpart_1"));
-      this.fragments.push(this.model.getObjectByName("bowlpart_2"));
-      this.fragments.push(this.model.getObjectByName("bowlpart_3"));
-      // console.log(fragments)
-
-      //fractures
-      this.fractures = [];
-      this.fractures.push(this.model.getObjectByName("fracture_1"));
-      this.fractures.push(this.model.getObjectByName("fracture_2"));
-      this.fractures.push(this.model.getObjectByName("fracture_3"));
-      // console.log(fractures)
-
-      this.fractures.forEach(fracture => {
-        fracture.children.forEach(piece => {
-          piece.material.color.set(new THREE.Color(0xff0000));
-          // console.log(piece)
+          if (index === 0) {
+            c.position.add(new THREE.Vector3(-3.952, 1.889, 0));
+            c.rotation.set(0, 0, THREE.Math.degToRad(29.7));
+          } else if (index === 1) {
+            c.position.add(new THREE.Vector3(21.144, 15.423, 0));
+            c.rotation.set(0, 0, THREE.Math.degToRad(-18.05));
+          } else if (index === 2) {
+            c.position.add(new THREE.Vector3(-12.159, 19.624, 0));
+            c.rotation.set(0, 0, THREE.Math.degToRad(-21.57));
+          } else if (index === 3) {
+            c.position.add(new THREE.Vector3(11.707, 27.608, 0));
+            c.rotation.set(0, 0, THREE.Math.degToRad(12.69));
+          }
+          // c.position.multiplyScalar(3);
+          c._maxPosition = c.position.clone();
+          c._maxRotation = c.rotation.clone();
+          // c.children[1].rotation.z = THREE.Math.degToRad(index*10)
         });
-      });
 
-      this.scene.add(this.model);
-      this.loaded = true;
+        //fragments
+        this.fragments = [];
+        this.fragments.push(this.model.getObjectByName("bowlpart_0"));
+        this.fragments.push(this.model.getObjectByName("bowlpart_1"));
+        this.fragments.push(this.model.getObjectByName("bowlpart_2"));
+        this.fragments.push(this.model.getObjectByName("bowlpart_3"));
+        // console.log(fragments)
+
+        //fractures
+        this.fractures = [];
+        this.fractures.push(this.model.getObjectByName("fracture_1"));
+        this.fractures.push(this.model.getObjectByName("fracture_2"));
+        this.fractures.push(this.model.getObjectByName("fracture_3"));
+        // console.log(fractures)
+
+        this.fractures.forEach(fracture => {
+          fracture.children.forEach(piece => {
+            piece.material.color.set(new THREE.Color(0xff0000));
+            // console.log(piece)
+          });
+        });
+
+        this.scene.add(this.model);
+        this.model.position.z = 0.2;
+        this.loaded = true;
+        resolve(this.model);
+      });
     });
   }
 
@@ -433,7 +438,7 @@ export default {
     init() {
       this.app = new App();
       this.app.init(this.$refs.canvas);
-      this.app.loadBowl();
+      // this.app.loadBowl();
       this.createSocketEvents();
     },
     createSocketEvents() {
@@ -452,8 +457,13 @@ export default {
       }
     },
     appearToTitle() {
-      console.log("appearToTitle");
-      Promise.all(this.app.addTitle()).then(meshes => {
+      let promises = [];
+      this.app.addTitle().forEach(promise => {
+        promises.push(promise);
+      });
+      promises.push(this.app.loadBowl());
+      Promise.all(promises).then(meshes => {
+        console.log("model", meshes);
         let tl = new TimelineMax();
         tl.delay(1)
           .add("titleAppear", 0)
@@ -476,6 +486,18 @@ export default {
               ease: Power4.easeOut,
               // delay: -0.5,
               opacity: 1
+            },
+            "titleAppear"
+          )
+          .to(
+            this.app.model.scale,
+            0.5,
+            {
+              ease: Power4.easeOut,
+              // delay: -0.5,
+              x: 1,
+              y: 1,
+              z: 1
             },
             "titleAppear"
           )
@@ -529,6 +551,10 @@ export default {
       this.app.addMomo();
     },
     nextFracture() {
+      this.runningInterval = 0;
+      if (this.tweening) {
+        this.tweening.kill();
+      }
       this.currentStep = 0;
       this.currentFracture++;
       this.fractureEnded = false;
@@ -536,11 +562,13 @@ export default {
       this.launchCountdown();
     },
     launchCountdown() {
+      this.$refs.keys.style.opacity = "0";
+      this.$refs.steps.style.opacity = "1";
       this.$refs.intro.launchCountdown();
     },
     nextStep() {
       if (this.currentStep === this.controls.length - 1) {
-        console.log("stop");
+        console.log("next step");
         this.launchStep();
         this.currentStep++;
         this.fractureEnded = true;
@@ -607,6 +635,10 @@ export default {
             }
           });
         }
+        this.runningInterval = 0;
+        if (this.tweening) {
+          this.tweening.kill();
+        }
         this.currentStep = 0;
 
         //STOP la fracture vient de se cancel -> ecran TODO
@@ -618,6 +650,8 @@ export default {
       // this.currentFracture--
     },
     startFracture() {
+      console.log(this.$refs.keys);
+      this.$refs.keys.style.opacity = "1";
       this.isMiniGameStarted = true;
       this.resetUI();
       this.startKeyPressInterval();
@@ -676,8 +710,8 @@ export default {
                   this.$refs.svgs.style.opacity = "0";
                 }
               });
-          } else {
-            console.log("wrong");
+          } else if (this.runningInterval > 0) {
+            console.log("wrong key");
             this.cancelFracture();
           }
         }
@@ -725,7 +759,7 @@ export default {
   mounted() {
     this.init();
     window.addEventListener("keydown", this.onKeyPress.bind(this));
-    // this.appearToTitle();
+    this.appearToTitle();
   },
   beforeDestroy() {
     window.removeEventListener("keydown", this.onKeyPress.bind(this));
@@ -769,14 +803,14 @@ $border: 3px;
     width: 100%;
     display: flex;
     flex-direction: column;
-    opacity: 0;
+    // opacity: 0;
 
     .container {
       display: flex;
       flex-direction: column;
       margin: auto;
       .keys {
-        // opacity: 0;
+        opacity: 0;
         // background: green;
         // width: 100%;
         display: flex;
@@ -921,6 +955,7 @@ $border: 3px;
     }
 
     .steps {
+      opacity: 0;
       margin-bottom: 32px;
       // background: yellow;
       //   width: 100%;
