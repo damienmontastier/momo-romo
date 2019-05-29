@@ -1,0 +1,29 @@
+<template>
+  <div id="portrait">return fdp</div>
+</template>
+
+<script>
+export default {};
+</script>
+
+<style lang="scss" scoped>
+#portrait {
+  height: 100vh;
+  width: 100vw;
+  z-index: 100;
+  position: absolute;
+  left: 0px;
+  top: 0px;
+}
+@media screen and (orientation: portrait) {
+  // CSS applied when the device is in portrait mode
+  #portrait {
+    background: red;
+  }
+}
+
+@media screen and (orientation: landscape) {
+  // CSS applied when the device is in landscape mode
+  display: none;
+}
+</style>

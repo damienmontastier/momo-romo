@@ -1,5 +1,6 @@
 <template>
   <div id="default">
+    <portrait v-if="this.$device.isMobile"/>
     <nuxt/>
     <debugger id="debugger" v-if="$route.name != 'editor'"></debugger>
   </div>
@@ -7,9 +8,11 @@
 
 <script>
 import Debugger from "@/components/debugger/Debugger";
+import Portrait from "@/components/Portrait";
 export default {
   components: {
-    Debugger
+    Debugger,
+    Portrait
   },
   mounted() {}
 };

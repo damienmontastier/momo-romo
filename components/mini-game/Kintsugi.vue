@@ -86,6 +86,7 @@ Number.prototype.map = function(in_min, in_max, out_min, out_max) {
 class App {
   constructor() {
     this.loaded = false;
+    window.addEventListener("resize", this.onWindowResize.bind(this));
   }
 
   init(ref) {
@@ -735,6 +736,11 @@ export default {
           // this.runningInterval = this.interval;
         }
       });
+    },
+    onWindowResize() {
+      this.camera.aspect = window.innerWidth / window.innerHeight;
+      this.camera.updateProjectionMatrix();
+      this.renderer.setSize(window.innerWidth, window.innerHeight);
     }
   },
   computed: {
