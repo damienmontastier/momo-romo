@@ -405,6 +405,13 @@ class App {
     piece.triggered = true;
     piece.material.color.set(0x00ff00);
   }
+
+  onWindowResize() {
+    console.log("resize");
+    this.camera.aspect = window.innerWidth / window.innerHeight;
+    this.camera.updateProjectionMatrix();
+    this.renderer.setSize(window.innerWidth, window.innerHeight);
+  }
 }
 
 export default {
@@ -736,11 +743,6 @@ export default {
           // this.runningInterval = this.interval;
         }
       });
-    },
-    onWindowResize() {
-      this.camera.aspect = window.innerWidth / window.innerHeight;
-      this.camera.updateProjectionMatrix();
-      this.renderer.setSize(window.innerWidth, window.innerHeight);
     }
   },
   computed: {
