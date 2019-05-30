@@ -99,10 +99,10 @@ export default class Sprite extends THREE.Object3D {
 
     setOffset() {
         // console.log(this.currentTile)
-        let indexRow = Math.floor(this.currentTile / this.hTiles);
-        let indexColumn = this.currentTile % this.hTiles;
+        let indexRow = Math.floor(this.currentTile / this.wTiles);
+        let indexColumn = this.currentTile % this.wTiles;
 
-        // console.log(indexRow,indexColumn)
+        // console.log(Math.floor(this.currentTile / this.wTiles));
         this.uniforms.offset.value.x = indexColumn;
         this.uniforms.offset.value.y = indexRow % this.hTiles;
     }

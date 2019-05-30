@@ -1,9 +1,7 @@
 <template>
-  <div>
-    <section class="container">
+  <div id="level">
       <room v-if="isRoom"></room>
       <level v-else></level>
-    </section>
   </div>
 </template>
 
@@ -54,4 +52,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+#level{
+  width: 100%;
+  height: 100%;
+}
 </style>

@@ -2,7 +2,7 @@
 @import 'fonts';
 
 body {
-  background: red;
+  // background: red;
 }
 
 html {
@@ -47,6 +47,98 @@ video {
   max-width: 100%;
 }
 
+.frame {
+  width: 90vw;
+  height: 80vh;
+  position: relative;
+  margin: 0 auto;
+  top: 50%;
+  -webkit-transform: translateY(-50%);
+  transform: translateY(-50%);
+  background: #fefbf0;
+  border: 4px solid #1f1f1f;
+}
+
 canvas {
   display: block;
+}
+
+.skew {
+  transform: skewY(-3deg);
+  display: inline-block;
+}
+
+.mobile-layout {
+  // background: url("~/static/ui/mobile/background.jpg");
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-repeat: no-repeat;
+  padding: 5%;
+}
+
+.choose {
+  top: 50%;
+  position: relative;
+  text-align: center;
+  transform: translateY(-50%);
+  width: 80%;
+  margin: 0 auto;
+
+  ul {
+    display: inline-flex;
+    align-items: center;
+    align-content: center;
+    justify-content: center;
+    margin-top: 120px;
+
+    li {
+      margin-right: 120px;
+
+      &:last-child {
+        margin-right: 0;
+      }
+    }
+  }
+
+}
+
+// SVG BUTTON STYLE
+.button-red-curved-jpn,
+.button-red-curved-en,
+.button-red-letter-center {
+  fill: $a;
+}
+
+.button-curved-jpn,
+.button-curved-en,
+.button-letter-center {
+  fill: $black;
+}
+
+.button-red-curved-jpn,
+.button-red-curved-en {
+  font-size: 22px;
+}
+
+.button-red-curved-jpn,
+.button-curved-jpn {
+  font-family: $M1-Black;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.button-red-letter-center,
+.button-letter-center {
+  font-size: 50px;
+  letter-spacing: 1px;
+  font-family: $M1-Light;
+  text-transform: uppercase;
+}
+
+.button-red-curved-en,
+.button-curved-en {
+  font-family: $Jost-Heavy;
+  letter-spacing: 1px;
+  text-transform: uppercase;
 }

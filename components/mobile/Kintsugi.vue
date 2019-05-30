@@ -15,6 +15,7 @@ import { TweenMax } from "gsap";
 
 class App {
   constructor() {
+    window.addEventListener("resize", this.onWindowResize.bind(this));
     this.loaded = false;
     this.mouse = new THREE.Vector2();
     this.raycaster = new THREE.Raycaster();
@@ -212,6 +213,13 @@ class App {
     }
     this.currentFracture = null;
   }
+
+  onWindowResize() {
+    console.log("resize");
+    this.camera.aspect = window.innerWidth / window.innerHeight;
+    this.camera.updateProjectionMatrix();
+    this.renderer.setSize(window.innerWidth, window.innerHeight);
+  }
 }
 
 export default {
@@ -302,5 +310,12 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
+@media screen and (orientation: portrait) {
+  // CSS applied when the device is in portrait mode
+}
+
+@media screen and (orientation: landscape) {
+  // CSS applied when the device is in landscape mode
+}
 </style>
