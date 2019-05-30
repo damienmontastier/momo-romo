@@ -21,11 +21,11 @@
     </div>
     <div id="bottom">
       <div id="desktop">
-        <div id="momo-chara"></div>
-        <div id="keyboard-indicator" v-if="!isSynchro"></div>
+        <div id="momo-chara">{{mobileReady}}</div>
+        <div id="keyboard-indicator" v-if="!isSynchro && !mobileReady"></div>
       </div>
       <div id="mobile" v-if="qrcode">
-        <div id="mobile-container" v-if="!isSynchro">
+        <div id="mobile-container" v-if="!isSynchro && !mobileReady">
           <div>
             <a :href="url">{{url}}</a>
           </div>
@@ -84,6 +84,7 @@ export default {
   computed: {
     ...mapState({
       isSynchro: state => state.synchro.isSynchro,
+      mobileReady: state => state.synchro.mobileReady,
       roomID: state => state.synchro.roomID,
       url: state => state.synchro.url
     })
@@ -91,6 +92,9 @@ export default {
   watch: {
     roomID() {
       this.generateQRCode();
+    },
+    mobileReady(value) {
+      console.log(value)
     }
   }
 };
@@ -128,7 +132,7 @@ export default {
 
       .center {
         margin: 0 auto;
-        max-width: 65%;
+        max-width: 70%;
         display: flex;
         flex-direction: column;
       }

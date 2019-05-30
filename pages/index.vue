@@ -43,7 +43,6 @@ export default {
   methods: {
     increment() {
       if (this.value === this.components.length - 1) {
-        console.log("SYNCHRO");
         this.$router.push("/synchro");
       } else {
         this.value++;

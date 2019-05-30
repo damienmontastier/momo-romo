@@ -20,16 +20,25 @@ import { mapGetters, mapMutations, mapState, mapActions } from "vuex";
 import synchedTitle from "@/components/mobile/svg/synched";
 
 export default {
+  data() {
+    return {
+      startCoord: { x: 0, y: 0 },
+      endCoord: { x: 0, y: 0 }
+    };
+  },
   components: {
     synchedTitle
   },
   computed: {
     ...mapState({
-      isSynchro: state => state.synchro.isSynchro
+      isSynchro: state => state.synchro.isSynchro,
+      mobileReady: state => state.synchro.mobileReady
     })
   },
   mounted() {
     if (this.$device.isMobileOrTablet) {
+      window.addEventListener("touchstart", this.handleStart.bind(this));
+      window.addEventListener("touchend", this.handleEnd.bind(this));
       this.connect({
         device: this.$device.isMobileOrTablet,
         roomID: this.$device.isMobileOrTablet ? this.$route.params.level : null
@@ -41,7 +50,34 @@ export default {
   methods: {
     ...mapActions({
       connect: "synchro/connect"
-    })
+    }),
+    ...mapMutations({
+      setMobileReady: "synchro/setMobileReady"
+    }),
+    handleStart(event) {
+      this.startCoord.x = event.touches[0].clientX;
+      this.startCoord.y = event.touches[0].clientY;
+    },
+    handleEnd(event) {
+      this.endCoord.x = event.changedTouches[0].clientX;
+      this.endCoord.y = event.changedTouches[0].clientY;
+      this.handleGesture();
+    },
+    handleGesture() {
+      let distanceY = this.startCoord.y - this.endCoord.y;
+      let distanceX = this.startCoord.x - this.endCoord.x;
+      if (
+        this.startCoord.y > this.endCoord.y &&
+        distanceX < 50 &&
+        distanceY > 80
+      ) {
+        this.setMobileReady();
+      }
+    }
+  },
+  beforeDestroy() {
+    window.removeEventListener("touchstart", this.handleStart.bind(this));
+    window.removeEventListener("touchend", this.handleEnd.bind(this));
   }
 };
 </script>
@@ -58,7 +94,7 @@ export default {
   .character-romo {
     // background-image: url('../../static/ui/romo.png')
     background-image: url("~static/ui/romo.png");
-    width: 30%;
+    width: 25%;
     height: 100px;
     background-repeat: no-repeat;
     background-size: contain;
