@@ -37,7 +37,9 @@ export default {
         x: 0,
         y: 0
       },
-      up: false
+      speed: {
+        value: 0
+      }
     };
   },
   computed: {},
@@ -49,8 +51,22 @@ export default {
     document.addEventListener("touchend", this.handleMouseUp.bind(this));
   },
   watch: {
-    speed(value) {
-      console.log(value);
+    speed: {
+      handler: value => {
+        console.log(value.value);
+  console.log(this.socket)
+        if (this.socket) {
+          this.socket.emit("custom-event", {
+            name: "coordonate-joystick",
+            in: this.roomID,
+            args: {
+              joystickCoord: this.joystickCoord,
+              speed: value.value
+            }
+          });
+        }
+      },
+      deep: true
     }
   },
   methods: {
@@ -82,8 +98,8 @@ export default {
       let angleDeg = Math.degrees(angle);
 
       let distance = Math.min(60, Math.hypot(xDiff, yDiff));
-      
-      this.speed = Math.round(map_range(distance, 0, 60, 1, 10));
+
+      this.speed.value = Math.round(map_range(distance, 0, 60, 1, 10));
 
       let xNew = distance * Math.cos(angle);
       let yNew = distance * Math.sin(angle);
@@ -91,18 +107,7 @@ export default {
       this.joystickCoord.x = map_roundToTwo(Math.cos(angle));
       this.joystickCoord.y = map_roundToTwo(-Math.sin(angle));
 
-      // console.log(this.speed, this.joystickCoord.x, this.joystickCoord.y);
-
-      if (this.socket) {
-        // this.socket.emit("custom-event", {
-        //   name: "coordonate-joystick",
-        //   in: this.roomID,
-        //   args: {
-        //     joystickCoord: this.joystickCoord,
-        //     speed: this.speed
-        //   }
-        // });
-      }
+      // console.log("mousemove", this.speed.value);
 
       this.stick.style.transform = `translate(${xNew}px, ${yNew}px)`;
 
@@ -122,7 +127,7 @@ export default {
       this.dragStart = null;
       this.currentPos = { x: 0, y: 0 };
 
-      console.log(this.speed);
+      // console.log(this.speed.value);
 
       // TweenMax.to(this.speed, 1, {
       //   value: 1
