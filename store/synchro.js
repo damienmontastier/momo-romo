@@ -9,7 +9,7 @@ export const state = () => ({
     roomID: null,
     isSynchro: false,
     serverURL: serverURL,
-    url: null
+    url: null,
 })
 
 export const getters = {
@@ -44,7 +44,6 @@ export const mutations = {
         })
 
         state.socket.on('synchro', (value) => {
-            console.log('SYNCHRO', value)
             state.isSynchro = value
         })
 
@@ -73,7 +72,7 @@ export const mutations = {
     },
     setRoomID(state, roomID) {
         state.roomID = roomID;
-    }
+    },
 }
 
 export const actions = {

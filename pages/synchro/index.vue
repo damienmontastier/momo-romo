@@ -20,12 +20,12 @@
       </div>
     </div>
     <div id="bottom">
-      <div id="desktop">
+      <div id="desktop" class="center">
         <div id="momo-chara"></div>
-        <div id="keyboard-indicator" v-if="!isSynchro"></div>
+        <div id="keyboard-animation" v-if="!isReady"></div>
       </div>
-      <div id="mobile" v-if="qrcode">
-        <div id="mobile-container" v-if="!isSynchro">
+      <div id="mobile" class="center" v-if="qrcode">
+        <div id="mobile-container" v-if="!isReady">
           <div>
             <a :href="url">{{url}}</a>
           </div>
@@ -56,7 +56,8 @@ export default {
   },
   data() {
     return {
-      qrcode: null
+      qrcode: null,
+      mobileReady: false
     };
   },
   mounted() {
@@ -64,6 +65,9 @@ export default {
       device: this.$device.isMobileOrTablet,
       // roomID: this.$device.isMobileOrTablet ? this.$route.query.id : null
       roomID: null
+    });
+    this.socket.on("mobile-ready", value => {
+      this.mobileReady = value;
     });
   },
   methods: {
@@ -82,16 +86,21 @@ export default {
     }
   },
   computed: {
+    isReady: function() {
+      return this.mobileReady && this.isSynchro;
+    },
     ...mapState({
       isSynchro: state => state.synchro.isSynchro,
       roomID: state => state.synchro.roomID,
-      url: state => state.synchro.url
+      url: state => state.synchro.url,
+      socket: state => state.synchro.socket
     })
   },
   watch: {
     roomID() {
       this.generateQRCode();
-    }
+    },
+    isReady() {}
   }
 };
 </script>
@@ -128,7 +137,7 @@ export default {
 
       .center {
         margin: 0 auto;
-        max-width: 65%;
+        max-width: 70%;
         display: flex;
         flex-direction: column;
       }
@@ -149,10 +158,7 @@ export default {
     #desktop,
     #mobile {
       width: 50%;
-      display: flex;
-      justify-content: center;
       position: relative;
-      align-items: center;
     }
 
     #desktop {
@@ -163,7 +169,7 @@ export default {
         animation: play 1.2s steps(12) infinite;
         animation-direction: reverse;
       }
-      #keyboard-indicator {
+      #keyboard-animation {
         width: 160px;
         height: 120px;
         border-radius: 45px;
