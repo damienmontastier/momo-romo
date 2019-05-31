@@ -50,9 +50,9 @@
       <button @click="nextFracture()">Next fracture</button>
       <!-- <div>{{fractureEnded}}</div> -->
       <button @click="launchCountdown()">START coutdown</button>
-      <!-- <button @click="nextStep()">Next step</button>
-      <button @click="launchStep()">Start</button>
-      <button @click="cancelFracture()">Cancel</button>-->
+      <button @click="()=>{$refs.intro.setRomoReady()}">set momo ready</button>
+      <!-- <button @click="launchStep()">Start</button>
+      <button @click="cancelFracture()">Cancel</button> -->
     </div>
   </div>
 </template>
@@ -76,8 +76,6 @@ const MomoSpriteJson = require("~/static/ui/kintsugi/mini-game/sprites/momo/powe
 
 import MomoMoodSprite from "~/static/ui/kintsugi/mini-game/sprites/moods/face_momo.png";
 const MomoMoodSpriteJson = require("~/static/ui/kintsugi/mini-game/sprites/moods/face_momo.json");
-
-console.log(MomoSpriteJson);
 
 Number.prototype.map = function(in_min, in_max, out_min, out_max) {
   return ((this - in_min) * (out_max - out_min)) / (in_max - in_min) + out_min;
@@ -147,21 +145,26 @@ class App {
     this.momoGroup = new THREE.Group();
     this.scene.add(this.momoGroup);
 
-    this.momo = new Sprite(null, MomoSprite, MomoSpriteJson.sprites, {
-      wTiles: 16,
-      hTiles: 2
-    });
-    this.momoGroup.add(this.momo);
-    console.log(this.momo);
-    this.momo
-      .newSprites()
-      .addState("wait")
-      .start();
+    return new Promise((resolve,reject)=>{
+      new Sprite(MomoSprite, MomoSpriteJson.sprites, {
+        wTiles: 16,
+        hTiles: 2
+      }).then((momo)=>{
+        this.momo = momo
+        this.momo.scale.set(50, 50, 50);
+        this.momo.position.z = 2;
+        this.momo.position.x = -65;
+        this.momo.position.y = -10;
 
-    this.momo.scale.set(50, 50, 50);
-    this.momo.position.z = 2;
-    this.momo.position.x = -65;
-    this.momo.position.y = -10;
+        this.momoGroup.add(this.momo);
+        this.momo
+          .newSprites()
+          .addState("wait")
+          .start();
+      })
+      resolve()
+    })
+
   }
 
   addTitle() {
@@ -349,7 +352,7 @@ class App {
         this.scene.add(this.model);
         this.model.position.z = 0.2;
         this.loaded = true;
-        resolve(this.model);
+        resolve();
       });
     });
   }
@@ -407,7 +410,6 @@ class App {
   }
 
   onWindowResize() {
-    console.log("resize");
     this.camera.aspect = window.innerWidth / window.innerHeight;
     this.camera.updateProjectionMatrix();
     this.renderer.setSize(window.innerWidth, window.innerHeight);
@@ -461,6 +463,11 @@ export default {
             // console.log(fracture.children[params.index])
             this.app.triggerFracturePiece(fracture.children[params.index]);
           }
+          if(params.id === 'romo is ready') {
+            this.$refs.intro.setRomoReady()
+            // this.$refs.intro.romoIsReady = true
+            // console.log('romo is ready')
+          }
         });
       }
     },
@@ -470,8 +477,9 @@ export default {
         promises.push(promise);
       });
       promises.push(this.app.loadBowl());
+      promises.push(this.app.addMomo());
       Promise.all(promises).then(meshes => {
-        console.log("model", meshes);
+        console.log("3D ASSETS LOADED");
         let tl = new TimelineMax();
         tl.delay(1)
           .add("titleAppear", 0)
@@ -532,7 +540,7 @@ export default {
             "titleAppear"
           )
           .to(
-            [meshes[0].scale, meshes[1].scale, meshes[2].scale],
+            [meshes[0].scale, meshes[1].scale, meshes[2].scale,this.app.model.scale],
             0.5,
             {
               ease: Power4.easeOut,
@@ -553,10 +561,13 @@ export default {
           )
           .to(this.$refs.intro.$refs.tuto, 1, {
             ease: Power4.easeOut,
-            opacity: 1
+            opacity: 1,
+            onStart:()=>{
+              this.$refs.intro.showSynchro()
+            }
           });
       });
-      this.app.addMomo();
+      
     },
     nextFracture() {
       this.runningInterval = 0;
@@ -572,11 +583,13 @@ export default {
     launchCountdown() {
       this.$refs.keys.style.opacity = "0";
       this.$refs.steps.style.opacity = "1";
+      this.app.model.scale.set(1,1,1)
       this.$refs.intro.launchCountdown();
     },
     nextStep() {
       if (this.currentStep === this.controls.length - 1) {
         console.log("next step");
+        this.$refs.intro.$refs.isPlaying.style.opacity = "1"
         this.launchStep();
         this.currentStep++;
         this.fractureEnded = true;
@@ -629,6 +642,11 @@ export default {
         svgstep.style.opacity = "0";
       });
     },
+    tryAgain() {
+      this.$refs.keys.style.opacity = '0'
+      this.$refs.steps.style.opacity = '0'
+      this.$refs.intro.$refs.tryAgain.style.opacity = '1'
+    },
     cancelFracture() {
       if (this.gameModel[this.currentFracture]) {
         let fragments = this.gameModel[this.currentFracture].fragments;
@@ -650,7 +668,11 @@ export default {
         this.currentStep = 0;
 
         //STOP la fracture vient de se cancel -> ecran TODO
-        this.launchCountdown();
+        this.tryAgain()
+        setTimeout(()=>{
+          this.launchCountdown();
+        },2000)
+        
         // this.startKeyPressInterval();
         //STOP
         this.resetUI();
@@ -658,7 +680,6 @@ export default {
       // this.currentFracture--
     },
     startFracture() {
-      console.log(this.$refs.keys);
       this.$refs.keys.style.opacity = "1";
       this.isMiniGameStarted = true;
       this.resetUI();
