@@ -1,25 +1,43 @@
 import * as THREE from 'three'
 
 export default class Sprite extends THREE.Object3D {
-    constructor(camera, texture, json, {
+    constructor(textureURL, json, {
         wTiles,
         hTiles
     }) {
         super()
-        this.camera = camera
-        this.texture = new THREE.TextureLoader().load(texture);
-        this.texture.wrapS = this.texture.wrapT = THREE.RepeatWrapping;
+        // this.texture = new THREE.TextureLoader().load(texture);
+        this.textureURL = textureURL
         this.json = json;
-
         this.wTiles = wTiles;
         this.hTiles = hTiles;
 
-        this.texture.flipY = true
-        this.texture.flipX = true
-        this.init()
+        return new Promise((resolve,reject)=>{
+            this.loadTexture()
+            .then((texture)=>{
+                this.texture = texture
+                this.texture.wrapS = this.texture.wrapT = THREE.RepeatWrapping;
+                this.texture.flipY = true
+                this.texture.flipX = true
+                this.init()
+                resolve(this)
+            })
+        })
+    }
+
+    loadTexture() {
+        let loader = new THREE.TextureLoader();
+
+        return new Promise((resolve,reject)=>{
+            loader.load(this.textureURL,(texture)=>{
+                resolve(texture)
+            })
+        })
+
     }
 
     init() {
+        this.loaded = true
         this.currentTile = 0;
         this.currentTime = 0;
         this.durationPerTile = 500;
@@ -122,9 +140,6 @@ export default class Sprite extends THREE.Object3D {
     }
 
     update(delta) {
-        if (this.camera) {
-            this.mesh.lookAt(this.camera.position)
-        }
 
         this.currentTime += delta;
         if (this.currentTime >= this.durationPerTile) {

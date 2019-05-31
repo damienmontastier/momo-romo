@@ -950,7 +950,7 @@ export default {
 
 <style lang="scss" scoped>
 .container {
-  height: 50px;
+  height: 100%;
   margin: auto;
   display: flex;
 }
