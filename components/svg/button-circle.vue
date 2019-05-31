@@ -66,8 +66,10 @@ export default {
 @import "~assets/scss/main.scss";
 
 svg {
-  width: 150px;
-  height: 150px;
+  // width: 150px;
+  // height: 150px;
+  width: 100%;
+  height: 100%;
 }
 
 #text,

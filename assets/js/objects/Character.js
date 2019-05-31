@@ -34,20 +34,26 @@ export default class Character {
             wait: false
         }
 
-        this.addSprite()
-
         this.KeyboardManager = new KeyboardManager(this.onInput.bind(this));
+
+        return new Promise((resolve, reject) => {
+            this.addSprite().then((momo) => {
+                this.momo = momo
+                resolve(this)
+            })
+        });
     }
 
     addSprite() {
-        this.momo = new Sprite(null, MomoSprite, MomoJson.sprites, {
-            wTiles: 8,
-            hTiles: 8
-        })
-
-        this.momo.body = this.body
-
-        return this.momo
+        return new Promise((resolve, reject) => {
+            new Sprite(MomoSprite, MomoJson.sprites, {
+                wTiles: 8,
+                hTiles: 8
+            }).then((momo) => {
+                momo.body = this.body
+                resolve(momo)
+            })
+        });
     }
 
     addBody() {

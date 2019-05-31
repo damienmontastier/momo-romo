@@ -16,9 +16,7 @@ export default class Level {
             x: 0,
             y: 0
         }
-        this.speed = {
-            value: 0
-        }
+        this.speed = 0
 
         this.socket = store.state.synchro.socket
 
@@ -26,15 +24,8 @@ export default class Level {
             this.socket.on("coordonate-joystick", t => {
                 this.coordinate.x = t.joystickCoord.x
                 this.coordinate.y = t.joystickCoord.y
-                // if (this.handleUp) {
-                //     TweenMax.to(this.speed, 1, {
-                //         value: 0,
-                //         ease: Power4.easeInOut
-                //     })
-                // } else {
-                console.log(t.speed)
-                this.speed.value = t.speed
-                // }
+
+                this.speed = t.speed
             });
 
         }
@@ -53,9 +44,11 @@ export default class Level {
         });
         this.romo = new THREE.Mesh(geometry, material);
 
-        this.character = new Character()
-
-        this.momo = this.character.momo
+        new Character().then((character) => {
+            this.character = character
+            this.momo = character.momo
+            this.addCharactere()
+        })
 
         this.eventAnimate = new Event('launchAnimated');
 
@@ -133,7 +126,6 @@ export default class Level {
             this.addPlatforms(platform)
         });
 
-        this.addCharactere()
     }
 
     addFixedProp(props) {
@@ -217,27 +209,27 @@ export default class Level {
         window.dispatchEvent(this.eventMinigame);
     }
 
-    nextToAnimated(value, elementId) {
-        if (value && !this.isAnimatedLaunched) {
-            this.eventAnimate.props[elementId] = value
-            this.isAnimatedLaunched = true
-        } else {
-            this.eventAnimate.props[elementId] = value
-            this.isAnimatedLaunched = false
-        }
+    // nextToAnimated(value, elementId) {
+    //     if (value && !this.isAnimatedLaunched) {
+    //         this.eventAnimate.props[elementId] = value
+    //         this.isAnimatedLaunched = true
+    //     } else {
+    //         this.eventAnimate.props[elementId] = value
+    //         this.isAnimatedLaunched = false
+    //     }
 
-        // console.log(this.eventAnimate.props)
+    //     // console.log(this.eventAnimate.props)
 
-        // if (value && !this.isAnimatedLaunched) {
-        //     this.isAnimatedLaunched = true
-        //     this.eventAnimate.props[elementId] = value
-        // } else {
-        //     this.isAnimatedLaunched = value
-        //     this.eventAnimate.props[elementId] = false
-        // }
+    //     // if (value && !this.isAnimatedLaunched) {
+    //     //     this.isAnimatedLaunched = true
+    //     //     this.eventAnimate.props[elementId] = value
+    //     // } else {
+    //     //     this.isAnimatedLaunched = value
+    //     //     this.eventAnimate.props[elementId] = false
+    //     // }
 
-        window.dispatchEvent(this.eventAnimate);
-    }
+    //     window.dispatchEvent(this.eventAnimate);
+    // }
 
     reset() {
         this.scene = null
@@ -246,18 +238,21 @@ export default class Level {
     render() {
         // this.camera.lookAt(this.camera.position)
 
-        this.camera.position.set(this.momo.position.x, 2, 20)
 
         this.cannonDebugRenderer.update()
 
-        this.character.update()
 
-        // console.log(this.romo.position.x)
+        if (this.character) {
+            this.character.update()
+
+            this.camera.position.set(this.momo.position.x, 2, 20)
+        }
+
 
         if (this.socket) {
             if (this.speed) {
-                this.romo.position.x += (this.coordinate.x / 50) * this.speed.value
-                this.romo.position.y += (this.coordinate.y / 50) * this.speed.value
+                this.romo.position.x += (this.coordinate.x / 100) * this.speed
+                this.romo.position.y += (this.coordinate.y / 100) * this.speed
             }
         }
 
@@ -269,15 +264,15 @@ export default class Level {
             }
         }
 
-        if (this.checkpointAnimatedGroup) {
-            this.checkpointAnimatedGroup.forEach((element) => {
-                if (this.character.body.position.x >= element.position.x - 2 && this.character.body.position.x <= element.position.x + 2) {
-                    this.nextToAnimated(true, element._id)
-                } else {
-                    this.nextToAnimated(false, element._id)
-                }
-            });
-        }
+        // if (this.checkpointAnimatedGroup) {
+        //     this.checkpointAnimatedGroup.forEach((element) => {
+        //         if (this.character.body.position.x >= element.position.x - 2 && this.character.body.position.x <= element.position.x + 2) {
+        //             this.nextToAnimated(true, element._id)
+        //         } else {
+        //             this.nextToAnimated(false, element._id)
+        //         }
+        //     });
+        // }
 
         this.physicParams.update()
 

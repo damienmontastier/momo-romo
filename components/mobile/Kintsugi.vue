@@ -1,6 +1,7 @@
 <template>
   <div id="kintsugi">
     <!-- <div class="title">kintsugi mobile mini game {{roomID}}</div> -->
+    <is-ready/>
     <div ref="canvas" id="canvas"></div>
     <div id="debug"></div>
   </div>
@@ -12,6 +13,7 @@ import OrbitControls from "orbit-controls-es6";
 import ObjectLoader from "~/assets/js/utils/ObjectLoader";
 import { mapState } from "vuex";
 import { TweenMax } from "gsap";
+import isReady from './isReady'
 
 class App {
   constructor() {
@@ -223,7 +225,6 @@ class App {
 }
 
 export default {
-  head: {},
   data() {
     return {
       app: new App(),
@@ -306,16 +307,12 @@ export default {
     onMouseUp(event) {
       this.isMouseDown = false;
     }
+  },
+  components: {
+    isReady
   }
 };
 </script>
 
 <style lang="scss">
-@media screen and (orientation: portrait) {
-  // CSS applied when the device is in portrait mode
-}
-
-@media screen and (orientation: landscape) {
-  // CSS applied when the device is in landscape mode
-}
 </style>

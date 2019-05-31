@@ -37,9 +37,7 @@ export default {
         x: 0,
         y: 0
       },
-      speed: {
-        value: 0
-      }
+      speed: 0
     };
   },
   computed: {},
@@ -51,22 +49,9 @@ export default {
     document.addEventListener("touchend", this.handleMouseUp.bind(this));
   },
   watch: {
-    speed: {
-      handler: value => {
-        console.log(value.value);
-  console.log(this.socket)
-        if (this.socket) {
-          this.socket.emit("custom-event", {
-            name: "coordonate-joystick",
-            in: this.roomID,
-            args: {
-              joystickCoord: this.joystickCoord,
-              speed: value.value
-            }
-          });
-        }
-      },
-      deep: true
+    speed(value) {
+      this.modifyValue(value);
+      console.log(this.joystickCoord.x)
     }
   },
   methods: {
@@ -99,15 +84,13 @@ export default {
 
       let distance = Math.min(60, Math.hypot(xDiff, yDiff));
 
-      this.speed.value = Math.round(map_range(distance, 0, 60, 1, 10));
+      this.speed = Math.round(map_range(distance, 0, 60, 1, 10));
 
       let xNew = distance * Math.cos(angle);
       let yNew = distance * Math.sin(angle);
 
       this.joystickCoord.x = map_roundToTwo(Math.cos(angle));
       this.joystickCoord.y = map_roundToTwo(-Math.sin(angle));
-
-      // console.log("mousemove", this.speed.value);
 
       this.stick.style.transform = `translate(${xNew}px, ${yNew}px)`;
 
@@ -127,11 +110,22 @@ export default {
       this.dragStart = null;
       this.currentPos = { x: 0, y: 0 };
 
-      // console.log(this.speed.value);
-
-      // TweenMax.to(this.speed, 1, {
-      //   value: 1
-      // });
+      TweenMax.to(this, 0.25, {
+        speed: 0,
+        ease: Power4.easeInOut
+      });
+    },
+    modifyValue(value) {
+      if (this.socket) {
+        this.socket.emit("custom-event", {
+          name: "coordonate-joystick",
+          in: this.roomID,
+          args: {
+            joystickCoord: this.joystickCoord,
+            speed: value
+          }
+        });
+      }
     }
   },
   computed: {
