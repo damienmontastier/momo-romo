@@ -38,12 +38,12 @@
       <div class="container">
         <div class="states">
           <div class="momo skew">
-            <span class="stroke" v-if="momoIsReady">go?</span>
-            <span class="stroke" v-else>wait</span>
+            <!-- <span class="stroke" v-if="momoIsReady">go?</span>
+            <span class="stroke" v-else>wait</span> -->
           </div>
           <div class="romo skew">
-            <span class="stroke" v-if="romoIsReady">Ready!</span>
-            <span class="stroke" v-else>Ready?</span>
+            <!-- <span class="stroke" v-if="romoIsReady">Ready!</span>
+            <span class="stroke" v-else>Ready?</span> -->
           </div>
         </div>
       </div>

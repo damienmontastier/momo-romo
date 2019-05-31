@@ -1,7 +1,6 @@
 <template>
   <div v-if="components[value] != null" id="home">
     <component v-on:increment="increment" v-bind:is="components[value]"></component>
-    <!-- <button v-if="components[value] != 'chooseQuality'" @click="increment">Next (choose quality)</button> -->
   </div>
 </template>
 
@@ -43,7 +42,6 @@ export default {
   methods: {
     increment() {
       if (this.value === this.components.length - 1) {
-        console.log("SYNCHRO");
         this.$router.push("/synchro");
       } else {
         this.value++;

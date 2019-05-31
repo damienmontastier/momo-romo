@@ -1,14 +1,16 @@
 <template>
   <div id="level">
-      <room v-if="isRoom"></room>
-      <level v-else></level>
+    <component v-if="isRoom" v-on:changeComponent="changeComponent" v-bind:is="components[numberComponent]"></component>
+    <Level v-else></Level>
   </div>
 </template>
 
 <script>
 import { mapState, mapGetters, mapMutations } from "vuex";
-import level from "@/components/level";
-import room from "@/components/room";
+import Level from "@/components/level";
+import Room from "@/components/room";
+import Wait from "@/components/wait";
+import Navigate from "@/components/navigate";
 
 export default {
   // middleware: "loadStage",
@@ -19,13 +21,17 @@ export default {
   // },
 
   components: {
-    level,
-    room
+    Level,
+    Room,
+    Navigate,
+    Wait
   },
   data: () => {
     return {
       renderComponent: true,
-      isRoom: false
+      isRoom: false,
+      components: ["room", "wait", "navigate"],
+      numberComponent: 0
     };
   },
   computed: {
@@ -41,6 +47,9 @@ export default {
     });
   },
   methods: {
+    changeComponent() {
+      this.numberComponent++;
+    },
     ...mapMutations({
       resetLoaded: "game/resetLoaded"
     })
@@ -52,7 +61,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-#level{
+#level {
   width: 100%;
   height: 100%;
 }

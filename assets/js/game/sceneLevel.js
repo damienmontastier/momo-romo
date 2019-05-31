@@ -5,9 +5,40 @@ import CANNON from 'cannon'
 import physicParams from '../physics/physicParams';
 import Character from '../objects/Character';
 import cannonDebugRenderer from '../physics/CannonDebugRenderer'
+import {
+    TweenMax,
+    Power4
+} from 'gsap';
 
 export default class Level {
-    constructor(opts) {
+    constructor(opts, store) {
+        this.coordinate = {
+            x: 0,
+            y: 0
+        }
+        this.speed = {
+            value: 0
+        }
+
+        this.socket = store.state.synchro.socket
+
+        if (this.socket) {
+            this.socket.on("coordonate-joystick", t => {
+                this.coordinate.x = t.joystickCoord.x
+                this.coordinate.y = t.joystickCoord.y
+                // if (this.handleUp) {
+                //     TweenMax.to(this.speed, 1, {
+                //         value: 0,
+                //         ease: Power4.easeInOut
+                //     })
+                // } else {
+                console.log(t.speed)
+                this.speed.value = t.speed
+                // }
+            });
+
+        }
+
         this.canvas = document.getElementById("canvas")
         this.textureAtlas = opts.textureAtlas; // textureAtlas
         this.fixedProps = opts.levelParams.props.fixed; // Fixed Props
@@ -15,6 +46,12 @@ export default class Level {
             ...opts.levelParams
         };
         this.platforms = this.levelParams.platforms
+
+        var geometry = new THREE.BoxGeometry(1, 1, 1);
+        var material = new THREE.MeshBasicMaterial({
+            color: 0x00ff00
+        });
+        this.romo = new THREE.Mesh(geometry, material);
 
         this.character = new Character()
 
@@ -128,7 +165,7 @@ export default class Level {
     }
 
     addCharactere() {
-        this.scene.add(this.momo)
+        this.scene.add(this.momo, this.romo)
         this.world.add(this.momo.body)
     }
 
@@ -214,6 +251,15 @@ export default class Level {
         this.cannonDebugRenderer.update()
 
         this.character.update()
+
+        // console.log(this.romo.position.x)
+
+        if (this.socket) {
+            if (this.speed) {
+                this.romo.position.x += (this.coordinate.x / 50) * this.speed.value
+                this.romo.position.y += (this.coordinate.y / 50) * this.speed.value
+            }
+        }
 
         if (this.minigameProps) {
             if (this.character.body.position.x >= this.minigameProps.position.x - 2 && this.character.body.position.x <= this.minigameProps.position.x + 2) {

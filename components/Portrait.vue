@@ -24,6 +24,8 @@ export default {};
 
 @media screen and (orientation: landscape) {
   // CSS applied when the device is in landscape mode
-  display: none;
+  #portrait {
+    display: none;
+  }
 }
 </style>
