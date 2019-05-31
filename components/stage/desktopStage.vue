@@ -34,10 +34,6 @@ export default {
     this.$store.dispatch("game/loadStage", this.$route.params.level);
   },
   mounted() {
-    // if (this.socket) {
-      // this.socket.on("coordonate-joystick", t => {
-      //   console.log(t);
-      // });
       this.game = new Game();
       window.addEventListener(
         "launchMiniGame",
@@ -72,7 +68,7 @@ export default {
     MiniGame
   },
   beforeDestroy() {
-    // this.game.reset();
+    this.game.reset();
   }
 };
 </script>

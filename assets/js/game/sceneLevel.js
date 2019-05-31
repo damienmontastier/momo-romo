@@ -5,6 +5,10 @@ import CANNON from 'cannon'
 import physicParams from '../physics/physicParams';
 import Character from '../objects/Character';
 import cannonDebugRenderer from '../physics/CannonDebugRenderer'
+import {
+    TweenMax,
+    Power4
+} from 'gsap';
 
 export default class Level {
     constructor(opts, store) {
@@ -12,16 +16,27 @@ export default class Level {
             x: 0,
             y: 0
         }
+        this.speed = {
+            value: 0
+        }
+
         this.socket = store.state.synchro.socket
+
         if (this.socket) {
             this.socket.on("coordonate-joystick", t => {
                 this.coordinate.x = t.joystickCoord.x
                 this.coordinate.y = t.joystickCoord.y
+                // if (this.handleUp) {
+                //     TweenMax.to(this.speed, 1, {
+                //         value: 0,
+                //         ease: Power4.easeInOut
+                //     })
+                // } else {
+                console.log(t.speed)
+                this.speed.value = t.speed
+                // }
             });
-            this.socket.on("up-joystick", t => {
-                // console.log(t.handleUp)
-                this.test = t.handleUp
-            });
+
         }
 
         this.canvas = document.getElementById("canvas")
@@ -237,13 +252,12 @@ export default class Level {
 
         this.character.update()
 
+        // console.log(this.romo.position.x)
+
         if (this.socket) {
-            if (!this.test) {
-                this.romo.position.x += this.coordinate.x / 10
-                this.romo.position.y += this.coordinate.y / 10
-            } else {
-                this.romo.position.x = 0
-                this.romo.position.y = 0
+            if (this.speed) {
+                this.romo.position.x += (this.coordinate.x / 50) * this.speed.value
+                this.romo.position.y += (this.coordinate.y / 50) * this.speed.value
             }
         }
 

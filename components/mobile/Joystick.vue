@@ -12,6 +12,14 @@ Math.degrees = function(radians) {
   return (radians * 180) / Math.PI;
 };
 
+function map_range(value, low1, high1, low2, high2) {
+  return low2 + ((high2 - low2) * (value - low1)) / (high1 - low1);
+}
+
+function map_roundToTwo(num) {
+  return +(Math.round(num + "e+2") + "e-2");
+}
+
 import { mapState } from "vuex";
 import { TweenMax } from "gsap";
 import joystickArrow from "@/components/mobile/svg/joystick_arrows";
@@ -33,25 +41,17 @@ export default {
     };
   },
   computed: {},
-  watch: {
-    up(value) {
-      console.log(value);
-      this.socket.emit("custom-event", {
-        name: "up-joystick",
-        in: this.roomID,
-        args: {
-          handleUp: this.up
-        }
-      });
-    }
-  },
   mounted() {
     this.stick = this.$refs.stick;
 
-    //Mobile Events
     this.stick.addEventListener("touchstart", this.handleMouseDown.bind(this));
     document.addEventListener("touchmove", this.handleMouseMove.bind(this));
-    this.stick.addEventListener("touchend", this.handleMouseUp.bind(this));
+    document.addEventListener("touchend", this.handleMouseUp.bind(this));
+  },
+  watch: {
+    speed(value) {
+      console.log(value);
+    }
   },
   methods: {
     handleMouseDown(event) {
@@ -70,8 +70,6 @@ export default {
     handleMouseMove(event) {
       if (this.dragStart === null) return;
 
-      this.up = false;
-
       if (event.changedTouches) {
         event.clientX = event.changedTouches[0].clientX;
         event.clientY = event.changedTouches[0].clientY;
@@ -84,21 +82,26 @@ export default {
       let angleDeg = Math.degrees(angle);
 
       let distance = Math.min(60, Math.hypot(xDiff, yDiff));
+      
+      this.speed = Math.round(map_range(distance, 0, 60, 1, 10));
 
       let xNew = distance * Math.cos(angle);
       let yNew = distance * Math.sin(angle);
 
-      this.joystickCoord.x = Math.cos(angle);
-      this.joystickCoord.y = -Math.sin(angle);
+      this.joystickCoord.x = map_roundToTwo(Math.cos(angle));
+      this.joystickCoord.y = map_roundToTwo(-Math.sin(angle));
+
+      // console.log(this.speed, this.joystickCoord.x, this.joystickCoord.y);
 
       if (this.socket) {
-        this.socket.emit("custom-event", {
-          name: "coordonate-joystick",
-          in: this.roomID,
-          args: {
-            joystickCoord: this.joystickCoord
-          }
-        });
+        // this.socket.emit("custom-event", {
+        //   name: "coordonate-joystick",
+        //   in: this.roomID,
+        //   args: {
+        //     joystickCoord: this.joystickCoord,
+        //     speed: this.speed
+        //   }
+        // });
       }
 
       this.stick.style.transform = `translate(${xNew}px, ${yNew}px)`;
@@ -118,7 +121,12 @@ export default {
       });
       this.dragStart = null;
       this.currentPos = { x: 0, y: 0 };
-      this.up = true;
+
+      console.log(this.speed);
+
+      // TweenMax.to(this.speed, 1, {
+      //   value: 1
+      // });
     }
   },
   computed: {
