@@ -16,15 +16,15 @@ export default {
   data() {
     return {
       isLevelCompleted: false,
-      minigame: null,
-      coucou: null
+      minigame: null
     };
   },
   computed: {
     ...mapState({
       stage: state => state.game.stage,
       currentStageId: state => state.game.currentStageId,
-      loaded: state => state.game.loaded
+      loaded: state => state.game.loaded,
+      socket: state => state.synchro.socket
     }),
     ...mapGetters({
       currentAtlas: "game/currentAtlas"
@@ -34,22 +34,27 @@ export default {
     this.$store.dispatch("game/loadStage", this.$route.params.level);
   },
   mounted() {
-    this.game = new Game();
-    window.addEventListener(
-      "launchMiniGame",
-      e => {
-        this.minigame = e.minigame;
-      },
-      false
-    );
-    window.addEventListener(
-      "launchAnimated",
-      e => {
-        // console.log(e.props);
-        // this.coucou = e.props;
-      },
-      false
-    );
+    // if (this.socket) {
+      // this.socket.on("coordonate-joystick", t => {
+      //   console.log(t);
+      // });
+      this.game = new Game();
+      window.addEventListener(
+        "launchMiniGame",
+        e => {
+          this.minigame = e.minigame;
+        },
+        false
+      );
+      // window.addEventListener(
+      //   "launchAnimated",
+      //   e => {
+      //     // console.log(e.props);
+      //     // this.coucou = e.props;
+      //   },
+      //   false
+      // );
+    // }
   },
   watch: {
     minigame() {},
@@ -57,7 +62,7 @@ export default {
       this.game.start({
         currentLevelParams: this.stage,
         currentAltlas: this.currentAtlas
-      });
+      }, this.$store);
     }
   },
   methods: {

@@ -10,7 +10,6 @@ export const state = () => ({
     isSynchro: false,
     serverURL: serverURL,
     url: null,
-    mobileReady: false
 })
 
 export const getters = {
@@ -74,9 +73,6 @@ export const mutations = {
     setRoomID(state, roomID) {
         state.roomID = roomID;
     },
-    setMobileReady(state) {
-        state.mobileReady = true;
-    }
 }
 
 export const actions = {

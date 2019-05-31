@@ -6,14 +6,14 @@ import {
 
 export default class Game {
     constructor() {}
-    start(opts) {
+    start(opts, store) {
         this.currentLevelParams = opts.currentLevelParams
         this.currentAltlas = opts.currentAltlas
 
         this.sceneLevel = new sceneLevel({
             levelParams: this.currentLevelParams,
             textureAtlas: new TextureAtlas(this.currentAltlas)
-        })
+        }, store)
 
     }
     reset() {

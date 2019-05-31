@@ -7,7 +7,23 @@ import Character from '../objects/Character';
 import cannonDebugRenderer from '../physics/CannonDebugRenderer'
 
 export default class Level {
-    constructor(opts) {
+    constructor(opts, store) {
+        this.coordinate = {
+            x: 0,
+            y: 0
+        }
+        this.socket = store.state.synchro.socket
+        if (this.socket) {
+            this.socket.on("coordonate-joystick", t => {
+                this.coordinate.x = t.joystickCoord.x
+                this.coordinate.y = t.joystickCoord.y
+            });
+            this.socket.on("up-joystick", t => {
+                // console.log(t.handleUp)
+                this.test = t.handleUp
+            });
+        }
+
         this.canvas = document.getElementById("canvas")
         this.textureAtlas = opts.textureAtlas; // textureAtlas
         this.fixedProps = opts.levelParams.props.fixed; // Fixed Props
@@ -15,6 +31,12 @@ export default class Level {
             ...opts.levelParams
         };
         this.platforms = this.levelParams.platforms
+
+        var geometry = new THREE.BoxGeometry(1, 1, 1);
+        var material = new THREE.MeshBasicMaterial({
+            color: 0x00ff00
+        });
+        this.romo = new THREE.Mesh(geometry, material);
 
         this.character = new Character()
 
@@ -128,7 +150,7 @@ export default class Level {
     }
 
     addCharactere() {
-        this.scene.add(this.momo)
+        this.scene.add(this.momo, this.romo)
         this.world.add(this.momo.body)
     }
 
@@ -214,6 +236,16 @@ export default class Level {
         this.cannonDebugRenderer.update()
 
         this.character.update()
+
+        if (this.socket) {
+            if (!this.test) {
+                this.romo.position.x += this.coordinate.x / 10
+                this.romo.position.y += this.coordinate.y / 10
+            } else {
+                this.romo.position.x = 0
+                this.romo.position.y = 0
+            }
+        }
 
         if (this.minigameProps) {
             if (this.character.body.position.x >= this.minigameProps.position.x - 2 && this.character.body.position.x <= this.minigameProps.position.x + 2) {

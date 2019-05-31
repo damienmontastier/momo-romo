@@ -5,19 +5,19 @@
       <synchedTitle></synchedTitle>
     </div>
     <div class="character-romo"></div>
-    <div>
+    <div class="center-horizontaly">
       <p class="book skew">
         <span class="semi">Swipe up</span> to join
         <br>Momo in his quest.
       </p>
     </div>
-    <!-- SYNCHRO: {{isSynchro}} -->
   </div>
 </template>
 
 <script>
 import { mapGetters, mapMutations, mapState, mapActions } from "vuex";
 import synchedTitle from "@/components/mobile/svg/synched";
+import Joystick from "@/components/mobile/Joystick";
 
 export default {
   data() {
@@ -27,12 +27,14 @@ export default {
     };
   },
   components: {
-    synchedTitle
+    synchedTitle,
+    Joystick
   },
   computed: {
     ...mapState({
       isSynchro: state => state.synchro.isSynchro,
-      mobileReady: state => state.synchro.mobileReady
+      socket: state => state.synchro.socket,
+      roomID: state => state.synchro.roomID
     })
   },
   mounted() {
@@ -51,9 +53,6 @@ export default {
     ...mapActions({
       connect: "synchro/connect"
     }),
-    ...mapMutations({
-      setMobileReady: "synchro/setMobileReady"
-    }),
     handleStart(event) {
       this.startCoord.x = event.touches[0].clientX;
       this.startCoord.y = event.touches[0].clientY;
@@ -71,7 +70,16 @@ export default {
         distanceX < 50 &&
         distanceY > 80
       ) {
-        this.setMobileReady();
+        if (this.socket) {
+          this.socket.emit("custom-event", {
+            name: "mobile-ready",
+            in: this.roomID,
+            args: {
+              ready: true
+            }
+          });
+          if (this.isSynchro) this.$emit("changeComponent");
+        }
       }
     }
   },
@@ -83,7 +91,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-// @import "~assets/scss/main.scss";
+@import "~assets/scss/main.scss";
 
 #room {
   svg {
@@ -92,7 +100,6 @@ export default {
     margin-top: -30px;
   }
   .character-romo {
-    // background-image: url('../../static/ui/romo.png')
     background-image: url("~static/ui/romo.png");
     width: 25%;
     height: 100px;

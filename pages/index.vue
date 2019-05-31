@@ -1,7 +1,6 @@
 <template>
   <div v-if="components[value] != null" id="home">
     <component v-on:increment="increment" v-bind:is="components[value]"></component>
-    <!-- <button v-if="components[value] != 'chooseQuality'" @click="increment">Next (choose quality)</button> -->
   </div>
 </template>
 

@@ -10,6 +10,7 @@ import { mapState, mapMutations } from "vuex";
 import { TweenMax } from "gsap";
 
 export default {
+
   data() {
     return {};
   },

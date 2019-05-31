@@ -1,33 +1,57 @@
 <template>
-  <div id="joystick">
-    <div ref="stick" id="stick"></div>
+  <div id="border">
+    <div id="joystick">
+      <div ref="stick" id="stick"></div>
+    </div>
+    <joystickArrow></joystickArrow>
   </div>
 </template>
 
 <script>
+Math.degrees = function(radians) {
+  return (radians * 180) / Math.PI;
+};
+
 import { mapState } from "vuex";
 import { TweenMax } from "gsap";
+import joystickArrow from "@/components/mobile/svg/joystick_arrows";
+import roomVue from "../room.vue";
 
 export default {
+  components: {
+    joystickArrow
+  },
   data() {
     return {
       dragStart: null,
-      stick: null
+      stick: null,
+      joystickCoord: {
+        x: 0,
+        y: 0
+      },
+      up: false
     };
   },
   computed: {},
+  watch: {
+    up(value) {
+      console.log(value);
+      this.socket.emit("custom-event", {
+        name: "up-joystick",
+        in: this.roomID,
+        args: {
+          handleUp: this.up
+        }
+      });
+    }
+  },
   mounted() {
     this.stick = this.$refs.stick;
-
-    //Desktop Events debug
-    this.stick.addEventListener("mousedown", this.handleMouseDown.bind(this));
-    document.addEventListener("mousemove", this.handleMouseMove.bind(this));
-    document.addEventListener("mouseup", this.handleMouseUp.bind(this));
 
     //Mobile Events
     this.stick.addEventListener("touchstart", this.handleMouseDown.bind(this));
     document.addEventListener("touchmove", this.handleMouseMove.bind(this));
-    document.addEventListener("touchend", this.handleMouseUp.bind(this));
+    this.stick.addEventListener("touchend", this.handleMouseUp.bind(this));
   },
   methods: {
     handleMouseDown(event) {
@@ -46,6 +70,8 @@ export default {
     handleMouseMove(event) {
       if (this.dragStart === null) return;
 
+      this.up = false;
+
       if (event.changedTouches) {
         event.clientX = event.changedTouches[0].clientX;
         event.clientY = event.changedTouches[0].clientY;
@@ -55,11 +81,25 @@ export default {
       let yDiff = event.clientY - this.dragStart.y;
 
       let angle = Math.atan2(yDiff, xDiff);
+      let angleDeg = Math.degrees(angle);
 
-      let distance = Math.min(50, Math.hypot(xDiff, yDiff));
+      let distance = Math.min(60, Math.hypot(xDiff, yDiff));
 
       let xNew = distance * Math.cos(angle);
       let yNew = distance * Math.sin(angle);
+
+      this.joystickCoord.x = Math.cos(angle);
+      this.joystickCoord.y = -Math.sin(angle);
+
+      if (this.socket) {
+        this.socket.emit("custom-event", {
+          name: "coordonate-joystick",
+          in: this.roomID,
+          args: {
+            joystickCoord: this.joystickCoord
+          }
+        });
+      }
 
       this.stick.style.transform = `translate(${xNew}px, ${yNew}px)`;
 
@@ -78,30 +118,60 @@ export default {
       });
       this.dragStart = null;
       this.currentPos = { x: 0, y: 0 };
+      this.up = true;
     }
+  },
+  computed: {
+    ...mapState({
+      socket: state => state.synchro.socket,
+      roomID: state => state.synchro.roomID
+    })
   }
 };
 </script>
 
 <style lang="scss" scoped>
-#joystick {
+@import "~assets/scss/main.scss";
+#border {
   background: transparent;
-  border: 1px solid yellow;
-  width: 100px;
-  height: 100px;
-  border-radius: 100px;
-  position: absolute;
-  top: 50%;
-  left: 50%;
+  width: 250px;
+  height: 250px;
+  position: relative;
+  border-radius: 100%;
+  border: 5px solid $a;
 
-  #stick {
-    position: relative;
-    background: blue;
-    width: 50px;
-    height: 50px;
+  #joystick {
+    background: transparent;
+    border: 2px solid $a;
     border-radius: 50px;
-    top: calc(50% - 25px);
-    left: calc(50% - 25px);
+    width: 100px;
+    height: 100px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    background-image: url("~static/ui/mobile/joystick/joystick_center.png");
+    background-size: cover;
+    transform: translate(-50%, -50%);
+
+    #stick {
+      position: relative;
+      background: white;
+      border: 2px solid $a;
+      width: 100px;
+      height: 100px;
+      border-radius: 50px;
+      top: calc(50% - 50px);
+      left: calc(50% - 50px);
+    }
+  }
+  svg {
+    width: 200px;
+    height: 200px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: -1;
   }
 }
 </style>
