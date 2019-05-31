@@ -11,12 +11,15 @@ export default class Sprite extends THREE.Object3D {
         this.json = json;
         this.wTiles = wTiles;
         this.hTiles = hTiles;
+        
 
         return new Promise((resolve,reject)=>{
             this.loadTexture()
             .then((texture)=>{
                 this.texture = texture
                 this.texture.wrapS = this.texture.wrapT = THREE.RepeatWrapping;
+                // this.texture.magFilter = texture.minFilter = THREE.NearestFilter;
+                // this.texture.anisotropy = 0;
                 this.texture.flipY = true
                 this.texture.flipX = true
                 this.init()

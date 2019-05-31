@@ -18,6 +18,7 @@ import isReady from './isReady'
 class App {
   constructor() {
     window.addEventListener("resize", this.onWindowResize.bind(this));
+    window.addEventListener("orientationchange", this.onOrientationChange.bind(this));
     this.loaded = false;
     this.mouse = new THREE.Vector2();
     this.raycaster = new THREE.Raycaster();
@@ -217,10 +218,24 @@ class App {
   }
 
   onWindowResize() {
-    console.log("resize");
-    this.camera.aspect = window.innerWidth / window.innerHeight;
+    // if(this.orientation = "landscape") {
+    //   this.camera.aspect = window.innerWidth / window.innerHeight;
+    // }
+    // this.camera.aspect = window.innerWidth / window.innerHeight;
+    // this.camera.updateProjectionMatrix();
+    // this.renderer.setSize(window.innerWidth, window.innerHeight);
+  }
+
+  onOrientationChange() {
+    let orientation = screen.orientation.angle
+    if(orientation === 90 || orientation === -90) {
+      this.orientation = "landscape"
+    } else if (orientation === 0 || orientation === -0) {
+      this.orientation = "portrait"
+    }
+    this.camera.aspect = window.innerHeight / window.innerWidth;
     this.camera.updateProjectionMatrix();
-    this.renderer.setSize(window.innerWidth, window.innerHeight);
+    this.renderer.setSize(window.innerHeight,window.innerWidth);
   }
 }
 

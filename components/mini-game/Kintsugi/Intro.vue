@@ -1,7 +1,9 @@
 <template>
   <div class="intro">
     <div class="title" ref="title">
-      <!-- <TitleSVG/> -->
+      <div ref="titleSVG" id="titleSVG">
+        <TitleSVG/>
+      </div>
       <div class="tuto" ref="tuto">
         <div class="text">
           <span class="t skew">
@@ -17,8 +19,8 @@
         <div class="gif"></div>
       </div>
     </div>
-    <div class="launchButton" v-if="romoIsReady" @click="launchMinigame" ref="launchButton">
-      <button-circle-red jpn="スタート" en="LAUNCH GAME" letter="E"  />
+    <div class="launchButton" @click="launchMinigame" ref="launchButton">
+      <button-circle-red jpn="スタート" en="LAUNCH GAME" letter="E"/>
     </div>
     
     <div class="countdown" @click="launchCountdown" ref="countdown">
@@ -100,6 +102,7 @@ export default {
     },
     setRomoReady() {
       this.romoIsReady = true
+      this.$refs.launchButton.style.opacity = "1"
       console.log('romo is ready')
     }
   },
@@ -130,10 +133,16 @@ export default {
     width: 100%;
     height: 100%;
     display: flex;
-    svg {
+    #titleSVG {
+      opacity: 0;
+      transform: scale(0);
       margin: auto;
       height: 50%;
       width: 50%;
+      // transform: scale(1.1);
+      svg {
+        height: 100%;
+      }
     }
   }
 
@@ -180,7 +189,7 @@ export default {
     bottom: calc(150px - 100px);
     left: calc(50% - 100px);
     z-index: 10000;
-    // opacity: 0;
+    opacity: 0;
   }
   .countdown {
     height: 100px;
