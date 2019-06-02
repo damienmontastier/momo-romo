@@ -45,8 +45,6 @@ export default class Level {
             this.romo.scale.set(10, 10, 10)
             this.addCharactere()
             this.loaderTexture()
-
-            console.log(this.scene)
         })
 
         this.eventAnimate = new Event('launchAnimated');
@@ -159,7 +157,6 @@ export default class Level {
     }
 
     addPlatforms(platform) {
-        // TODO add class for sphere, plane, box
         let size = platform.scale
         let position = platform.position
         let rotation = platform.rotation
