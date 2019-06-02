@@ -12,24 +12,6 @@ import {
 
 export default class Level {
     constructor(opts, store) {
-        this.coordinate = {
-            x: 0,
-            y: 0
-        }
-        this.speed = 0
-
-        this.socket = store.state.synchro.socket
-
-        if (this.socket) {
-            this.socket.on("coordonate-joystick", t => {
-                this.coordinate.x = t.joystickCoord.x
-                this.coordinate.y = t.joystickCoord.y
-
-                this.speed = t.speed
-            });
-
-        }
-
         this.canvas = document.getElementById("canvas")
         this.textureAtlas = opts.textureAtlas; // textureAtlas
         this.fixedProps = opts.levelParams.props.fixed; // Fixed Props
@@ -38,11 +20,11 @@ export default class Level {
         };
         this.platforms = this.levelParams.platforms
 
-        new Characters().then((characters) => {
+        new Characters(store).then((characters) => {
             this.characters = characters
             this.momo = this.characters.momo
             this.romo = this.characters.romo
-            this.romo.scale.set(10, 10, 10)
+            this.romo.scale.set(2, 2, 2)
             this.addCharactere()
             this.loaderTexture()
         })
@@ -210,44 +192,10 @@ export default class Level {
     render() {
         // this.camera.lookAt(this.camera.position)
 
-        if (this.socket) {
-            if (this.speed) {
-                console.log(frustum.containsPoint(pos))
-                let x = this.romo.position.x
-                let y = this.romo.position.y
-
-                if (frustum.containsPoint(pos)) {
-                    TweenMax.to(this.romo.position, .5, {
-                        x: x + (this.coordinate.x * this.speed) / 25,
-                        y: y + (this.coordinate.y * this.speed) / 25,
-                        ease: Power4.easeOut
-                    })
-                } else {
-                    if (this.coordinate.x < 0) {
-                        TweenMax.to(this.romo.position, .5, {
-                            x: x + (this.coordinate.x * this.speed) / 25,
-                            y: y + (this.coordinate.y * this.speed) / 25,
-                            ease: Power4.easeOut
-                        })
-                    }
-                }
-            }
-        }
-
         this.cannonDebugRenderer.update()
-
 
         if (this.characters) {
             this.characters.update()
-
-            var frustum = new THREE.Frustum();
-
-            this.camera.updateMatrixWorld();
-            this.camera.matrixWorldInverse.getInverse(this.camera.matrixWorld);
-            frustum.setFromMatrix(new THREE.Matrix4().multiplyMatrices(this.camera.projectionMatrix, this.camera.matrixWorldInverse));
-
-            var pos = new THREE.Vector3(this.romo.position.x, this.romo.position.y, this.romo.position.z);
-
             // this.camera.position.set(this.momo.position.x, 2, 10)
         }
 
