@@ -3,7 +3,7 @@ import OrbitControls from 'orbit-controls-es6';
 import FixedProp from '../objects/FixedProp'
 import CANNON from 'cannon'
 import physicParams from '../physics/physicParams';
-import Character from '../objects/Character';
+import Characters from '../objects/Characters';
 import cannonDebugRenderer from '../physics/CannonDebugRenderer'
 import {
     TweenMax,
@@ -16,9 +16,7 @@ export default class Level {
             x: 0,
             y: 0
         }
-        this.speed = {
-            value: 0
-        }
+        this.speed = 0
 
         this.socket = store.state.synchro.socket
 
@@ -26,15 +24,8 @@ export default class Level {
             this.socket.on("coordonate-joystick", t => {
                 this.coordinate.x = t.joystickCoord.x
                 this.coordinate.y = t.joystickCoord.y
-                // if (this.handleUp) {
-                //     TweenMax.to(this.speed, 1, {
-                //         value: 0,
-                //         ease: Power4.easeInOut
-                //     })
-                // } else {
-                console.log(t.speed)
-                this.speed.value = t.speed
-                // }
+
+                this.speed = t.speed
             });
 
         }
@@ -47,15 +38,16 @@ export default class Level {
         };
         this.platforms = this.levelParams.platforms
 
-        var geometry = new THREE.BoxGeometry(1, 1, 1);
-        var material = new THREE.MeshBasicMaterial({
-            color: 0x00ff00
-        });
-        this.romo = new THREE.Mesh(geometry, material);
+        new Characters().then((characters) => {
+            this.characters = characters
+            this.momo = this.characters.momo
+            this.romo = this.characters.romo
+            this.romo.scale.set(10, 10, 10)
+            this.addCharactere()
+            this.loaderTexture()
 
-        this.character = new Character()
-
-        this.momo = this.character.momo
+            console.log(this.scene)
+        })
 
         this.eventAnimate = new Event('launchAnimated');
 
@@ -79,7 +71,7 @@ export default class Level {
         // this.camera = new THREE.OrthographicCamera(
         //     window.innerWidth / - 20, window.innerWidth / 20, window.innerHeight / 20, window.innerHeight / - 20, .1, 1000
         // );
-        this.camera.position.z = 50;
+        this.camera.position.z = 10;
 
         this.controls = new OrbitControls(this.camera);
 
@@ -89,7 +81,6 @@ export default class Level {
 
         this.scene.add(new THREE.AxesHelper(20));
 
-        this.loaderTexture()
 
         this.worldPhysic();
 
@@ -132,8 +123,6 @@ export default class Level {
         this.platforms.forEach(platform => {
             this.addPlatforms(platform)
         });
-
-        this.addCharactere()
     }
 
     addFixedProp(props) {
@@ -187,7 +176,7 @@ export default class Level {
 
         body.quaternion.setFromAxisAngle(axis, rotation.z)
 
-        let platform_cm = new CANNON.ContactMaterial(this.character.body.material, platform_material, {
+        let platform_cm = new CANNON.ContactMaterial(this.momo.body.material, platform_material, {
             friction: 0.1,
             restitution: 0,
             // frictionEquationStiffness: 1e9,
@@ -217,28 +206,6 @@ export default class Level {
         window.dispatchEvent(this.eventMinigame);
     }
 
-    nextToAnimated(value, elementId) {
-        if (value && !this.isAnimatedLaunched) {
-            this.eventAnimate.props[elementId] = value
-            this.isAnimatedLaunched = true
-        } else {
-            this.eventAnimate.props[elementId] = value
-            this.isAnimatedLaunched = false
-        }
-
-        // console.log(this.eventAnimate.props)
-
-        // if (value && !this.isAnimatedLaunched) {
-        //     this.isAnimatedLaunched = true
-        //     this.eventAnimate.props[elementId] = value
-        // } else {
-        //     this.isAnimatedLaunched = value
-        //     this.eventAnimate.props[elementId] = false
-        // }
-
-        window.dispatchEvent(this.eventAnimate);
-    }
-
     reset() {
         this.scene = null
     }
@@ -246,37 +213,53 @@ export default class Level {
     render() {
         // this.camera.lookAt(this.camera.position)
 
-        this.camera.position.set(this.momo.position.x, 2, 20)
-
-        this.cannonDebugRenderer.update()
-
-        this.character.update()
-
-        // console.log(this.romo.position.x)
-
         if (this.socket) {
             if (this.speed) {
-                this.romo.position.x += (this.coordinate.x / 50) * this.speed.value
-                this.romo.position.y += (this.coordinate.y / 50) * this.speed.value
+                console.log(frustum.containsPoint(pos))
+                let x = this.romo.position.x
+                let y = this.romo.position.y
+
+                if (frustum.containsPoint(pos)) {
+                    TweenMax.to(this.romo.position, .5, {
+                        x: x + (this.coordinate.x * this.speed) / 25,
+                        y: y + (this.coordinate.y * this.speed) / 25,
+                        ease: Power4.easeOut
+                    })
+                } else {
+                    if (this.coordinate.x < 0) {
+                        TweenMax.to(this.romo.position, .5, {
+                            x: x + (this.coordinate.x * this.speed) / 25,
+                            y: y + (this.coordinate.y * this.speed) / 25,
+                            ease: Power4.easeOut
+                        })
+                    }
+                }
             }
         }
 
+        this.cannonDebugRenderer.update()
+
+
+        if (this.characters) {
+            this.characters.update()
+
+            var frustum = new THREE.Frustum();
+
+            this.camera.updateMatrixWorld();
+            this.camera.matrixWorldInverse.getInverse(this.camera.matrixWorld);
+            frustum.setFromMatrix(new THREE.Matrix4().multiplyMatrices(this.camera.projectionMatrix, this.camera.matrixWorldInverse));
+
+            var pos = new THREE.Vector3(this.romo.position.x, this.romo.position.y, this.romo.position.z);
+
+            // this.camera.position.set(this.momo.position.x, 2, 10)
+        }
+
         if (this.minigameProps) {
-            if (this.character.body.position.x >= this.minigameProps.position.x - 2 && this.character.body.position.x <= this.minigameProps.position.x + 2) {
+            if (this.momo.body.position.x >= this.minigameProps.position.x - 2 && this.momo.body.position.x <= this.minigameProps.position.x + 2) {
                 this.nextToMinigame(true)
             } else {
                 this.nextToMinigame(false)
             }
-        }
-
-        if (this.checkpointAnimatedGroup) {
-            this.checkpointAnimatedGroup.forEach((element) => {
-                if (this.character.body.position.x >= element.position.x - 2 && this.character.body.position.x <= element.position.x + 2) {
-                    this.nextToAnimated(true, element._id)
-                } else {
-                    this.nextToAnimated(false, element._id)
-                }
-            });
         }
 
         this.physicParams.update()
