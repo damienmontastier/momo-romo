@@ -19,6 +19,11 @@
         <div class="gif"></div>
       </div>
     </div>
+    <div class="endTitle" ref="endTitle">
+      <div ref="greatSVG" id="greatSVG">
+        <GreatSVG/>
+      </div>
+    </div>
     <div class="launchButton" @click="launchMinigame" ref="launchButton">
       <button-circle-red jpn="スタート" en="LAUNCH GAME" letter="E"/>
     </div>
@@ -58,6 +63,7 @@
 
 <script>
 import TitleSVG from "./Title";
+import GreatSVG from "./Great";
 import buttonCircleRed from "@/components/svg/button-circle-red";
 import Countdown from "./Countdown";
 import { TweenMax } from "gsap";
@@ -66,7 +72,8 @@ export default {
   components: {
     TitleSVG,
     Countdown,
-    buttonCircleRed
+    buttonCircleRed,
+    GreatSVG
   },
   data() {
     return {
@@ -196,7 +203,8 @@ export default {
   }
   .countdown,
   .isPlaying,
-  .tryAgain {
+  .tryAgain,
+  .endTitle {
     // min-width: 50px;
     // height: 50px;
     // background: #f00;
@@ -207,6 +215,23 @@ export default {
     z-index: 11;
     display: flex;
     opacity: 0;
+  }
+
+  .endTitle {
+    // height: 100px;
+     bottom: 100px;
+    transform: scale(0);
+    #greatSVG {
+      
+      width: 100%;
+      height: 125px;
+      display: flex;
+    }
+    svg {
+      
+      margin: auto;
+      height: 100%;
+    }
   }
 
   .isPlaying,

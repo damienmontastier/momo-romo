@@ -599,6 +599,9 @@ export default {
     },
     launchEndGame() {
       console.log('end game')
+      this.$refs.intro.$refs.isPlaying.style.opacity = "0"
+      this.$refs.keys.style.opacity = "0"
+      this.$refs.steps.style.opacity = "0"
       let tl = new TimelineMax();
       tl
       .add("endGameAppear", 0)
@@ -613,6 +616,10 @@ export default {
       },"endGameAppear")
       .to([this.app.planeRosace.material,this.app.planeGradient.material],0.5,{
         opacity:1
+      },"endGameAppear")
+      .to(this.$refs.intro.$refs.endTitle,0.5,{
+        opacity:1,
+        scale:1
       },"endGameAppear")
     },
     launchCountdown() {
