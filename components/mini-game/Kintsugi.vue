@@ -51,6 +51,7 @@
       <!-- <div>{{fractureEnded}}</div> -->
       <button @click="launchCountdown()">START coutdown</button>
       <button @click="()=>{$refs.intro.setRomoReady()}">set momo ready</button>
+      <button @click="launchEndGame()">end game</button>
       <!-- <button @click="launchStep()">Start</button>
       <button @click="cancelFracture()">Cancel</button> -->
     </div>
@@ -147,8 +148,8 @@ class App {
 
     return new Promise((resolve,reject)=>{
       new Sprite(MomoSprite, MomoSpriteJson.sprites, {
-        wTiles: 16,
-        hTiles: 2
+        wTiles: 8,
+        hTiles: 8
       }).then((momo)=>{
         this.momo = momo
         this.momo.scale.set(50, 50, 50);
@@ -161,7 +162,7 @@ class App {
           .newSprites()
           .addState("wait")
           .start();
-      })
+        })
       resolve()
     })
 
@@ -188,11 +189,11 @@ class App {
             map: texture,
             transparent: true
           });
-          let planeR = new THREE.Mesh(geometryR, materialR);
-          this.titleGroup.add(planeR);
-          planeR.position.z = 0.1;
-          planeR.scale.set(0.01, 0.01, 0.01);
-          resolve(planeR);
+          this.planeRosace = new THREE.Mesh(geometryR, materialR);
+          this.titleGroup.add(this.planeRosace);
+          this.planeRosace.position.z = 0.1;
+          this.planeRosace.scale.set(0.01, 0.01, 0.01);
+          resolve();
         });
       })
     );
@@ -213,11 +214,11 @@ class App {
             map: texture,
             transparent: true
           });
-          let planeG = new THREE.Mesh(geometryG, materialG);
-          this.titleGroup.add(planeG);
-          planeG.position.z = 0.3;
-          planeG.scale.set(0.01, 0.01, 0.01);
-          resolve(planeG);
+          this.planeGradient = new THREE.Mesh(geometryG, materialG);
+          this.titleGroup.add(this.planeGradient);
+          this.planeGradient.position.z = 0.3;
+          this.planeGradient.scale.set(0.01, 0.01, 0.01);
+          resolve();
         });
       })
     );
@@ -229,8 +230,8 @@ class App {
           texture.magFilter = THREE.NearestFilter;
           texture.minFilter = THREE.NearestFilter;
           let geometryT = new THREE.PlaneGeometry(
-            texture.image.width / 6,
-            texture.image.height / 6,
+            100,
+            100,
             1
           );
           let materialT = new THREE.MeshBasicMaterial({
@@ -238,11 +239,11 @@ class App {
             map: texture,
             transparent: true
           });
-          let planeT = new THREE.Mesh(geometryT, materialT);
-          this.titleGroup.add(planeT);
-          planeT.position.z = 1;
-          planeT.scale.set(0.01, 0.01, 0.01);
-          resolve(planeT);
+          this.planeTitle = new THREE.Mesh(geometryT, materialT);
+          this.titleGroup.add(this.planeTitle);
+          this.planeTitle.position.z = 1;
+          this.planeTitle.scale.set(0.01, 0.01, 0.01);
+          resolve();
         });
       })
     );
@@ -478,30 +479,32 @@ export default {
       });
       promises.push(this.app.loadBowl());
       promises.push(this.app.addMomo());
-      Promise.all(promises).then(meshes => {
+      Promise.all(promises).then(() => {
         console.log("3D ASSETS LOADED");
+        console.log(this.app.planeRosace, this.app.planeGradient, this.app.planeTitle)
         let tl = new TimelineMax();
         tl.delay(1)
           .add("titleAppear", 0)
           .add("titleDisappear", 3)
+          // .to(
+          //   this.app.planeTitle.scale,
+          //   0.5,
+          //   {
+          //     ease: Power4.easeOut,
+          //     x: 1,
+          //     y: 1,
+          //     z: 1
+          //   },
+          //   "titleAppear"
+          // )
           .to(
-            meshes[2].scale,
-            0.5,
-            {
-              ease: Power4.easeOut,
-              x: 1,
-              y: 1,
-              z: 1
-            },
-            "titleAppear"
-          )
-          .to(
-            meshes[2].material,
+            this.$refs.intro.$refs.titleSVG,
             0.5,
             {
               ease: Power4.easeOut,
               // delay: -0.5,
-              opacity: 1
+              opacity: 1,
+              scale:1
             },
             "titleAppear"
           )
@@ -510,7 +513,7 @@ export default {
             0.5,
             {
               ease: Power4.easeOut,
-              // delay: -0.5,
+              delay: 0.1,
               x: 1,
               y: 1,
               z: 1
@@ -518,7 +521,7 @@ export default {
             "titleAppear"
           )
           .to(
-            [meshes[0].scale, meshes[1].scale],
+            [this.app.planeRosace.scale, this.app.planeGradient.scale],
             0.5,
             {
               ease: Power4.easeOut,
@@ -530,7 +533,7 @@ export default {
             "titleAppear"
           )
           .to(
-            [meshes[0].material, meshes[1].material],
+            [this.app.planeRosace.material, this.app.planeGradient.material],
             0.5,
             {
               ease: Power4.easeOut,
@@ -540,7 +543,16 @@ export default {
             "titleAppear"
           )
           .to(
-            [meshes[0].scale, meshes[1].scale, meshes[2].scale,this.app.model.scale],
+            this.$refs.intro.$refs.titleSVG,
+            0.5,
+            {
+              ease: Power4.easeOut,
+              scale:0
+            },
+            "titleDisappear"
+          )
+          .to(
+            [this.app.planeRosace.scale, this.app.planeGradient.scale,this.app.model.scale],
             0.5,
             {
               ease: Power4.easeOut,
@@ -551,7 +563,7 @@ export default {
             "titleDisappear"
           )
           .to(
-            [meshes[0].material, meshes[1].material, meshes[2].material],
+            [this.app.planeRosace.material, this.app.planeGradient.material, this.$refs.intro.$refs.titleSVG],
             0.5,
             {
               ease: Power4.easeOut,
@@ -577,10 +589,45 @@ export default {
       this.currentStep = 0;
       this.currentFracture++;
       this.fractureEnded = false;
-      this.resetUI();
-      this.launchCountdown();
+      if(this.currentFracture >= this.gameModel.length) {
+        this.launchEndGame()
+      } else {
+        this.resetUI();
+        this.launchCountdown();
+      }
+
+    },
+    launchEndGame() {
+      console.log('end game')
+      this.$refs.intro.$refs.isPlaying.style.opacity = "0"
+      this.$refs.keys.style.opacity = "0"
+      this.$refs.steps.style.opacity = "0"
+      let tl = new TimelineMax();
+      tl
+      .add("endGameAppear", 0)
+      .to([this.app.planeRosace.scale,this.app.planeGradient.scale],0.5,{
+        x:1,
+        y:1,
+        z:1,
+        onStart:()=>{
+          this.app.model.scale.set(1,1,1)
+          this.app.model.position.z = 0.7
+        }
+      },"endGameAppear")
+      .to([this.app.planeRosace.material,this.app.planeGradient.material],0.5,{
+        opacity:1
+      },"endGameAppear")
+      .to(this.$refs.intro.$refs.endTitle,0.5,{
+        opacity:1,
+        scale:1
+      },"endGameAppear")
     },
     launchCountdown() {
+      this.app.momo
+        .newSprites()
+        .addState("power start")
+        .addState("power loop")
+        .start();
       this.$refs.keys.style.opacity = "0";
       this.$refs.steps.style.opacity = "1";
       this.app.model.scale.set(1,1,1)

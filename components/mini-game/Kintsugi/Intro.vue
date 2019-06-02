@@ -1,7 +1,9 @@
 <template>
   <div class="intro">
     <div class="title" ref="title">
-      <!-- <TitleSVG/> -->
+      <div ref="titleSVG" id="titleSVG">
+        <TitleSVG/>
+      </div>
       <div class="tuto" ref="tuto">
         <div class="text">
           <span class="t skew">
@@ -17,8 +19,13 @@
         <div class="gif"></div>
       </div>
     </div>
-    <div class="launchButton" v-if="romoIsReady" @click="launchMinigame" ref="launchButton">
-      <button-circle-red jpn="スタート" en="LAUNCH GAME" letter="E"  />
+    <div class="endTitle" ref="endTitle">
+      <div ref="greatSVG" id="greatSVG">
+        <GreatSVG/>
+      </div>
+    </div>
+    <div class="launchButton" @click="launchMinigame" ref="launchButton">
+      <button-circle-red jpn="スタート" en="LAUNCH GAME" letter="E"/>
     </div>
     
     <div class="countdown" @click="launchCountdown" ref="countdown">
@@ -56,6 +63,7 @@
 
 <script>
 import TitleSVG from "./Title";
+import GreatSVG from "./Great";
 import buttonCircleRed from "@/components/svg/button-circle-red";
 import Countdown from "./Countdown";
 import { TweenMax } from "gsap";
@@ -64,7 +72,8 @@ export default {
   components: {
     TitleSVG,
     Countdown,
-    buttonCircleRed
+    buttonCircleRed,
+    GreatSVG
   },
   data() {
     return {
@@ -100,6 +109,7 @@ export default {
     },
     setRomoReady() {
       this.romoIsReady = true
+      this.$refs.launchButton.style.opacity = "1"
       console.log('romo is ready')
     }
   },
@@ -130,10 +140,16 @@ export default {
     width: 100%;
     height: 100%;
     display: flex;
-    svg {
+    #titleSVG {
+      opacity: 0;
+      transform: scale(0);
       margin: auto;
       height: 50%;
       width: 50%;
+      // transform: scale(1.1);
+      svg {
+        height: 100%;
+      }
     }
   }
 
@@ -180,14 +196,15 @@ export default {
     bottom: calc(150px - 100px);
     left: calc(50% - 100px);
     z-index: 10000;
-    // opacity: 0;
+    opacity: 0;
   }
   .countdown {
     height: 100px;
   }
   .countdown,
   .isPlaying,
-  .tryAgain {
+  .tryAgain,
+  .endTitle {
     // min-width: 50px;
     // height: 50px;
     // background: #f00;
@@ -198,6 +215,23 @@ export default {
     z-index: 11;
     display: flex;
     opacity: 0;
+  }
+
+  .endTitle {
+    // height: 100px;
+     bottom: 100px;
+    transform: scale(0);
+    #greatSVG {
+      
+      width: 100%;
+      height: 125px;
+      display: flex;
+    }
+    svg {
+      
+      margin: auto;
+      height: 100%;
+    }
   }
 
   .isPlaying,
