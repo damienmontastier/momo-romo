@@ -3,12 +3,12 @@ import CANNON from 'cannon'
 import KeyboardManager from "../utils/KeyboardManager";
 import Sprite from "@/assets/js/objects/Sprite";
 import MomoSprite from '~/static/sprites/momo/momo.png';
-import {
-    timingSafeEqual
-} from "crypto";
 const MomoJson = require("~/static/sprites/momo/momo.json");
 
-export default class Character {
+import RomoSprite from '~/static/sprites/romo/romo.png';
+const RomoJson = require("~/static/sprites/romo/romo.json");
+
+export default class Characters {
     constructor() {
         this.body = null
 
@@ -37,23 +37,38 @@ export default class Character {
         this.KeyboardManager = new KeyboardManager(this.onInput.bind(this));
 
         return new Promise((resolve, reject) => {
-            this.addSprite().then((momo) => {
-                this.momo = momo
+            this.addSprite().then((sprites) => {
+                this.momo = sprites[0]
+                this.romo = sprites[1]
                 resolve(this)
             })
         });
     }
 
     addSprite() {
-        return new Promise((resolve, reject) => {
+        let p1 = new Promise((resolve, reject) => {
             new Sprite(MomoSprite, MomoJson.sprites, {
                 wTiles: 8,
                 hTiles: 8
-            }).then((momo) => {
+            }).then(momo => {
+                momo.name = "momo"
                 momo.body = this.body
                 resolve(momo)
             })
-        });
+        })
+        let p2 = new Promise((resolve, reject) => {
+            new Sprite(RomoSprite, RomoJson.frames, {
+                wTiles: 4,
+                hTiles: 3
+            }).then(romo => {
+                romo.name = "romo"
+                resolve(romo)
+            })
+        })
+
+        return Promise.all([p1, p2]).then(sprites => {
+            return sprites
+        }).catch(error => console.log(error));
     }
 
     addBody() {
@@ -63,7 +78,7 @@ export default class Character {
 
         var body = new CANNON.Body({
             mass: 1,
-            position: new CANNON.Vec3(2, 2, 3 - radius),
+            position: new CANNON.Vec3(2, .5, 3 - radius),
             shape: new CANNON.Sphere(radius),
             material: character_material,
             sleepSpeedLimit: .1,
@@ -121,7 +136,7 @@ export default class Character {
                 this.bothWays = false
 
                 if (this.moveLeft) {
-                    this.forceValue.x = -8;
+                    this.forceValue.x = -6;
                     if (!this.movementState.walking) {
                         if (this.momo.scale.x == 1) {
                             this.turnToWalk()
@@ -139,7 +154,7 @@ export default class Character {
                 }
 
                 if (this.moveRight) {
-                    this.forceValue.x = 8;
+                    this.forceValue.x = 6;
                     if (!this.movementState.walking) {
                         if (this.momo.scale.x == -1) {
                             this.turnToWalk()
@@ -174,6 +189,7 @@ export default class Character {
             this.movementState.walking = false
             this.movementState.wait = true
         }
+
 
         if (this.bothWays) {
             let accelerationValue = new CANNON.Vec3(this.forceValue.x, 0, 0);

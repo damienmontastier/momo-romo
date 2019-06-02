@@ -51,7 +51,6 @@ export default {
   watch: {
     speed(value) {
       this.modifyValue(value);
-      console.log(this.joystickCoord.x)
     }
   },
   methods: {
@@ -110,7 +109,7 @@ export default {
       this.dragStart = null;
       this.currentPos = { x: 0, y: 0 };
 
-      TweenMax.to(this, 0.25, {
+      TweenMax.to(this, 0.5, {
         speed: 0,
         ease: Power4.easeInOut
       });
