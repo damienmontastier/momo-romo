@@ -37,7 +37,7 @@ export default {
         x: 0,
         y: 0
       },
-      up: false
+      speed: 0
     };
   },
   computed: {},
@@ -50,7 +50,7 @@ export default {
   },
   watch: {
     speed(value) {
-      console.log(value);
+      this.modifyValue(value);
     }
   },
   methods: {
@@ -82,7 +82,7 @@ export default {
       let angleDeg = Math.degrees(angle);
 
       let distance = Math.min(60, Math.hypot(xDiff, yDiff));
-      
+
       this.speed = Math.round(map_range(distance, 0, 60, 1, 10));
 
       let xNew = distance * Math.cos(angle);
@@ -90,19 +90,6 @@ export default {
 
       this.joystickCoord.x = map_roundToTwo(Math.cos(angle));
       this.joystickCoord.y = map_roundToTwo(-Math.sin(angle));
-
-      // console.log(this.speed, this.joystickCoord.x, this.joystickCoord.y);
-
-      if (this.socket) {
-        // this.socket.emit("custom-event", {
-        //   name: "coordonate-joystick",
-        //   in: this.roomID,
-        //   args: {
-        //     joystickCoord: this.joystickCoord,
-        //     speed: this.speed
-        //   }
-        // });
-      }
 
       this.stick.style.transform = `translate(${xNew}px, ${yNew}px)`;
 
@@ -122,11 +109,22 @@ export default {
       this.dragStart = null;
       this.currentPos = { x: 0, y: 0 };
 
-      console.log(this.speed);
-
-      // TweenMax.to(this.speed, 1, {
-      //   value: 1
-      // });
+      TweenMax.to(this, 0.5, {
+        speed: 0,
+        ease: Power4.easeInOut
+      });
+    },
+    modifyValue(value) {
+      if (this.socket) {
+        this.socket.emit("custom-event", {
+          name: "coordonate-joystick",
+          in: this.roomID,
+          args: {
+            joystickCoord: this.joystickCoord,
+            speed: value
+          }
+        });
+      }
     }
   },
   computed: {

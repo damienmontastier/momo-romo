@@ -1,0 +1,27 @@
+{
+    "frames": [{
+            "id": "romo",
+            "durationTile": "700",
+            "start": 0,
+            "end": 2
+        },
+        {
+            "id": "normal",
+            "durationTile": "700",
+            "start": 3,
+            "end": 5
+        },
+        {
+            "id": "win",
+            "durationTile": "700",
+            "start": 6,
+            "end": 8
+        },
+        {
+            "id": "power",
+            "durationTile": "700",
+            "start": 9,
+            "end": 11
+        }
+    ]
+}
