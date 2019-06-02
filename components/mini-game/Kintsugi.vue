@@ -119,17 +119,17 @@ class App {
     this.camera.position.set(0, 0, 200);
 
     // controls
-    this.controls = new OrbitControls(this.camera);
-    this.controls.enabled = true;
+    // this.controls = new OrbitControls(this.camera);
+    // this.controls.enabled = true;
 
     // ambient light
-    this.scene.add(new THREE.AmbientLight(0x222222));
+    this.scene.add(new THREE.AmbientLight(0xffffff,4));
     this.scene.background = new THREE.Color("#fefbf0");
 
     // directional light
-    this.light = new THREE.DirectionalLight(0xffffff, 1);
-    this.light.position.set(0, 0, 100);
-    this.scene.add(this.light);
+    // this.light = new THREE.DirectionalLight(0xffffff, 0.70);
+    // this.light.position.set(0, 0, 100);
+    // this.scene.add(this.light);
 
     // axes
     // this.scene.add(new THREE.AxesHelper(20));
@@ -152,10 +152,10 @@ class App {
         hTiles: 8
       }).then((momo)=>{
         this.momo = momo
-        this.momo.scale.set(50, 50, 50);
+        this.momo.scale.set(55, 55, 55);
         this.momo.position.z = 2;
         this.momo.position.x = -65;
-        this.momo.position.y = -10;
+        this.momo.position.y = -5;
 
         this.momoGroup.add(this.momo);
         this.momo
@@ -299,27 +299,36 @@ class App {
   loadBowl() {
     return new Promise((resolve, reject) => {
       ObjectLoader.load({
-        url: "https://rocheclement.fr/momoromo/bol/_.glb",
+        url: "https://rocheclement.fr/momoromo/bol/_2.glb",
         format: "glb"
       }).then(object => {
-        this.model = object.scene.children[0].children[0].children[0];
+        // console.log(object.scene.children[0].children[1])
+        // this.model = object.scene.children[0].children[1].children[0];
+        this.model = object.scene.children[0].children[1]
         this.model.scale.set(0.00001, 0.00001, 0.00001);
         this.model.children.forEach((c, index) => {
           c._originPosition = c.getWorldPosition(new THREE.Vector3());
           c._originRotation = c.rotation;
           c._originScale = c.scale;
 
+          let ratio = 1
+
           if (index === 0) {
-            c.position.add(new THREE.Vector3(-3.952, 1.889, 0));
-            c.rotation.set(0, 0, THREE.Math.degToRad(29.7));
+            let position = new THREE.Vector3(-2.697, -9.130, 0)
+            c.position.add(position.multiplyScalar(ratio));
+            let euler = new THREE.Euler(0, 0, THREE.Math.degToRad(29.7))
+            c.rotation.copy(euler);
           } else if (index === 1) {
-            c.position.add(new THREE.Vector3(21.144, 15.423, 0));
+            let position = new THREE.Vector3(14.308, -3.160, 0)
+            c.position.add(position.multiplyScalar(ratio));
             c.rotation.set(0, 0, THREE.Math.degToRad(-18.05));
           } else if (index === 2) {
-            c.position.add(new THREE.Vector3(-12.159, 19.624, 0));
+            let position = new THREE.Vector3(-8.943, 7.734, 0)
+            c.position.add(position.multiplyScalar(ratio));
             c.rotation.set(0, 0, THREE.Math.degToRad(-21.57));
           } else if (index === 3) {
-            c.position.add(new THREE.Vector3(11.707, 27.608, 0));
+            let position = new THREE.Vector3(8.338, 10.434, 0)
+            c.position.add(position.multiplyScalar(ratio));
             c.rotation.set(0, 0, THREE.Math.degToRad(12.69));
           }
           // c.position.multiplyScalar(3);
@@ -334,7 +343,17 @@ class App {
         this.fragments.push(this.model.getObjectByName("bowlpart_1"));
         this.fragments.push(this.model.getObjectByName("bowlpart_2"));
         this.fragments.push(this.model.getObjectByName("bowlpart_3"));
+        console.log(this.fragments)
         // console.log(fragments)
+
+        // this.fragments.forEach((fragment)=>{
+        //   fragment.children.forEach((mesh)=>{
+        //     if(mesh.type === "Mesh") {
+        //       let map = mesh.material.map
+        //       mesh.material = new THREE.MeshBasicMaterial({map:map})
+        //     }
+        //   })
+        // })
 
         //fractures
         this.fractures = [];
@@ -345,13 +364,17 @@ class App {
 
         this.fractures.forEach(fracture => {
           fracture.children.forEach(piece => {
-            piece.material.color.set(new THREE.Color(0xff0000));
+            // piece.material.color.set(new THREE.Color(0xff0000));
             // console.log(piece)
+            // piece.material.transparent = true
+            // piece.material.opacity = 0;
+            piece.visible = false
           });
         });
 
         this.scene.add(this.model);
         this.model.position.z = 0.2;
+        this.model.position.y = -5
         this.loaded = true;
         resolve();
       });
@@ -514,9 +537,9 @@ export default {
             {
               ease: Power4.easeOut,
               delay: 0.1,
-              x: 1,
-              y: 1,
-              z: 1
+              x: 1.3,
+              y: 1.3,
+              z: 1.3
             },
             "titleAppear"
           )
@@ -610,7 +633,7 @@ export default {
         y:1,
         z:1,
         onStart:()=>{
-          this.app.model.scale.set(1,1,1)
+          this.app.model.scale.set(1.3,1.3,1.3)
           this.app.model.position.z = 0.7
         }
       },"endGameAppear")
@@ -630,12 +653,35 @@ export default {
         .start();
       this.$refs.keys.style.opacity = "0";
       this.$refs.steps.style.opacity = "1";
-      this.app.model.scale.set(1,1,1)
+      this.app.model.scale.set(1.3,1.3,1.3)
+      this.app.model.position.y = 0
       this.$refs.intro.launchCountdown();
     },
     nextStep() {
       if (this.currentStep === this.controls.length - 1) {
         console.log("next step");
+        let tl = new TimelineMax()
+        tl
+        .to([this.app.planeRosace.scale,this.app.planeGradient.scale],0.5, {
+          x:1,
+          y:1,
+          z:1,
+          ease: Power4.easeOut,
+        },0)
+        .to([this.app.planeRosace.material,this.app.planeGradient.material],0.5, {
+          opacity:1,
+          ease: Power4.easeOut,
+        },0)
+        .to([this.app.planeRosace.scale,this.app.planeGradient.scale],0.5, {
+          x:0,
+          y:0,
+          z:0,
+          ease: Power4.easeOut,
+        },1)
+        .to([this.app.planeRosace.material,this.app.planeGradient.material],0.5, {
+          opacity:0,
+          ease: Power4.easeOut,
+        },1)
         this.$refs.intro.$refs.isPlaying.style.opacity = "1"
         this.launchStep();
         this.currentStep++;
@@ -852,9 +898,22 @@ $border: 3px;
   margin: auto;
   background: white;
   position: relative;
-  //   -webkit-clip-path: polygon(0 3%, 100% 0%, 100% 97%, 0% 100%);
-  //   clip-path: polygon(0 3%, 100% 0%, 100% 97%, 0% 100%);
-  border: 5px solid #05498d;
+  -webkit-clip-path: polygon(0 3%, 100% 0%, 100% 97%, 0% 100%);
+  clip-path: polygon(0 3%, 100% 0%, 100% 97%, 0% 100%);
+  
+
+  &::after {
+    content: '';
+    height: 96.9%;
+    width: 100%;
+    top: 1.6%;
+    left: 0px;
+    // background: red;
+    border: 5px solid $black;
+    transform: skew(0,-1.4deg);
+    position: absolute;
+    z-index: 2;
+  }
 
   .title {
     position: absolute;
@@ -1139,7 +1198,7 @@ $border: 3px;
 
   #debug {
     position: absolute;
-    bottom: 0px;
+    bottom: 20px;
     left: 0px;
     width: 100%;
     display: flex;
