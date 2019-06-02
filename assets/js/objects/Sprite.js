@@ -6,23 +6,36 @@ export default class Sprite extends THREE.Object3D {
         hTiles
     }) {
         super()
-        // this.texture = new THREE.TextureLoader().load(texture);
         this.textureURL = textureURL
         this.json = json;
         this.wTiles = wTiles;
         this.hTiles = hTiles;
-
-        return new Promise((resolve,reject)=>{
-            this.loadTexture()
-            .then((texture)=>{
-                this.texture = texture
-                this.texture.wrapS = this.texture.wrapT = THREE.RepeatWrapping;
-                this.texture.flipY = true
-                this.texture.flipX = true
-                this.init()
-                resolve(this)
+        
+        if(textureURL.image) {
+            this.texture = this.textureURL
+            this.resets()
+            this.init()
+            return this
+        } else {
+            return new Promise((resolve,reject)=>{
+                this.loadTexture()
+                .then((texture)=>{
+                    this.texture = texture
+                    this.resets()
+                    this.init()
+                    resolve(this)
+                })
             })
-        })
+        }
+
+    }
+
+    resets() {
+        this.texture.wrapS = this.texture.wrapT = THREE.RepeatWrapping;
+        // this.texture.magFilter = texture.minFilter = THREE.NearestFilter;
+        // this.texture.anisotropy = 0;
+        this.texture.flipY = true
+        this.texture.flipX = true
     }
 
     loadTexture() {

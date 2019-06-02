@@ -14,11 +14,10 @@ export default {
     Debugger,
     Portrait
   },
-  mounted() {
-    const elem = document.documentElement;
-
-    /* View in fullscreen */
-    function openFullscreen() {
+  methods: {
+    openFullscreen() {
+      console.log('request fullscreen')
+      const elem = document.documentElement;
       if (elem.requestFullscreen) {
         elem.requestFullscreen();
       } else if (elem.mozRequestFullScreen) { /* Firefox */
@@ -28,6 +27,14 @@ export default {
       } else if (elem.msRequestFullscreen) { /* IE/Edge */
         elem.msRequestFullscreen();
       }
+    }
+  },
+  mounted() {
+    if(this.$device.isMobile) {
+      setTimeout(()=>{
+        this.openFullscreen()
+      },3000)
+      
     }
   }
 };
