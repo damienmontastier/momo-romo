@@ -119,17 +119,17 @@ class App {
     this.camera.position.set(0, 0, 200);
 
     // controls
-    this.controls = new OrbitControls(this.camera);
-    this.controls.enabled = true;
+    // this.controls = new OrbitControls(this.camera);
+    // this.controls.enabled = true;
 
     // ambient light
-    this.scene.add(new THREE.AmbientLight(0x222222));
+    this.scene.add(new THREE.AmbientLight(0xffffff,4));
     this.scene.background = new THREE.Color("#fefbf0");
 
     // directional light
-    this.light = new THREE.DirectionalLight(0xffffff, 1);
-    this.light.position.set(0, 0, 100);
-    this.scene.add(this.light);
+    // this.light = new THREE.DirectionalLight(0xffffff, 0.70);
+    // this.light.position.set(0, 0, 100);
+    // this.scene.add(this.light);
 
     // axes
     // this.scene.add(new THREE.AxesHelper(20));
@@ -152,10 +152,10 @@ class App {
         hTiles: 8
       }).then((momo)=>{
         this.momo = momo
-        this.momo.scale.set(50, 50, 50);
+        this.momo.scale.set(55, 55, 55);
         this.momo.position.z = 2;
         this.momo.position.x = -65;
-        this.momo.position.y = -10;
+        this.momo.position.y = -5;
 
         this.momoGroup.add(this.momo);
         this.momo
@@ -216,37 +216,37 @@ class App {
           });
           this.planeGradient = new THREE.Mesh(geometryG, materialG);
           this.titleGroup.add(this.planeGradient);
-          this.planeGradient.position.z = 0.3;
+          this.planeGradient.position.z = 1;
           this.planeGradient.scale.set(0.01, 0.01, 0.01);
           resolve();
         });
       })
     );
 
-    promises.push(
-      new Promise((resolve, reject) => {
-        new THREE.TextureLoader().load(Title, texture => {
-          // texture.anisotropy = 0;
-          texture.magFilter = THREE.NearestFilter;
-          texture.minFilter = THREE.NearestFilter;
-          let geometryT = new THREE.PlaneGeometry(
-            100,
-            100,
-            1
-          );
-          let materialT = new THREE.MeshBasicMaterial({
-            opacity: 0,
-            map: texture,
-            transparent: true
-          });
-          this.planeTitle = new THREE.Mesh(geometryT, materialT);
-          this.titleGroup.add(this.planeTitle);
-          this.planeTitle.position.z = 1;
-          this.planeTitle.scale.set(0.01, 0.01, 0.01);
-          resolve();
-        });
-      })
-    );
+    // promises.push(
+    //   new Promise((resolve, reject) => {
+    //     new THREE.TextureLoader().load(Title, texture => {
+    //       // texture.anisotropy = 0;
+    //       texture.magFilter = THREE.NearestFilter;
+    //       texture.minFilter = THREE.NearestFilter;
+    //       let geometryT = new THREE.PlaneGeometry(
+    //         100,
+    //         100,
+    //         1
+    //       );
+    //       let materialT = new THREE.MeshBasicMaterial({
+    //         opacity: 0,
+    //         map: texture,
+    //         transparent: true
+    //       });
+    //       this.planeTitle = new THREE.Mesh(geometryT, materialT);
+    //       this.titleGroup.add(this.planeTitle);
+    //       this.planeTitle.position.z = 1;
+    //       this.planeTitle.scale.set(0.01, 0.01, 0.01);
+    //       resolve();
+    //     });
+    //   })
+    // );
     return promises;
   }
 
@@ -299,28 +299,37 @@ class App {
   loadBowl() {
     return new Promise((resolve, reject) => {
       ObjectLoader.load({
-        url: "https://rocheclement.fr/momoromo/bol/_.glb",
+        url: "https://rocheclement.fr/momoromo/bol/_2.glb",
         format: "glb"
       }).then(object => {
-        this.model = object.scene.children[0].children[0].children[0];
+        // console.log(object.scene.children[0].children[1])
+        // this.model = object.scene.children[0].children[1].children[0];
+        this.model = object.scene.children[0].children[1]
         this.model.scale.set(0.00001, 0.00001, 0.00001);
         this.model.children.forEach((c, index) => {
           c._originPosition = c.getWorldPosition(new THREE.Vector3());
           c._originRotation = c.rotation;
           c._originScale = c.scale;
 
+          let ratio = 1
+
           if (index === 0) {
-            c.position.add(new THREE.Vector3(-3.952, 1.889, 0));
-            c.rotation.set(0, 0, THREE.Math.degToRad(29.7));
+            let position = new THREE.Vector3(-2.697, -9.130, 0)
+            c.position.add(position.multiplyScalar(ratio));
+            let euler = new THREE.Euler(0, 0, THREE.Math.degToRad(29.7)*ratio)
+            c.rotation.copy(euler);
           } else if (index === 1) {
-            c.position.add(new THREE.Vector3(21.144, 15.423, 0));
-            c.rotation.set(0, 0, THREE.Math.degToRad(-18.05));
+            let position = new THREE.Vector3(14.308, -3.160, 0)
+            c.position.add(position.multiplyScalar(ratio));
+            c.rotation.set(0, 0, THREE.Math.degToRad(-18.05)*ratio);
           } else if (index === 2) {
-            c.position.add(new THREE.Vector3(-12.159, 19.624, 0));
-            c.rotation.set(0, 0, THREE.Math.degToRad(-21.57));
+            let position = new THREE.Vector3(-4.943, 10.734, 0)
+            c.position.add(position.multiplyScalar(ratio));
+            c.rotation.set(0, 0, THREE.Math.degToRad(-21.57)*ratio);
           } else if (index === 3) {
-            c.position.add(new THREE.Vector3(11.707, 27.608, 0));
-            c.rotation.set(0, 0, THREE.Math.degToRad(12.69));
+            let position = new THREE.Vector3(8.338, 10.434, 0)
+            c.position.add(position.multiplyScalar(ratio));
+            c.rotation.set(0, 0, THREE.Math.degToRad(12.69)*ratio);
           }
           // c.position.multiplyScalar(3);
           c._maxPosition = c.position.clone();
@@ -334,7 +343,17 @@ class App {
         this.fragments.push(this.model.getObjectByName("bowlpart_1"));
         this.fragments.push(this.model.getObjectByName("bowlpart_2"));
         this.fragments.push(this.model.getObjectByName("bowlpart_3"));
+        console.log(this.fragments)
         // console.log(fragments)
+
+        // this.fragments.forEach((fragment)=>{
+        //   fragment.children.forEach((mesh)=>{
+        //     if(mesh.type === "Mesh") {
+        //       let map = mesh.material.map
+        //       mesh.material = new THREE.MeshBasicMaterial({map:map})
+        //     }
+        //   })
+        // })
 
         //fractures
         this.fractures = [];
@@ -345,13 +364,17 @@ class App {
 
         this.fractures.forEach(fracture => {
           fracture.children.forEach(piece => {
-            piece.material.color.set(new THREE.Color(0xff0000));
+            // piece.material.color.set(new THREE.Color(0xff0000));
             // console.log(piece)
+            // piece.material.transparent = true
+            // piece.material.opacity = 0;
+            piece.visible = false
           });
         });
 
         this.scene.add(this.model);
         this.model.position.z = 0.2;
+        this.model.position.y = -5
         this.loaded = true;
         resolve();
       });
@@ -407,6 +430,7 @@ class App {
 
   triggerFracturePiece(piece) {
     piece.triggered = true;
+    piece.visible = true;
     piece.material.color.set(0x00ff00);
   }
 
@@ -481,7 +505,7 @@ export default {
       promises.push(this.app.addMomo());
       Promise.all(promises).then(() => {
         console.log("3D ASSETS LOADED");
-        console.log(this.app.planeRosace, this.app.planeGradient, this.app.planeTitle)
+        this.tweeningScalar = 0.5
         let tl = new TimelineMax();
         tl.delay(1)
           .add("titleAppear", 0)
@@ -514,9 +538,33 @@ export default {
             {
               ease: Power4.easeOut,
               delay: 0.1,
-              x: 1,
-              y: 1,
-              z: 1
+              x: 1.2,
+              y: 1.2,
+              z: 1.2
+            },
+            "titleAppear"
+          )
+          .to(
+            this,
+            3,
+            {
+              ease: Power4.easeOut,
+              // delay: 0.6,
+              tweeningScalar: 1.1,
+              onStart:()=>{
+                // this.app.fragments.forEach((fragment)=>{
+                //   let o = new THREE.Vector3().copy(fragment._originPosition)
+                //   console.log(o)
+                // })
+              },
+              onUpdate:()=>{
+                this.app.fragments.forEach((fragment)=>{
+                  let o = new THREE.Vector3().copy(fragment._maxPosition)
+                  let rotationZ = fragment._maxRotation.z
+                  fragment.position.copy(o.multiplyScalar(this.tweeningScalar))
+                  fragment.rotation.z = rotationZ * this.tweeningScalar
+                })
+              }
             },
             "titleAppear"
           )
@@ -556,9 +604,9 @@ export default {
             0.5,
             {
               ease: Power4.easeOut,
-              x: 0.001,
-              y: 0.001,
-              z: 0.001
+              x: 0.01,
+              y: 0.01,
+              z: 0.01
             },
             "titleDisappear"
           )
@@ -610,8 +658,12 @@ export default {
         y:1,
         z:1,
         onStart:()=>{
-          this.app.model.scale.set(1,1,1)
+          this.app.model.scale.set(1.2,1.2,1.2)
           this.app.model.position.z = 0.7
+          this.app.fragments.forEach((fragment)=>{
+            fragment.position.copy(fragment._maxPosition)
+            fragment.rotation.z = fragment._maxRotation.z
+          })
         }
       },"endGameAppear")
       .to([this.app.planeRosace.material,this.app.planeGradient.material],0.5,{
@@ -630,12 +682,35 @@ export default {
         .start();
       this.$refs.keys.style.opacity = "0";
       this.$refs.steps.style.opacity = "1";
-      this.app.model.scale.set(1,1,1)
+      this.app.model.scale.set(1.2,1.2,1.2)
+      this.app.model.position.y = 0
       this.$refs.intro.launchCountdown();
     },
     nextStep() {
       if (this.currentStep === this.controls.length - 1) {
         console.log("next step");
+        let tl = new TimelineMax()
+        tl
+        .to([this.app.planeRosace.scale,this.app.planeGradient.scale],0.5, {
+          x:1,
+          y:1,
+          z:1,
+          ease: Power4.easeOut,
+        },0)
+        .to([this.app.planeRosace.material,this.app.planeGradient.material],0.5, {
+          opacity:1,
+          ease: Power4.easeOut,
+        },0)
+        .to([this.app.planeRosace.scale,this.app.planeGradient.scale],0.5, {
+          x:0.001,
+          y:0.001,
+          z:0.001,
+          ease: Power4.easeOut,
+        },1)
+        .to([this.app.planeRosace.material,this.app.planeGradient.material],0.5, {
+          opacity:0,
+          ease: Power4.easeOut,
+        },1)
         this.$refs.intro.$refs.isPlaying.style.opacity = "1"
         this.launchStep();
         this.currentStep++;
@@ -832,6 +907,17 @@ export default {
     //   console.log("isLoaded");
     // }
   },
+  created() {
+    if(this.socket) {
+      this.socket.emit("custom-event", {
+        name: "router",
+        in: this.roomID,
+        args: {
+          id: "kintsugi"
+        }
+      });
+    }
+  },
   mounted() {
     this.init();
     window.addEventListener("keydown", this.onKeyPress.bind(this));
@@ -852,9 +938,22 @@ $border: 3px;
   margin: auto;
   background: white;
   position: relative;
-  //   -webkit-clip-path: polygon(0 3%, 100% 0%, 100% 97%, 0% 100%);
-  //   clip-path: polygon(0 3%, 100% 0%, 100% 97%, 0% 100%);
-  border: 5px solid #05498d;
+  -webkit-clip-path: polygon(0 3%, 100% 0%, 100% 97%, 0% 100%);
+  clip-path: polygon(0 3%, 100% 0%, 100% 97%, 0% 100%);
+  
+
+  &::after {
+    content: '';
+    height: 96.9%;
+    width: 100%;
+    top: 1.6%;
+    left: 0px;
+    // background: red;
+    border: 5px solid $black;
+    transform: skew(0,-1.4deg);
+    position: absolute;
+    z-index: 2;
+  }
 
   .title {
     position: absolute;
@@ -1139,7 +1238,7 @@ $border: 3px;
 
   #debug {
     position: absolute;
-    bottom: 0px;
+    bottom: 20px;
     left: 0px;
     width: 100%;
     display: flex;

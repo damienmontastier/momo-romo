@@ -9,10 +9,17 @@
 <script>
 import Debugger from "@/components/debugger/Debugger";
 import Portrait from "@/components/Portrait";
+import { mapState } from 'vuex';
 export default {
   components: {
     Debugger,
     Portrait
+  },
+  computed: {
+    ...mapState({
+      socket: state => state.synchro.socket,
+      roomID: state => state.synchro.roomID
+    }),
   },
   methods: {
     openFullscreen() {
@@ -29,12 +36,25 @@ export default {
       }
     }
   },
+  watch: {
+    socket() {
+      if(this.socket) {
+        this.socket.on("router",(params)=>{
+          console.log('router' + params)
+          this.$router.replace({path:params.id})
+        })
+      }
+    }
+  },
   mounted() {
     if(this.$device.isMobile) {
-      setTimeout(()=>{
-        this.openFullscreen()
-      },3000)
-      
+      // this.openFullscreen()
+
+      // if(this.socket) {
+      //   this.socket.on("router",(params)=>{
+      //     this.$router.replace({path:params.id})
+      //   })
+      // }
     }
   }
 };

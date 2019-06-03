@@ -6,6 +6,7 @@ if (process.client) {
         }
 
         update(target) {
+            console.log('fdsfs',target)
             this.remove();
             this.target = target;
             this.init();
