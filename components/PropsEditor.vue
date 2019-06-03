@@ -1,24 +1,63 @@
 <template>
-  <div id="props-editor" ref="props-editor" v-on:mouseup="onMouseUp">
-    <img
-      v-if="loaded"
-      ref="atlas-image"
-      :src="this.currentAtlas.png"
-      alt
-      v-on:mousedown="onMouseDown"
-      draggable="false"
-    >
+  <div>
+    <div id="props-editor" ref="props-editor" v-on:mouseup="onMouseUp">
+      <img
+        v-if="loaded"
+        ref="atlas-image"
+        :src="this.currentAtlas.png"
+        alt
+        v-on:mousedown="onMouseDown"
+        draggable="false"
+      >
+    </div>
+    <div id="sprites">
+      <p
+        :key="index"
+        v-for="(sprite, index) in sprites"
+        class="sprite"
+        @click="addSprite(sprite)"
+      >{{sprite.id}} animated</p>
+    </div>
   </div>
 </template>
 
 <script>
 import { mapGetters, mapMutations, mapState } from "vuex";
+import pngCat from "@/static/sprites/cat/cat.png";
+const jsonCat = require("~/static/sprites/cat/cat.json");
+
+import pngPetals from "@/static/sprites/petals/petals.png";
+const jsonPetals = require("~/static/sprites/petals/petals.json");
 
 Number.prototype.map = function(in_min, in_max, out_min, out_max) {
   return ((this - in_min) * (out_max - out_min)) / (in_max - in_min) + out_min;
 };
 
 export default {
+  data() {
+    return {
+      sprites: [
+        {
+          id: "cat",
+          png: pngCat,
+          json: jsonCat,
+          size: {
+            w: 4,
+            h: 4
+          }
+        },
+        {
+          id: "petals",
+          png: pngPetals,
+          json: jsonPetals,
+          size: {
+            w: 16,
+            h: 4
+          }
+        }
+      ]
+    };
+  },
   computed: {
     ...mapGetters({
       currentAtlas: "editor/currentAtlas"
@@ -60,6 +99,9 @@ export default {
         let id = target[0].filename.replace(".png", "").toLowerCase();
         this.setDraggingPropId(id);
       }
+    },
+    addSprite(sprite) {
+      this.$emit("addSprite", sprite);
     }
   }
 };
@@ -72,7 +114,7 @@ export default {
   left: 0px;
   top: 0px;
   width: 300px;
-  height: 100vh;
+  height: 70vh;
   background: white;
   z-index: 2;
 
@@ -80,5 +122,21 @@ export default {
     height: 100%;
     max-width: unset;
   }
+}
+#sprites {
+  overflow-x: auto;
+  position: absolute;
+  left: 0px;
+  top: 70vh;
+  width: 300px;
+  height: 30vh;
+  background: white;
+  z-index: 2;
+  p {
+    &:hover{
+      background:red;
+    }
+  }
+  
 }
 </style>

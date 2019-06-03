@@ -2,6 +2,7 @@ import * as THREE from "three";
 import CANNON from 'cannon'
 import KeyboardManager from "../utils/KeyboardManager";
 import Sprite from "@/assets/js/objects/Sprite";
+
 import MomoSprite from '~/static/sprites/momo/momo.png';
 const MomoJson = require("~/static/sprites/momo/momo.json");
 

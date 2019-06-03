@@ -39,8 +39,6 @@ export default class Level {
 
         this.isAnimatedLaunched = false
 
-        this.checkpointAnimatedGroup = []
-
         //Setup Camera
         this.camera = new THREE.PerspectiveCamera(
             40,
@@ -122,12 +120,8 @@ export default class Level {
         prop.scale.set(props.scale.x, props.scale.y, props.scale.z);
         prop.rotation.set(props.rotation.x, props.rotation.y, props.rotation.z);
         prop.checkpointMinigame = props.checkpoint.minigame
-        prop.checkpointAnimate = props.checkpoint.animate
         if (props.checkpoint.minigame) {
             this.minigameProps = prop
-        }
-        if (props.checkpoint.animate) {
-            this.checkpointAnimatedGroup.push(prop)
         }
         this.fixedProps.push(prop);
         this.scene.add(prop)
