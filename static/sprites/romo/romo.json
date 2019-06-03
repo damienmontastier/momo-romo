@@ -1,5 +1,5 @@
 {
-    "frames": [{
+    "sprites": [{
             "id": "romo",
             "durationTile": "700",
             "start": 0,

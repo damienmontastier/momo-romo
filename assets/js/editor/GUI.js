@@ -6,6 +6,7 @@ if (process.client) {
         }
 
         update(target) {
+            console.log('fdsfs',target)
             this.remove();
             this.target = target;
             this.init();
@@ -52,6 +53,7 @@ if (process.client) {
             }
             this.position.add(params, 'alignOnGrid')
         }
+
     }
 
     var g = new GUI()

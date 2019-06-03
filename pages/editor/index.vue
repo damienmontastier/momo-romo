@@ -1,7 +1,7 @@
 <template>
   <div id="editor" ref="editor">
     <select name="stages" id="stages-select" ref="stages-select" v-on:change="onChange"></select>
-    <props-editor></props-editor>
+    <props-editor v-on:addAnimate="addAnimate($event)"></props-editor>
     <export-btn v-on:save="save" v-on:exprt="exprt"></export-btn>
     <LayerElement v-if="loaded"></LayerElement>
     <export-btn v-on:exprt="exprt" v-on:save="save"></export-btn>
@@ -104,11 +104,12 @@ export default {
           let prop = this.editor.stages[this.currentStageId].addFixedProp({
             _id: this.draggingPropId
           });
-          console.log(prop)
+
           prop.position.set(pos.x, pos.y, pos.z);
           this.setDraggingPropId(null);
         }
       });
+
       //fixedprops
       this.editor.renderer.domElement.addEventListener("mousemove", event => {
         this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
@@ -133,6 +134,9 @@ export default {
           }
         }
       });
+    },
+    addAnimate(params) {
+      this.editor.stages[this.currentStageId].addAnimate(params);
     },
     onChange() {
       this.setCurrentStageId(this.$refs["stages-select"].value);

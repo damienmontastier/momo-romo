@@ -109,6 +109,7 @@ export default class Editor {
                 this.target.highlight(false);
             }
             this.target = intersects[0].object._class;
+
             ArrowsHelper.setTarget(this.target);
             this.target.highlight(true);
         } else {

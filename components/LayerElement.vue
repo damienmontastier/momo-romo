@@ -52,27 +52,6 @@
         {{prop._id+index}}
       </li>
     </ul>
-    <ul class="layer">
-      <p>Checkpoint animate</p>
-      <li
-        v-for="(prop,index) in currentStageRef.fixedProps"
-        :key="index"
-        v-if="prop.visible"
-        @mouseover="hover(prop)"
-        @mouseleave="out(prop)"
-      >
-        <input
-          type="checkbox"
-          v-model="prop.checkpointAnimate"
-          :name="prop._id + index"
-          :value="prop.checkpointAnimate"
-          :id="prop._id+index"
-          @click="animate(prop)"
-          :checked="prop.checkpointAnimate"
-        >
-        {{prop._id+index}}
-      </li>
-    </ul>
   </div>
 </template>
 <script>
@@ -86,6 +65,7 @@ export default {
       animateProps: []
     };
   },
+  mounted() {},
   computed: {
     ...mapState({
       currentStageId: state => state.editor.currentStageId,
@@ -131,9 +111,6 @@ export default {
         fixed.checkpointMinigame = false;
       });
       target.checkpointMinigame = true;
-    },
-    animate(target) {
-      target.checkpointAnimate = true;
     }
   },
   watch: {
