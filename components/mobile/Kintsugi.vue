@@ -1,7 +1,7 @@
 <template>
   <div id="kintsugi">
     <!-- <div class="title">kintsugi mobile mini game {{roomID}}</div> -->
-    <is-ready/>
+    <is-ready v-if="!isReady"/>
     <div ref="canvas" id="canvas"></div>
     <div id="debug"></div>
   </div>
@@ -244,7 +244,8 @@ export default {
     return {
       app: new App(),
       mouse: new THREE.Vector2(),
-      isMouseDown: false
+      isMouseDown: false,
+      isReady: false
     };
   },
   computed: {
@@ -291,6 +292,9 @@ export default {
           }
           if (params.id === "cancel fracture") {
             this.app.spread(params.fragments);
+          }
+          if (params.id === "romo is ready") {
+            this.isReady = true
           }
         });
       }

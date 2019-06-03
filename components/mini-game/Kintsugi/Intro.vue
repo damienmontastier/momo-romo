@@ -257,6 +257,7 @@ export default {
       display: flex;
       flex-direction: row;
       .states {
+        padding: 0 8px;
         width: 100%;
         display: flex;
         flex-direction: row;

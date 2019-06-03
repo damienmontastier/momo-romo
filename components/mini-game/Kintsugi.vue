@@ -216,37 +216,37 @@ class App {
           });
           this.planeGradient = new THREE.Mesh(geometryG, materialG);
           this.titleGroup.add(this.planeGradient);
-          this.planeGradient.position.z = 0.3;
+          this.planeGradient.position.z = 1;
           this.planeGradient.scale.set(0.01, 0.01, 0.01);
           resolve();
         });
       })
     );
 
-    promises.push(
-      new Promise((resolve, reject) => {
-        new THREE.TextureLoader().load(Title, texture => {
-          // texture.anisotropy = 0;
-          texture.magFilter = THREE.NearestFilter;
-          texture.minFilter = THREE.NearestFilter;
-          let geometryT = new THREE.PlaneGeometry(
-            100,
-            100,
-            1
-          );
-          let materialT = new THREE.MeshBasicMaterial({
-            opacity: 0,
-            map: texture,
-            transparent: true
-          });
-          this.planeTitle = new THREE.Mesh(geometryT, materialT);
-          this.titleGroup.add(this.planeTitle);
-          this.planeTitle.position.z = 1;
-          this.planeTitle.scale.set(0.01, 0.01, 0.01);
-          resolve();
-        });
-      })
-    );
+    // promises.push(
+    //   new Promise((resolve, reject) => {
+    //     new THREE.TextureLoader().load(Title, texture => {
+    //       // texture.anisotropy = 0;
+    //       texture.magFilter = THREE.NearestFilter;
+    //       texture.minFilter = THREE.NearestFilter;
+    //       let geometryT = new THREE.PlaneGeometry(
+    //         100,
+    //         100,
+    //         1
+    //       );
+    //       let materialT = new THREE.MeshBasicMaterial({
+    //         opacity: 0,
+    //         map: texture,
+    //         transparent: true
+    //       });
+    //       this.planeTitle = new THREE.Mesh(geometryT, materialT);
+    //       this.titleGroup.add(this.planeTitle);
+    //       this.planeTitle.position.z = 1;
+    //       this.planeTitle.scale.set(0.01, 0.01, 0.01);
+    //       resolve();
+    //     });
+    //   })
+    // );
     return promises;
   }
 
@@ -316,20 +316,20 @@ class App {
           if (index === 0) {
             let position = new THREE.Vector3(-2.697, -9.130, 0)
             c.position.add(position.multiplyScalar(ratio));
-            let euler = new THREE.Euler(0, 0, THREE.Math.degToRad(29.7))
+            let euler = new THREE.Euler(0, 0, THREE.Math.degToRad(29.7)*ratio)
             c.rotation.copy(euler);
           } else if (index === 1) {
             let position = new THREE.Vector3(14.308, -3.160, 0)
             c.position.add(position.multiplyScalar(ratio));
-            c.rotation.set(0, 0, THREE.Math.degToRad(-18.05));
+            c.rotation.set(0, 0, THREE.Math.degToRad(-18.05)*ratio);
           } else if (index === 2) {
-            let position = new THREE.Vector3(-8.943, 7.734, 0)
+            let position = new THREE.Vector3(-4.943, 10.734, 0)
             c.position.add(position.multiplyScalar(ratio));
-            c.rotation.set(0, 0, THREE.Math.degToRad(-21.57));
+            c.rotation.set(0, 0, THREE.Math.degToRad(-21.57)*ratio);
           } else if (index === 3) {
             let position = new THREE.Vector3(8.338, 10.434, 0)
             c.position.add(position.multiplyScalar(ratio));
-            c.rotation.set(0, 0, THREE.Math.degToRad(12.69));
+            c.rotation.set(0, 0, THREE.Math.degToRad(12.69)*ratio);
           }
           // c.position.multiplyScalar(3);
           c._maxPosition = c.position.clone();
@@ -430,6 +430,7 @@ class App {
 
   triggerFracturePiece(piece) {
     piece.triggered = true;
+    piece.visible = true;
     piece.material.color.set(0x00ff00);
   }
 
@@ -504,7 +505,7 @@ export default {
       promises.push(this.app.addMomo());
       Promise.all(promises).then(() => {
         console.log("3D ASSETS LOADED");
-        console.log(this.app.planeRosace, this.app.planeGradient, this.app.planeTitle)
+        this.tweeningScalar = 0.5
         let tl = new TimelineMax();
         tl.delay(1)
           .add("titleAppear", 0)
@@ -537,9 +538,33 @@ export default {
             {
               ease: Power4.easeOut,
               delay: 0.1,
-              x: 1.3,
-              y: 1.3,
-              z: 1.3
+              x: 1.2,
+              y: 1.2,
+              z: 1.2
+            },
+            "titleAppear"
+          )
+          .to(
+            this,
+            3,
+            {
+              ease: Power4.easeOut,
+              // delay: 0.6,
+              tweeningScalar: 1.1,
+              onStart:()=>{
+                // this.app.fragments.forEach((fragment)=>{
+                //   let o = new THREE.Vector3().copy(fragment._originPosition)
+                //   console.log(o)
+                // })
+              },
+              onUpdate:()=>{
+                this.app.fragments.forEach((fragment)=>{
+                  let o = new THREE.Vector3().copy(fragment._maxPosition)
+                  let rotationZ = fragment._maxRotation.z
+                  fragment.position.copy(o.multiplyScalar(this.tweeningScalar))
+                  fragment.rotation.z = rotationZ * this.tweeningScalar
+                })
+              }
             },
             "titleAppear"
           )
@@ -579,9 +604,9 @@ export default {
             0.5,
             {
               ease: Power4.easeOut,
-              x: 0.001,
-              y: 0.001,
-              z: 0.001
+              x: 0.01,
+              y: 0.01,
+              z: 0.01
             },
             "titleDisappear"
           )
@@ -633,8 +658,12 @@ export default {
         y:1,
         z:1,
         onStart:()=>{
-          this.app.model.scale.set(1.3,1.3,1.3)
+          this.app.model.scale.set(1.2,1.2,1.2)
           this.app.model.position.z = 0.7
+          this.app.fragments.forEach((fragment)=>{
+            fragment.position.copy(fragment._maxPosition)
+            fragment.rotation.z = fragment._maxRotation.z
+          })
         }
       },"endGameAppear")
       .to([this.app.planeRosace.material,this.app.planeGradient.material],0.5,{
@@ -653,7 +682,7 @@ export default {
         .start();
       this.$refs.keys.style.opacity = "0";
       this.$refs.steps.style.opacity = "1";
-      this.app.model.scale.set(1.3,1.3,1.3)
+      this.app.model.scale.set(1.2,1.2,1.2)
       this.app.model.position.y = 0
       this.$refs.intro.launchCountdown();
     },
@@ -673,9 +702,9 @@ export default {
           ease: Power4.easeOut,
         },0)
         .to([this.app.planeRosace.scale,this.app.planeGradient.scale],0.5, {
-          x:0,
-          y:0,
-          z:0,
+          x:0.001,
+          y:0.001,
+          z:0.001,
           ease: Power4.easeOut,
         },1)
         .to([this.app.planeRosace.material,this.app.planeGradient.material],0.5, {
@@ -877,6 +906,17 @@ export default {
     // loaded(val) {
     //   console.log("isLoaded");
     // }
+  },
+  created() {
+    if(this.socket) {
+      this.socket.emit("custom-event", {
+        name: "router",
+        in: this.roomID,
+        args: {
+          id: "kintsugi"
+        }
+      });
+    }
   },
   mounted() {
     this.init();
