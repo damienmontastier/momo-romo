@@ -132,10 +132,10 @@ export default class Stage extends THREE.Object3D {
                     z: animate.scale.z,
                 },
                 params: {
-                    w: animate.wTiles,
-                    h: animate.hTiles,
-                    png: animate.textureURL,
-                    json: animate.json
+                    w: animate.animate.wTiles,
+                    h: animate.animate.hTiles,
+                    png: animate.animate.textureURL,
+                    json: animate.animate.json
                 }
             })
         });
