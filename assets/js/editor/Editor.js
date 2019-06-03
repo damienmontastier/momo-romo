@@ -98,19 +98,16 @@ export default class Editor {
     raycast(mouse) {
         let targets = []
         this.stages[this.currentStageId].children.forEach((stage) => {
-            console.log(stage.children)
             stage.children.filter(c => c.material.visible).forEach((child) => {
                 targets.push(child)
             })
         })
         let intersects = Raycaster.use(mouse, targets);
-        // console.log(intersects)
 
         if (intersects[0]) {
             if (this.target) {
                 this.target.highlight(false);
             }
-            // console.log(intersects[0])
             this.target = intersects[0].object._class;
 
             ArrowsHelper.setTarget(this.target);

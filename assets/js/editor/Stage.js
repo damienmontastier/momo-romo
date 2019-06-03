@@ -7,7 +7,7 @@ import AnimatedProp from "@/assets/js/objects/AnimatedProp";
 export default class Stage extends THREE.Object3D {
     constructor(opts) {
         super()
-
+        console.log("stage", opts)
         if (opts.model) {
             this.modelIMG = opts.model
             this.addModelToScene()
@@ -143,6 +143,7 @@ export default class Stage extends THREE.Object3D {
 
     init() {
         //init fixed Props
+        console.log('pressets', this.pressets)
         this.pressets.props.fixed.forEach((prop, index) => {
             this.addFixedProp(prop)
         });
@@ -222,12 +223,14 @@ export default class Stage extends THREE.Object3D {
     }
 
     addSprite(params) {
-        let sprite = new AnimatedProp(params)
-        this.animates.push(sprite)
-        this.animatesGroup.add(sprite)
-        console.log('stage.js sprite', sprite)
+        new AnimatedProp(params).then((sprite) => {
+            console.log(sprite)
 
-        return sprite
+            this.animates.push(sprite)
+            this.animatesGroup.add(sprite)
+
+            return sprite
+        })
     }
 
     addFixedProp({
