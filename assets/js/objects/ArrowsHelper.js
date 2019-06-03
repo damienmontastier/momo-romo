@@ -114,7 +114,6 @@ class ArrowsHelper extends THREE.Object3D {
         if (this.target) {
 
             if (this.edited) {
-                console.log('gfggdgfgdg',this.target)
                 History.push({
                     name: 'moved',
                     copy: {
