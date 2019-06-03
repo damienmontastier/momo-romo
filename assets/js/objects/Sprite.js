@@ -10,21 +10,21 @@ export default class Sprite extends THREE.Object3D {
         this.json = json;
         this.wTiles = wTiles;
         this.hTiles = hTiles;
-        
-        if(textureURL.image) {
+
+        if (textureURL.image) {
             this.texture = this.textureURL
             this.resets()
             this.init()
             return this
         } else {
-            return new Promise((resolve,reject)=>{
+            return new Promise((resolve, reject) => {
                 this.loadTexture()
-                .then((texture)=>{
-                    this.texture = texture
-                    this.resets()
-                    this.init()
-                    resolve(this)
-                })
+                    .then((texture) => {
+                        this.texture = texture
+                        this.resets()
+                        this.init()
+                        resolve(this)
+                    })
             })
         }
 
@@ -41,8 +41,8 @@ export default class Sprite extends THREE.Object3D {
     loadTexture() {
         let loader = new THREE.TextureLoader();
 
-        return new Promise((resolve,reject)=>{
-            loader.load(this.textureURL,(texture)=>{
+        return new Promise((resolve, reject) => {
+            loader.load(this.textureURL, (texture) => {
                 resolve(texture)
             })
         })

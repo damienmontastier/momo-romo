@@ -2,6 +2,7 @@ import * as THREE from "three";
 import CANNON from 'cannon'
 import KeyboardManager from "../utils/KeyboardManager";
 import Sprite from "@/assets/js/objects/Sprite";
+
 import MomoSprite from '~/static/sprites/momo/momo.png';
 const MomoJson = require("~/static/sprites/momo/momo.json");
 
@@ -9,7 +10,26 @@ import RomoSprite from '~/static/sprites/romo/romo.png';
 const RomoJson = require("~/static/sprites/romo/romo.json");
 
 export default class Characters {
-    constructor() {
+    constructor(store) {
+        this.coordinate = {
+            x: 0,
+            y: 0
+        }
+        this.speed = 0
+
+        this.socket = store.state.synchro.socket
+
+        if (this.socket) {
+            this.socket.on("coordonate-joystick", t => {
+                this.coordinate.x = t.joystickCoord.x
+                this.coordinate.y = t.joystickCoord.y
+
+                this.speed = t.speed
+            });
+        }
+
+        this.canMove = true;
+
         this.body = null
 
         this.forceValue = new THREE.Vector3();
@@ -37,16 +57,29 @@ export default class Characters {
         this.KeyboardManager = new KeyboardManager(this.onInput.bind(this));
 
         return new Promise((resolve, reject) => {
-            this.addSprite().then((sprites) => {
+            this.addAnimate().then((sprites) => {
                 this.momo = sprites[0]
-                this.romo = sprites[1]
+
+                let body = sprites[1][0]
+                body.name = "romo_body"
+                let mood = sprites[1][1]
+                mood.name = "romo_mood"
+
+                this.romo = new THREE.Group();
+
+                this.romo.add(body);
+                this.romo.add(mood);
+
                 resolve(this)
             })
         });
     }
 
-    addSprite() {
-        let p1 = new Promise((resolve, reject) => {
+    addAnimate() {
+
+        let loader = new THREE.TextureLoader();
+
+        let p1 = (new Promise((resolve, reject) => {
             new Sprite(MomoSprite, MomoJson.sprites, {
                 wTiles: 8,
                 hTiles: 8
@@ -55,14 +88,23 @@ export default class Characters {
                 momo.body = this.body
                 resolve(momo)
             })
-        })
+        }))
         let p2 = new Promise((resolve, reject) => {
-            new Sprite(RomoSprite, RomoJson.frames, {
-                wTiles: 4,
-                hTiles: 3
-            }).then(romo => {
-                romo.name = "romo"
-                resolve(romo)
+            loader.load(RomoSprite, (texture) => {
+                let spriteTextureRomo = []
+                spriteTextureRomo.push(
+                    new Sprite(texture, RomoJson.sprites, {
+                        wTiles: 4,
+                        hTiles: 3
+                    })
+                )
+                spriteTextureRomo.push(
+                    new Sprite(texture, RomoJson.sprites, {
+                        wTiles: 4,
+                        hTiles: 3
+                    })
+                )
+                resolve(spriteTextureRomo)
             })
         })
 
@@ -94,9 +136,10 @@ export default class Characters {
     onCollide(e) {
         if (e.contact.enabled) {
             this.canJump = true
+            this.canMove = true;
             this.movementState.jump = false;
             if (!this.movementState.jump) {
-                this.launchSprite("walk")
+                this.launchSprite(this.momo, "walk")
             }
         }
     }
@@ -121,53 +164,57 @@ export default class Characters {
         if (value) {
             this.body.velocity.y = 8
             this.canJump = false
-            this.launchSprite("jump")
+            this.launchSprite(this.momo, "jump")
+            this.canMove = false;
         }
     }
 
     movement() {
         this.forceValue.set(0, 0, 0)
 
-        if (this.moveLeft !== undefined || this.moveRight !== undefined) {
-            if (this.moveLeft && this.moveRight) {
-                this.bothWays = true
-                this.forceValue.x = 0
-            } else {
-                this.bothWays = false
+        if (this.canMove) {
 
-                if (this.moveLeft) {
-                    this.forceValue.x = -6;
-                    if (!this.movementState.walking) {
-                        if (this.momo.scale.x == 1) {
-                            this.turnToWalk()
-                            this.momo.scale.set(-1, 1, 1)
-                        } else {
-                            this.launchSprite("walk")
-                        }
-                        this.movementState.walking = true
-                    }
+            if (this.moveLeft !== undefined || this.moveRight !== undefined) {
+                if (this.moveLeft && this.moveRight) {
+                    this.bothWays = true
+                    this.forceValue.x = 0
                 } else {
-                    if (!this.moveLeftBlock) {
-                        this.moveLeftBlock = true
-                        this.forceValue.x = 0
-                    }
-                }
+                    this.bothWays = false
 
-                if (this.moveRight) {
-                    this.forceValue.x = 6;
-                    if (!this.movementState.walking) {
-                        if (this.momo.scale.x == -1) {
-                            this.turnToWalk()
-                            this.momo.scale.set(1, 1, 1)
-                        } else {
-                            this.launchSprite("walk")
+                    if (this.moveLeft) {
+                        this.forceValue.x = -6;
+                        if (!this.movementState.walking) {
+                            if (this.momo.scale.x == 1) {
+                                this.turnToWalk()
+                                this.momo.scale.set(-1, 1, 1)
+                            } else {
+                                this.launchSprite(this.momo, "walk")
+                            }
+                            this.movementState.walking = true
                         }
-                        this.movementState.walking = true
+                    } else {
+                        if (!this.moveLeftBlock) {
+                            this.moveLeftBlock = true
+                            this.forceValue.x = 0
+                        }
                     }
-                } else {
-                    if (!this.moveRightBlock) {
-                        this.moveRightBlock = true
-                        this.forceValue.x = 0
+
+                    if (this.moveRight) {
+                        this.forceValue.x = 6;
+                        if (!this.movementState.walking) {
+                            if (this.momo.scale.x == -1) {
+                                this.turnToWalk()
+                                this.momo.scale.set(1, 1, 1)
+                            } else {
+                                this.launchSprite(this.momo, "walk")
+                            }
+                            this.movementState.walking = true
+                        }
+                    } else {
+                        if (!this.moveRightBlock) {
+                            this.moveRightBlock = true
+                            this.forceValue.x = 0
+                        }
                     }
                 }
             }
@@ -183,7 +230,7 @@ export default class Characters {
             let accelerationValue = new CANNON.Vec3(this.forceValue.x, 0, 0);
             this.body.velocity = accelerationValue
             if (!this.movementState.wait) {
-                this.launchSprite("wait")
+                this.launchSprite(this.momo, "wait")
                 this.movementState.wait = false;
             }
             this.movementState.walking = false
@@ -195,7 +242,7 @@ export default class Characters {
             let accelerationValue = new CANNON.Vec3(this.forceValue.x, 0, 0);
             this.body.velocity = accelerationValue
             if (!this.movementState.wait) {
-                this.launchSprite("wait")
+                this.launchSprite(this.momo, "wait")
                 this.movementState.wait = false;
             }
             this.movementState.walking = false
@@ -204,8 +251,8 @@ export default class Characters {
     }
 
     //Sprite
-    launchSprite(id) {
-        this.momo
+    launchSprite(character, id) {
+        character
             .newSprites()
             .addState(id)
             .start()
@@ -234,11 +281,50 @@ export default class Characters {
         }
     }
 
+    updateRomoPosition() {
+        // console.log(this.romo.children[0])
+        // this.launchSprite(this.romo.children[0], "romo")
+
+        if (this.socket) {
+            if (this.speed) {
+                let x = this.romo.position.x
+                let y = this.romo.position.y
+
+                // if (frustum.containsPoint(pos)) {
+                TweenMax.to(this.romo.position, .3, {
+                    x: x + (this.coordinate.x * this.speed) / 25,
+                    y: y + (this.coordinate.y * this.speed) / 25,
+                    ease: Power4.easeOut
+                })
+                // } else {
+                //     if (this.coordinate.x < 0) {
+                //         TweenMax.to(this.romo.position, .5, {
+                //             x: x + (this.coordinate.x * this.speed) / 25,
+                //             y: y + (this.coordinate.y * this.speed) / 25,
+                //             ease: Power4.easeOut
+                //         })
+                //     }
+                // }
+            }
+        }
+        // if (this.romo) {
+        //     var frustum = new THREE.Frustum();
+
+        //     this.camera.updateMatrixWorld();
+        //     this.camera.matrixWorldInverse.getInverse(this.camera.matrixWorld);
+        //     frustum.setFromMatrix(new THREE.Matrix4().multiplyMatrices(this.camera.projectionMatrix, this.camera.matrixWorldInverse));
+
+        //     var pos = new THREE.Vector3(this.romo.position.x, this.romo.position.y, this.romo.position.z);
+        // }
+    }
+
     update() {
         const delta = this.clock.getDelta() * 5000;
         this.time += delta;
         this.momo.update(delta)
+        this.romo.children[0].update(delta)
         this.updateSpritePosition()
+        this.updateRomoPosition()
         this.movement()
         this.move()
     }

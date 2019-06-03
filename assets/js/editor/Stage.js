@@ -2,11 +2,11 @@ import * as THREE from 'three'
 import FixedProp from '../objects/FixedProp'
 import History from '../editor/History'
 import Platform from '../editor/Platform'
+import AnimatedProp from "@/assets/js/objects/AnimatedProp";
 
 export default class Stage extends THREE.Object3D {
     constructor(opts) {
         super()
-
         if (opts.model) {
             this.modelIMG = opts.model
             this.addModelToScene()
@@ -24,9 +24,15 @@ export default class Stage extends THREE.Object3D {
         this.add(this.platformsGroup)
         this.platforms = []
 
+        this.animatesGroup = new THREE.Group()
+        this.animatesGroup.name = 'spriteAnimateGroup'
+        this.add(this.animatesGroup)
+        this.animates = []
+
         this.pressets = {
             ...opts.pressets
         };
+
         // console.log(this.pressets)
         //     let store
         //     if (process.browser) {
@@ -72,7 +78,6 @@ export default class Stage extends THREE.Object3D {
                     z: prop.scale.z
                 },
                 checkpoint: {
-                    animate: prop.checkpointAnimate || false,
                     minigame: prop.checkpointMinigame || false,
                 }
             })
@@ -105,8 +110,37 @@ export default class Stage extends THREE.Object3D {
                 }
             })
         });
-
         this.pressets.platforms = platforms;
+
+        let animates = [];
+        this.animates.filter(animate => animate.visible).forEach((animate) => {
+            console.log('animate paraaaams', animate)
+            animates.push({
+                position: {
+                    x: animate.position.x,
+                    y: animate.position.y,
+                    z: animate.position.z,
+                },
+                rotation: {
+                    x: animate.rotation.x,
+                    y: animate.rotation.y,
+                    z: animate.rotation.z,
+                },
+                scale: {
+                    x: animate.scale.x,
+                    y: animate.scale.y,
+                    z: animate.scale.z,
+                },
+                params: {
+                    w: animate.wTiles,
+                    h: animate.hTiles,
+                    png: animate.textureURL,
+                    json: animate.json
+                }
+            })
+        });
+
+        this.pressets.animates = animates;
 
         return {
             id: this.pressets.id,
@@ -116,13 +150,24 @@ export default class Stage extends THREE.Object3D {
 
     init() {
         //init fixed Props
-        this.pressets.props.fixed.forEach((prop, index) => {
-            this.addFixedProp(prop)
-        });
+        if (this.pressets.props.fixed) {
+            this.pressets.props.fixed.forEach((prop, index) => {
+                this.addFixedProp(prop)
+            });
+        }
 
-        this.pressets.platforms.forEach(platform => {
-            this.addPlatform(platform)
-        });
+        if (this.pressets.platforms) {
+            this.pressets.platforms.forEach(platform => {
+                this.addPlatform(platform)
+            });
+        }
+
+        if (this.pressets.animates) {
+
+            this.pressets.animates.forEach(animate => {
+                this.addAnimate(animate)
+            });
+        }
     }
 
     loadTextureAtlas() {
@@ -194,6 +239,25 @@ export default class Stage extends THREE.Object3D {
         return platform
     }
 
+    addAnimate(params) {
+        new AnimatedProp(params).then((animate) => {
+
+            console.log('anilate',animate)
+            let position = typeof params.position == "undefined" || undefined ? new THREE.Vector3(0, 0, 0) : params.position
+            let rotation = typeof params.rotation == "undefined" || undefined ? new THREE.Vector3(0, 0, 0) : params.rotation
+            let scale = typeof params.scale == "undefined" || undefined ? new THREE.Vector3(1, 1, 1) : params.scale
+
+            animate.scale.set(scale.x, scale.y, scale.z)
+            animate.position.set(position.x, position.y, position.z)
+            animate.rotation.set(rotation.x, rotation.y, rotation.z)
+
+            this.animates.push(animate)
+            this.animatesGroup.add(animate)
+
+            return animate
+        })
+    }
+
     addFixedProp({
         _id,
         position,
@@ -223,7 +287,6 @@ export default class Stage extends THREE.Object3D {
         prop.scale.set(scale.x, scale.y, scale.z)
         prop.index = this.fixedProps.length
 
-        prop.checkpointAnimate = typeof checkpoint == "undefined" || undefined ? false : checkpoint.animate
         prop.checkpointMinigame = typeof checkpoint == "undefined" || undefined ? false : checkpoint.minigame
 
         this.fixedProps.push(prop);
