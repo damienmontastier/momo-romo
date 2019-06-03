@@ -15,7 +15,7 @@
         :key="index"
         v-for="(sprite, index) in sprites"
         class="sprite"
-        @click="addSprite(sprite)"
+        @click="addAnimate(sprite)"
       >{{sprite.id}} animated</p>
     </div>
   </div>
@@ -41,19 +41,15 @@ export default {
           id: "cat",
           png: pngCat,
           json: jsonCat,
-          size: {
-            w: 4,
-            h: 4
-          }
+          w: 4,
+          h: 4
         },
         {
           id: "petals",
           png: pngPetals,
           json: jsonPetals,
-          size: {
-            w: 16,
-            h: 4
-          }
+          w: 16,
+          h: 4
         }
       ]
     };
@@ -100,8 +96,8 @@ export default {
         this.setDraggingPropId(id);
       }
     },
-    addSprite(sprite) {
-      this.$emit("addSprite", sprite);
+    addAnimate(sprite) {
+      this.$emit("addAnimate", sprite);
     }
   }
 };
@@ -133,10 +129,9 @@ export default {
   background: white;
   z-index: 2;
   p {
-    &:hover{
-      background:red;
+    &:hover {
+      background: red;
     }
   }
-  
 }
 </style>

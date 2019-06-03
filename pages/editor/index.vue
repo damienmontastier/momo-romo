@@ -1,7 +1,7 @@
 <template>
   <div id="editor" ref="editor">
     <select name="stages" id="stages-select" ref="stages-select" v-on:change="onChange"></select>
-    <props-editor v-on:addSprite="addSprite($event)"></props-editor>
+    <props-editor v-on:addAnimate="addAnimate($event)"></props-editor>
     <export-btn v-on:save="save" v-on:exprt="exprt"></export-btn>
     <LayerElement v-if="loaded"></LayerElement>
     <export-btn v-on:exprt="exprt" v-on:save="save"></export-btn>
@@ -135,8 +135,8 @@ export default {
         }
       });
     },
-    addSprite(params) {
-      this.editor.stages[this.currentStageId].addSprite(params);
+    addAnimate(params) {
+      this.editor.stages[this.currentStageId].addAnimate(params);
     },
     onChange() {
       this.setCurrentStageId(this.$refs["stages-select"].value);

@@ -5,12 +5,17 @@ export default class AnimatedProp extends THREE.Object3D {
     constructor(params) {
         super()
         return new Promise((resolve, reject) => {
-            this.params = params
+            if (params.params) {
+                this.params = params.params
+            } else {
+                this.params = params
+            }
+
             this._type = "animatedProp";
             this._id = this.params.id
 
-            this.render().then((sprite) => {
-                resolve(sprite)
+            this.render().then((animate) => {
+                resolve(animate)
             });
         })
     }
@@ -18,27 +23,33 @@ export default class AnimatedProp extends THREE.Object3D {
     render() {
         return new Promise((resolve, reject) => {
             new Sprite(this.params.png, this.params.json, {
-                wTiles: this.params.size.w,
-                hTiles: this.params.size.h
-            }).then(sprite => {
+                wTiles: this.params.w,
+                hTiles: this.params.h
+            }).then(animate => {
+                this.animate = animate
+                this.material = animate.material
+                this._type = "AnimatedProp"
+                this.animate.mesh._class = this;
+                this.mesh = this.animate.mesh
+                this.mesh._type = "AnimatedProp"
+                this.animate.mesh._type = "AnimatedProp";
 
-                this.material = sprite.material
-                sprite.position.set(2, 2, 2)
-                sprite._type = "AnimatedProp";
-                this.add(sprite);
+                this.add(this.animate);
 
-                resolve(sprite)
+                resolve(this)
             })
         })
     }
 
     highlight(value) {
-        if (value === true) {
-            this.AnimatedProp.material.color.set(0x00ff00);
-            this._highlight = true
-        } else if (value === false) {
-            this.AnimatedProp.material.color.set(0xffffff);
-            this._highlight = false
-        }
+        //TODO HIGHLIGHT
+
+        // if (value === true) {
+        //     this.animate.material.color.set(0x00ff00);
+        //     this._highlight = true
+        // } else if (value === false) {
+        //     this.animate.material.color.set(0xffffff);
+        //     this._highlight = false
+        // }
     }
 }

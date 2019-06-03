@@ -57,7 +57,7 @@ export default class Characters {
         this.KeyboardManager = new KeyboardManager(this.onInput.bind(this));
 
         return new Promise((resolve, reject) => {
-            this.addSprite().then((sprites) => {
+            this.addAnimate().then((sprites) => {
                 this.momo = sprites[0]
 
                 let body = sprites[1][0]
@@ -75,7 +75,7 @@ export default class Characters {
         });
     }
 
-    addSprite() {
+    addAnimate() {
 
         let loader = new THREE.TextureLoader();
 

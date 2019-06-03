@@ -7,7 +7,6 @@ import AnimatedProp from "@/assets/js/objects/AnimatedProp";
 export default class Stage extends THREE.Object3D {
     constructor(opts) {
         super()
-        console.log("stage", opts)
         if (opts.model) {
             this.modelIMG = opts.model
             this.addModelToScene()
@@ -33,6 +32,7 @@ export default class Stage extends THREE.Object3D {
         this.pressets = {
             ...opts.pressets
         };
+
         // console.log(this.pressets)
         //     let store
         //     if (process.browser) {
@@ -114,6 +114,7 @@ export default class Stage extends THREE.Object3D {
 
         let animates = [];
         this.animates.filter(animate => animate.visible).forEach((animate) => {
+            console.log('animate paraaaams', animate)
             animates.push({
                 position: {
                     x: animate.position.x,
@@ -129,6 +130,12 @@ export default class Stage extends THREE.Object3D {
                     x: animate.scale.x,
                     y: animate.scale.y,
                     z: animate.scale.z,
+                },
+                params: {
+                    w: animate.wTiles,
+                    h: animate.hTiles,
+                    png: animate.textureURL,
+                    json: animate.json
                 }
             })
         });
@@ -143,14 +150,24 @@ export default class Stage extends THREE.Object3D {
 
     init() {
         //init fixed Props
-        console.log('pressets', this.pressets)
-        this.pressets.props.fixed.forEach((prop, index) => {
-            this.addFixedProp(prop)
-        });
+        if (this.pressets.props.fixed) {
+            this.pressets.props.fixed.forEach((prop, index) => {
+                this.addFixedProp(prop)
+            });
+        }
 
-        this.pressets.platforms.forEach(platform => {
-            this.addPlatform(platform)
-        });
+        if (this.pressets.platforms) {
+            this.pressets.platforms.forEach(platform => {
+                this.addPlatform(platform)
+            });
+        }
+
+        if (this.pressets.animates) {
+
+            this.pressets.animates.forEach(animate => {
+                this.addAnimate(animate)
+            });
+        }
     }
 
     loadTextureAtlas() {
@@ -222,14 +239,22 @@ export default class Stage extends THREE.Object3D {
         return platform
     }
 
-    addSprite(params) {
-        new AnimatedProp(params).then((sprite) => {
-            console.log(sprite)
+    addAnimate(params) {
+        new AnimatedProp(params).then((animate) => {
 
-            this.animates.push(sprite)
-            this.animatesGroup.add(sprite)
+            console.log('anilate',animate)
+            let position = typeof params.position == "undefined" || undefined ? new THREE.Vector3(0, 0, 0) : params.position
+            let rotation = typeof params.rotation == "undefined" || undefined ? new THREE.Vector3(0, 0, 0) : params.rotation
+            let scale = typeof params.scale == "undefined" || undefined ? new THREE.Vector3(1, 1, 1) : params.scale
 
-            return sprite
+            animate.scale.set(scale.x, scale.y, scale.z)
+            animate.position.set(position.x, position.y, position.z)
+            animate.rotation.set(rotation.x, rotation.y, rotation.z)
+
+            this.animates.push(animate)
+            this.animatesGroup.add(animate)
+
+            return animate
         })
     }
 
