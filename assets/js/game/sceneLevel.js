@@ -5,6 +5,9 @@ import CANNON from 'cannon'
 import physicParams from '../physics/physicParams';
 import Characters from '../objects/Characters';
 import cannonDebugRenderer from '../physics/CannonDebugRenderer'
+import AnimatedProp from "@/assets/js/objects/AnimatedProp";
+import Sprite from "@/assets/js/objects/Sprite";
+
 import {
     TweenMax,
     Power4
@@ -12,13 +15,21 @@ import {
 
 export default class Level {
     constructor(opts, store) {
+
         this.canvas = document.getElementById("canvas")
         this.textureAtlas = opts.textureAtlas; // textureAtlas
+
         this.fixedProps = opts.levelParams.props.fixed; // Fixed Props
+
+        this.animates = opts.levelParams.animates; // Animate Props
+        this.animatesArray = []
+
         this.levelParams = {
             ...opts.levelParams
         };
         this.platforms = this.levelParams.platforms
+
+        this.clock = new THREE.Clock()
 
         new Characters(store).then((characters) => {
             this.characters = characters
@@ -101,6 +112,9 @@ export default class Level {
         this.platforms.forEach(platform => {
             this.addPlatforms(platform)
         });
+        this.animates.forEach(animate => {
+            this.addAnimate(animate)
+        });
     }
 
     addFixedProp(props) {
@@ -125,6 +139,18 @@ export default class Level {
         }
         this.fixedProps.push(prop);
         this.scene.add(prop)
+    }
+
+    addAnimate(params) {
+        new AnimatedProp(params).then((animate) => {
+            animate.scale.set(params.scale.x, params.scale.y, params.scale.z)
+            animate.position.set(params.position.x, params.position.y, params.position.z)
+            animate.rotation.set(params.rotation.x, params.rotation.y, params.rotation.z)
+            animate.name = params.params.json.id
+            this.animatesArray.push(animate)
+
+            this.scene.add(animate)
+        })
     }
 
     addCharactere() {
@@ -186,11 +212,29 @@ export default class Level {
     render() {
         // this.camera.lookAt(this.camera.position)
 
+        if (this.animatesArray.length) {
+            this.animatesArray.forEach(animate => {
+                const delta = this.clock.getDelta() * 5000;
+                this.time += delta;
+                animate.animate.update(delta)
+                if (this.momo.body.position.x >= animate.position.x - 1 && this.momo.body.position.x <= animate.position.x + 1) {
+                    if (animate.animate.json.id = "cat") {
+                        this.launchSprite(animate.animate, animate.animate.json.id)
+                    }
+                } else {
+                    console.log('no behind')
+                }
+            });
+
+        }
+
+        //TODO tween position caméra
+
         this.cannonDebugRenderer.update()
 
         if (this.characters) {
             this.characters.update()
-            // this.camera.position.set(this.momo.position.x, 2, 10)
+            // this.camera.position.set(this.momo.position.x, 2, 15)
         }
 
         if (this.minigameProps) {
@@ -204,5 +248,14 @@ export default class Level {
         this.physicParams.update()
 
         this.renderer.render(this.scene, this.camera);
+    }
+    launchSprite(character, id) {
+        console.log('charac',character)
+        console.log('id',id)
+        character
+            .newSprites()
+            .addState(id)
+            .start()
+        this.currentSpriteID = id;
     }
 }

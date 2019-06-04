@@ -70,9 +70,16 @@ export default class Characters {
                 this.romo.add(body);
                 this.romo.add(mood);
 
+                this.animeRomo()
+
                 resolve(this)
             })
         });
+    }
+
+    animeRomo() {
+        this.launchSprite(this.romo.children[0], "normal")
+        this.launchSprite(this.romo.children[1], "win")
     }
 
     addAnimate() {
@@ -165,6 +172,10 @@ export default class Characters {
             this.body.velocity.y = 8
             this.canJump = false
             this.launchSprite(this.momo, "jump")
+
+            this.launchSprite(this.romo.children[0], "romo")
+            this.launchSprite(this.romo.children[1], "power")
+
             this.canMove = false;
         }
     }
@@ -275,38 +286,28 @@ export default class Characters {
             .start()
     }
 
-    updateSpritePosition() {
+    updateMomoPosition() {
         if (this.momo) {
             this.momo.position.copy(this.momo.body.position)
         }
     }
 
     updateRomoPosition() {
-        // console.log(this.romo.children[0])
-        // this.launchSprite(this.romo.children[0], "romo")
-
         if (this.socket) {
             if (this.speed) {
                 let x = this.romo.position.x
                 let y = this.romo.position.y
 
-                // if (frustum.containsPoint(pos)) {
                 TweenMax.to(this.romo.position, .3, {
                     x: x + (this.coordinate.x * this.speed) / 25,
                     y: y + (this.coordinate.y * this.speed) / 25,
                     ease: Power4.easeOut
                 })
-                // } else {
-                //     if (this.coordinate.x < 0) {
-                //         TweenMax.to(this.romo.position, .5, {
-                //             x: x + (this.coordinate.x * this.speed) / 25,
-                //             y: y + (this.coordinate.y * this.speed) / 25,
-                //             ease: Power4.easeOut
-                //         })
-                //     }
-                // }
             }
         }
+
+        //TODO Ne pas sortir du cadre
+
         // if (this.romo) {
         //     var frustum = new THREE.Frustum();
 
@@ -322,9 +323,14 @@ export default class Characters {
         const delta = this.clock.getDelta() * 5000;
         this.time += delta;
         this.momo.update(delta)
+
         this.romo.children[0].update(delta)
-        this.updateSpritePosition()
+        this.romo.children[1].update(delta)
+
+        this.updateMomoPosition()
+        
         this.updateRomoPosition()
+
         this.movement()
         this.move()
     }

@@ -114,7 +114,6 @@ export default class Stage extends THREE.Object3D {
 
         let animates = [];
         this.animates.filter(animate => animate.visible).forEach((animate) => {
-            console.log('animate paraaaams', animate)
             animates.push({
                 position: {
                     x: animate.position.x,
