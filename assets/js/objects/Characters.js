@@ -202,7 +202,7 @@ export default class Characters {
                     this.bothWays = false
 
                     if (this.moveLeft) {
-                        this.forceValue.x = -6;
+                        this.forceValue.x = -4;
                         if (!this.movementState.walking) {
                             if (this.momo.scale.x == 1) {
                                 this.turnToWalk()
@@ -220,7 +220,7 @@ export default class Characters {
                     }
 
                     if (this.moveRight) {
-                        this.forceValue.x = 6;
+                        this.forceValue.x = 4;
                         if (!this.movementState.walking) {
                             if (this.momo.scale.x == -1) {
                                 this.turnToWalk()

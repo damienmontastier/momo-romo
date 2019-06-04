@@ -226,7 +226,7 @@ export default class Level {
                 this.time += delta;
                 animate.animate.update(delta)
                 // console.log(animate.animate)
-                if (this.momo.body.position.x >= animate.position.x - 2.5 && this.momo.body.position.x <= animate.position.x + 2.5) {
+                if (this.momo.body.position.x >= animate.position.x - 1.5 && this.momo.body.position.x <= animate.position.x + 1.5) {
                     if (animate.animate.name = "cat") {
                         if (!this.animateRunning) {
                             console.log('passage sur le animated')
