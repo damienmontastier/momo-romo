@@ -121,7 +121,6 @@ export default class Sprite extends THREE.Object3D {
     }
 
     addState(id) {
-        console.log(id, this.json)
         let sprite = this.json.find(sprite => sprite.id === id);
         if (sprite) {
             this.spritesMap.push(sprite)

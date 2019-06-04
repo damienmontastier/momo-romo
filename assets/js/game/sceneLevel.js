@@ -226,27 +226,28 @@ export default class Level {
                 this.time += delta;
                 animate.animate.update(delta)
                 // console.log(animate.animate)
-                if (this.momo.body.position.x >= animate.position.x - 1 && this.momo.body.position.x <= animate.position.x + 1) {
+                if (this.momo.body.position.x >= animate.position.x - 2.5 && this.momo.body.position.x <= animate.position.x + 2.5) {
                     if (animate.animate.name = "cat") {
                         if (!this.animateRunning) {
                             console.log('passage sur le animated')
+                            if (this.catRun) {}
                             this.launchSprite(animate.animate, "cat")
                             this.animateWait = false
                             this.animateRunning = true;
-                            TweenMax.to(animate.animate.position, 2, {
-                                x: animate.animate.position.x + 2,
-                                ease: Power4.easeIn
+                            console.log(animate.position)
+                            let x = animate.position.x
+                            TweenMax.to(animate.position, 2, {
+                                x: x + 2,
+                                ease: Power4.easeIn,
                             })
                         }
                     }
                 } else {
                     if (!this.animateWait) {
-                        console.log('no sur le animated')
-
                         this.launchSprite(animate.animate, "wait")
 
                         this.animateWait = true
-                        this.animateRunning = false;
+                        // this.animateRunning = false;
                     }
                 }
             });
@@ -259,6 +260,12 @@ export default class Level {
         if (this.characters) {
             this.characters.update()
             // this.camera.position.set(this.momo.position.x, 2, 15)
+            TweenMax.to(this.camera.position, 1, {
+                x: this.momo.position.x,
+                y: 2,
+                z: 15,
+                ease: Power0.easeIn
+            })
         }
 
         if (this.minigameProps) {

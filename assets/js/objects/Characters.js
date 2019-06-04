@@ -168,8 +168,17 @@ export default class Characters {
     }
 
     jump(value) {
+
         if (value) {
+            if (this.movementState.walking) {
+                if (this.moveLeft) {
+                    this.body.velocity.x = -3
+                } else {
+                    this.body.velocity.x = 3
+                }
+            }
             this.body.velocity.y = 8
+            this.movementState.jump = true
             this.canJump = false
             this.launchSprite(this.momo, "jump")
 
@@ -182,10 +191,10 @@ export default class Characters {
 
     movement() {
         this.forceValue.set(0, 0, 0)
-
         if (this.canMove) {
 
             if (this.moveLeft !== undefined || this.moveRight !== undefined) {
+
                 if (this.moveLeft && this.moveRight) {
                     this.bothWays = true
                     this.forceValue.x = 0
@@ -233,6 +242,15 @@ export default class Characters {
     }
 
     move() {
+
+        if (this.movementState.jump && this.movementState.walking) {
+            console.log('jump + walking')
+            if (this.moveLeft && this.momo.scale.x == 1) {
+                this.momo.scale.set(-1, 1, 1)
+            } else if (this.moveRight && this.momo.scale.x == -1) {
+                this.momo.scale.set(1, 1, 1)
+            }
+        }
         if (this.moveLeft || this.moveRight || !this.canJump && !this.bothWays) {
             let accelerationValue = new CANNON.Vec3(this.forceValue.x, 0, 0);
             this.body.force = accelerationValue
@@ -328,7 +346,7 @@ export default class Characters {
         this.romo.children[1].update(delta)
 
         this.updateMomoPosition()
-        
+
         this.updateRomoPosition()
 
         this.movement()
