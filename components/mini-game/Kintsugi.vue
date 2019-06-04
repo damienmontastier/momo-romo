@@ -78,6 +78,9 @@ const MomoSpriteJson = require("~/static/ui/kintsugi/mini-game/sprites/momo/powe
 import MomoMoodSprite from "~/static/ui/kintsugi/mini-game/sprites/moods/face_momo.png";
 const MomoMoodSpriteJson = require("~/static/ui/kintsugi/mini-game/sprites/moods/face_momo.json");
 
+import BrushSprite from "~/static/sprites/brush/brush.png";
+const BrushSpriteJson = require("~/static/sprites/brush/brush.json");
+
 Number.prototype.map = function(in_min, in_max, out_min, out_max) {
   return ((this - in_min) * (out_max - out_min)) / (in_max - in_min) + out_min;
 };
@@ -140,6 +143,29 @@ class App {
 
     //animation loop
     this.renderer.setAnimationLoop(this.render.bind(this));
+  }
+  
+  addBrush() {
+    return new Promise((resolve,reject)=>{
+      new Sprite(BrushSprite, BrushSpriteJson.sprites, {
+        wTiles: 4,
+        hTiles: 2
+      }).then((brush)=>{
+        this.brush = brush
+        this.brush.scale.set(50, 50, 50);
+        this.brush.position.z = 2;
+        this.brush.position.x = 60;
+        this.brush.position.y = -5;
+        this.brush.rotation.z = THREE.Math.degToRad(30)
+
+        this.scene.add(this.brush);
+        this.brush
+          .newSprites()
+          .addState("loop")
+          .start();
+        })
+      resolve()
+    })
   }
 
   addMomo() {
@@ -292,6 +318,9 @@ class App {
     this.time += delta;
     if (this.momo) {
       this.momo.update(delta);
+    }
+    if (this.brush) {
+      this.brush.update(delta);
     }
     this.renderer.render(this.scene, this.camera);
   }
@@ -503,6 +532,7 @@ export default {
       });
       promises.push(this.app.loadBowl());
       promises.push(this.app.addMomo());
+      promises.push(this.app.addBrush());
       Promise.all(promises).then(() => {
         console.log("3D ASSETS LOADED");
         this.tweeningScalar = 0.5

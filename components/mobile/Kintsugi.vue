@@ -1,9 +1,25 @@
 <template>
   <div id="kintsugi">
     <!-- <div class="title">kintsugi mobile mini game {{roomID}}</div> -->
-    <is-ready v-if="!isReady"/>
+    <!-- <is-ready v-if="!isReady"/> -->
     <div ref="canvas" id="canvas"></div>
-    <div id="debug"></div>
+    <div class="ui">
+      <div class="isPlaying">
+        <div class="container">
+          <span class="skew fill-en">momo is playing</span>
+          <p class="skew book">stay ready for your turn</p>
+        </div>
+      </div>
+      <div class="countdown">
+        <div class="container">
+          <Countdown :countdown="1"/>
+        </div>
+      </div>
+      <div class="swipe"></div>
+    </div>
+    <div class="debug">
+      <button @click="debugLaunchFracture()">launchFracture</button>
+    </div>
   </div>
 </template>
 
@@ -14,6 +30,7 @@ import ObjectLoader from "~/assets/js/utils/ObjectLoader";
 import { mapState } from "vuex";
 import { TweenMax } from "gsap";
 import isReady from './isReady'
+import Countdown from '@/components/mini-game/Kintsugi/Countdown'
 
 class App {
   constructor() {
@@ -46,19 +63,20 @@ class App {
       1,
       10000
     );
-    this.camera.position.set(0, 0, 100);
+    this.camera.position.set(0, 0, 80);
 
     // controls
     // this.controls = new OrbitControls(this.camera);
     // this.controls.enabled = true;
 
     // ambient light
-    this.scene.add(new THREE.AmbientLight(0x222222));
+    this.scene.add(new THREE.AmbientLight(0xffffff,4));
+    this.scene.background = new THREE.Color("#fefbf0");
 
     // directional light
-    this.light = new THREE.DirectionalLight(0xffffff, 1);
-    this.light.position.set(0, 0, 100);
-    this.scene.add(this.light);
+    // this.light = new THREE.DirectionalLight(0xffffff, 1);
+    // this.light.position.set(0, 0, 100);
+    // this.scene.add(this.light);
 
     // axes
     this.scene.add(new THREE.AxesHelper(20));
@@ -120,17 +138,36 @@ class App {
 
   loadBowl() {
     ObjectLoader.load({
-      url: "https://rocheclement.fr/momoromo/bol/_.glb",
+      url: "https://rocheclement.fr/momoromo/bol/_2.glb",
       format: "glb"
     }).then(object => {
-      this.model = object.scene.children[0].children[0].children[0];
+      this.model = object.scene.children[0].children[1];
+      this.model.position.y = - 3
       this.model.children.forEach((c, index) => {
         c._originPosition = c.getWorldPosition(new THREE.Vector3());
         c._originRotation = c.rotation;
-        c._originScale = c.scale;
+          let ratio = 1
 
-        c.position.multiplyScalar(3);
+          if (index === 0) {
+            let position = new THREE.Vector3(-2.697, -9.130, 0)
+            c.position.add(position.multiplyScalar(ratio));
+            let euler = new THREE.Euler(0, 0, THREE.Math.degToRad(29.7)*ratio)
+            c.rotation.copy(euler);
+          } else if (index === 1) {
+            let position = new THREE.Vector3(14.308, -3.160, 0)
+            c.position.add(position.multiplyScalar(ratio));
+            c.rotation.set(0, 0, THREE.Math.degToRad(-18.05)*ratio);
+          } else if (index === 2) {
+            let position = new THREE.Vector3(-4.943, 10.734, 0)
+            c.position.add(position.multiplyScalar(ratio));
+            c.rotation.set(0, 0, THREE.Math.degToRad(-21.57)*ratio);
+          } else if (index === 3) {
+            let position = new THREE.Vector3(8.338, 10.434, 0)
+            c.position.add(position.multiplyScalar(ratio));
+            c.rotation.set(0, 0, THREE.Math.degToRad(12.69)*ratio);
+          }
         c._maxPosition = c.position.clone();
+        c._maxRotation = c.rotation.clone();
         // c.children[1].rotation.z = THREE.Math.degToRad(index*10)
       });
 
@@ -174,6 +211,9 @@ class App {
       .add(target1._originPosition.clone());
     TweenMax.to(target1.position, 0.5, { x: p1.x, y: p1.y, z: p1.z });
 
+    let r1 = target1._maxRotation.clone();
+    TweenMax.to(target1.rotation, 0.5, { z: r1.z * ratio });
+
     if (targets[1]) {
       let target2 = this.fragments[targets[1]];
       let p2 = target2._maxPosition
@@ -182,6 +222,9 @@ class App {
         .multiplyScalar(ratio)
         .add(target2._originPosition.clone());
       TweenMax.to(target2.position, 0.5, { x: p2.x, y: p2.y, z: p2.z });
+
+      let r2 = target2._maxRotation.clone();
+      TweenMax.to(target2.rotation, 0.5, { z: r2.z * ratio });
     }
   }
 
@@ -200,6 +243,21 @@ class App {
   launchFracture(fracture) {
     if (this.fractures[fracture]) {
       this.currentFracture = this.fractures[fracture];
+      
+      setTimeout(()=>{
+        let box = new THREE.Box3().setFromObject(this.currentFracture)
+        let p = box.getCenter()
+        // var geometry = new THREE.SphereGeometry( 1, 32, 32 );
+        // var material = new THREE.MeshBasicMaterial( {color: 0xffff00} );
+        // var sphere = new THREE.Mesh(geometry,material);
+        // this.scene.add( sphere );
+        // sphere.position.copy(p)
+        this.camera.position.x = p.x
+        this.camera.position.y = p.y
+        this.camera.position.z = 40
+      },1000)
+
+
     }
   }
 
@@ -242,7 +300,7 @@ class App {
 export default {
   data() {
     return {
-      app: new App(),
+      // app: new App(),
       mouse: new THREE.Vector2(),
       isMouseDown: false,
       isReady: false
@@ -253,14 +311,14 @@ export default {
       socket: state => state.synchro.socket,
       roomID: state => state.synchro.roomID
     }),
-    loaded() {
-      return this.app.loaded;
-    }
+    // loaded() {
+    //   return this.app.loaded;
+    // }
   },
   watch: {
-    loaded(val) {
-      console.log("isLoaded");
-    },
+    // loaded(val) {
+    //   console.log("isLoaded");
+    // },
     mouse: {
       handler: function() {
         this.app.mouse = this.mouse;
@@ -277,6 +335,7 @@ export default {
     window.addEventListener("mousemove", this.onMouseMove.bind(this), false);
     window.addEventListener("mousedown", this.onMouseDown.bind(this), false);
     window.addEventListener("mouseup", this.onMouseUp.bind(this), false);
+    this.app = new App()
     this.init();
     this.createSocketEvents();
   },
@@ -325,13 +384,70 @@ export default {
     },
     onMouseUp(event) {
       this.isMouseDown = false;
+    },
+    debugLaunchFracture() {
+      console.log('debugLaunchFracture')
+      this.app.bringCloser([3], 5);
+      this.app.launchFracture(2)
     }
   },
   components: {
-    isReady
+    isReady,Countdown
   }
 };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
+@import "~assets/scss/main.scss";
+.ui {
+  position: absolute;
+  left: 0px;
+  top:0px;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  .isPlaying {
+    opacity: 0;
+    position: absolute;
+    left: 0px;
+    top:0px;
+    // z-index: 2;
+    width: 100%;
+    height: 100%;
+    background: rgba(200,200,200,0.7);
+    display: flex;
+    .container {
+      margin: auto;
+      display: flex;
+      justify-content: center;
+      flex-direction: column;
+      
+    }
+  }
+  .countdown {
+    position: absolute;
+    left: 0px;
+    top:0px;
+    // z-index: 2;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    .container {
+      margin: auto;
+      height: 100px;
+    }
+  }
+}
+.debug {
+    position: absolute;
+    bottom: 0px;
+    left: 0px;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    z-index: 20;
+    button {
+      background: white;
+    }
+}
 </style>
