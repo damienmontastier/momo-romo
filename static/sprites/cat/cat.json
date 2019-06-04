@@ -1,6 +1,8 @@
 {
-    "id": "cat",
-    "durationTile": "900",
-    "start": 0,
-    "end": 15
+    "sprites": [{
+        "id": "cat",
+        "durationTile": "900",
+        "start": 0,
+        "end": 15
+    }]
 }

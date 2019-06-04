@@ -4,6 +4,7 @@ import Sprite from "@/assets/js/objects/Sprite";
 export default class AnimatedProp extends THREE.Object3D {
     constructor(params) {
         super()
+
         return new Promise((resolve, reject) => {
             if (params.params) {
                 this.params = params.params
@@ -22,7 +23,7 @@ export default class AnimatedProp extends THREE.Object3D {
 
     render() {
         return new Promise((resolve, reject) => {
-            new Sprite(this.params.png, this.params.json, {
+            new Sprite(this.params.png, this.params.json.sprites, {
                 wTiles: this.params.w,
                 hTiles: this.params.h
             }).then(animate => {

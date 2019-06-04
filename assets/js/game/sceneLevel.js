@@ -29,6 +29,8 @@ export default class Level {
         };
         this.platforms = this.levelParams.platforms
 
+        this.test = true
+
         this.clock = new THREE.Clock()
 
         new Characters(store).then((characters) => {
@@ -192,6 +194,10 @@ export default class Level {
         this.renderer.setSize(window.innerWidth, window.innerHeight);
     }
 
+    testfunc(){
+        console.log('test function')
+    }
+
 
     nextToMinigame(value) {
         if (value && !this.isMiniGameLaunched) {
@@ -216,16 +222,18 @@ export default class Level {
             this.animatesArray.forEach(animate => {
                 const delta = this.clock.getDelta() * 5000;
                 this.time += delta;
-                animate.animate.update(delta)
+                // animate.animate.update(delta)
+                // console.log(animate.animate)
                 if (this.momo.body.position.x >= animate.position.x - 1 && this.momo.body.position.x <= animate.position.x + 1) {
                     if (animate.animate.json.id = "cat") {
-                        this.launchSprite(animate.animate, animate.animate.json.id)
+                        this.launchSprite(animate.animate, "cat")
                     }
-                } else {
-                    console.log('no behind')
-                }
+                } 
+                // else {
+                    
+                //     console.log('no behind')
+                // }
             });
-
         }
 
         //TODO tween position caméra
@@ -250,8 +258,6 @@ export default class Level {
         this.renderer.render(this.scene, this.camera);
     }
     launchSprite(character, id) {
-        console.log('charac',character)
-        console.log('id',id)
         character
             .newSprites()
             .addState(id)

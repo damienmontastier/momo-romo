@@ -46,6 +46,8 @@ export default class Characters {
 
         this.sprites = MomoJson.sprites
 
+        console.log('sprites', this.sprites)
+
         this.addBody()
 
         this.movementState = {
