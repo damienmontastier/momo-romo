@@ -29,7 +29,8 @@ export default class Level {
         };
         this.platforms = this.levelParams.platforms
 
-        this.test = true
+        this.animateRunning = false
+        this.animateWait = false
 
         this.clock = new THREE.Clock()
 
@@ -150,7 +151,7 @@ export default class Level {
             animate.rotation.set(params.rotation.x, params.rotation.y, params.rotation.z)
             animate.name = params.params.json.id
             this.animatesArray.push(animate)
-
+            console.log(animate)
             this.scene.add(animate)
         })
     }
@@ -194,8 +195,9 @@ export default class Level {
         this.renderer.setSize(window.innerWidth, window.innerHeight);
     }
 
-    testfunc(){
+    testfunc() {
         console.log('test function')
+
     }
 
 
@@ -222,17 +224,31 @@ export default class Level {
             this.animatesArray.forEach(animate => {
                 const delta = this.clock.getDelta() * 5000;
                 this.time += delta;
-                // animate.animate.update(delta)
+                animate.animate.update(delta)
                 // console.log(animate.animate)
                 if (this.momo.body.position.x >= animate.position.x - 1 && this.momo.body.position.x <= animate.position.x + 1) {
-                    if (animate.animate.json.id = "cat") {
-                        this.launchSprite(animate.animate, "cat")
+                    if (animate.animate.name = "cat") {
+                        if (!this.animateRunning) {
+                            console.log('passage sur le animated')
+                            this.launchSprite(animate.animate, "cat")
+                            this.animateWait = false
+                            this.animateRunning = true;
+                            TweenMax.to(animate.animate.position, 2, {
+                                x: animate.animate.position.x + 2,
+                                ease: Power4.easeIn
+                            })
+                        }
                     }
-                } 
-                // else {
-                    
-                //     console.log('no behind')
-                // }
+                } else {
+                    if (!this.animateWait) {
+                        console.log('no sur le animated')
+
+                        this.launchSprite(animate.animate, "wait")
+
+                        this.animateWait = true
+                        this.animateRunning = false;
+                    }
+                }
             });
         }
 
