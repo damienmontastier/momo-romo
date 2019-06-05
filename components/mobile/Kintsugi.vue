@@ -149,20 +149,20 @@ class App {
           let ratio = 1
 
           if (index === 0) {
-            let position = new THREE.Vector3(-2.697, -9.130, 0)
+            let position = new THREE.Vector3(-5.697, -9.130, 0)
             c.position.add(position.multiplyScalar(ratio));
             let euler = new THREE.Euler(0, 0, THREE.Math.degToRad(29.7)*ratio)
             c.rotation.copy(euler);
           } else if (index === 1) {
-            let position = new THREE.Vector3(14.308, -3.160, 0)
+            let position = new THREE.Vector3(8.308, 3.160, 0)
             c.position.add(position.multiplyScalar(ratio));
             c.rotation.set(0, 0, THREE.Math.degToRad(-18.05)*ratio);
           } else if (index === 2) {
-            let position = new THREE.Vector3(-4.943, 10.734, 0)
+            let position = new THREE.Vector3(-7.943, 10.734, 0)
             c.position.add(position.multiplyScalar(ratio));
             c.rotation.set(0, 0, THREE.Math.degToRad(-21.57)*ratio);
           } else if (index === 3) {
-            let position = new THREE.Vector3(8.338, 10.434, 0)
+            let position = new THREE.Vector3(5.338, 10.434, 0)
             c.position.add(position.multiplyScalar(ratio));
             c.rotation.set(0, 0, THREE.Math.degToRad(12.69)*ratio);
           }
@@ -387,8 +387,8 @@ export default {
     },
     debugLaunchFracture() {
       console.log('debugLaunchFracture')
-      this.app.bringCloser([3], 5);
-      this.app.launchFracture(2)
+      this.app.bringCloser([0,1], 5);
+      this.app.launchFracture(0)
     }
   },
   components: {

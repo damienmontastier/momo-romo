@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="container" ref="countdown">
     <!-- go -->
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 160" v-if="countdown == 0">
       <defs>
@@ -941,9 +941,27 @@
 </template>
 
 <script>
+import {TweenMax} from 'gsap'
 export default {
   props: {
     countdown: Number
+  },
+  watch: {
+    countdown() {
+      console.log('tl')
+      let tl = new TimelineMax();
+      tl
+      .to(this.$refs.countdown,0.25, {
+        ease: Back.easeOut.config(1.4),
+        scale: 1,
+        opacity:1
+      })
+      .to(this.$refs.countdown,0.25, {
+        ease: Back.easeIn.config(1.4),
+        scale: 0,
+        opacity:0
+      },0.5)
+    }
   }
 };
 </script>
@@ -953,6 +971,7 @@ export default {
   height: 100%;
   margin: auto;
   display: flex;
+  transform: scale(0);
 }
 svg {
   height: 100%;

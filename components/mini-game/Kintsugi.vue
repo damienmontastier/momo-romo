@@ -334,7 +334,7 @@ class App {
         // console.log(object.scene.children[0].children[1])
         // this.model = object.scene.children[0].children[1].children[0];
         this.model = object.scene.children[0].children[1]
-        this.model.scale.set(0.00001, 0.00001, 0.00001);
+        this.model.scale.set(1.2, 1.2, 1.2);
         this.model.children.forEach((c, index) => {
           c._originPosition = c.getWorldPosition(new THREE.Vector3());
           c._originRotation = c.rotation;
@@ -343,20 +343,20 @@ class App {
           let ratio = 1
 
           if (index === 0) {
-            let position = new THREE.Vector3(-2.697, -9.130, 0)
+            let position = new THREE.Vector3(-5.697, -9.130, 0)
             c.position.add(position.multiplyScalar(ratio));
             let euler = new THREE.Euler(0, 0, THREE.Math.degToRad(29.7)*ratio)
             c.rotation.copy(euler);
           } else if (index === 1) {
-            let position = new THREE.Vector3(14.308, -3.160, 0)
+            let position = new THREE.Vector3(8.308, 3.160, 0)
             c.position.add(position.multiplyScalar(ratio));
             c.rotation.set(0, 0, THREE.Math.degToRad(-18.05)*ratio);
           } else if (index === 2) {
-            let position = new THREE.Vector3(-4.943, 10.734, 0)
+            let position = new THREE.Vector3(-7.943, 10.734, 0)
             c.position.add(position.multiplyScalar(ratio));
             c.rotation.set(0, 0, THREE.Math.degToRad(-21.57)*ratio);
           } else if (index === 3) {
-            let position = new THREE.Vector3(8.338, 10.434, 0)
+            let position = new THREE.Vector3(5.338, 10.434, 0)
             c.position.add(position.multiplyScalar(ratio));
             c.rotation.set(0, 0, THREE.Math.degToRad(12.69)*ratio);
           }
@@ -535,7 +535,7 @@ export default {
       promises.push(this.app.addBrush());
       Promise.all(promises).then(() => {
         console.log("3D ASSETS LOADED");
-        this.tweeningScalar = 0.5
+        this.tweeningScalar = 1
         let tl = new TimelineMax();
         tl.delay(1)
           .add("titleAppear", 0)
@@ -555,32 +555,32 @@ export default {
             this.$refs.intro.$refs.titleSVG,
             0.5,
             {
-              ease: Power4.easeOut,
+              ease: Back.easeOut.config(1.4),
               // delay: -0.5,
               opacity: 1,
               scale:1
             },
             "titleAppear"
           )
-          .to(
-            this.app.model.scale,
-            0.5,
-            {
-              ease: Power4.easeOut,
-              delay: 0.1,
-              x: 1.2,
-              y: 1.2,
-              z: 1.2
-            },
-            "titleAppear"
-          )
+          // .to(
+          //   this.app.model.scale,
+          //   1,
+          //   {
+          //     ease: Power4.easeOut,
+          //     delay: 0.1,
+          //     x: 1.2,
+          //     y: 1.2,
+          //     z: 1.2
+          //   },
+          //   "titleAppear"
+          // )
           .to(
             this,
             3,
             {
               ease: Power4.easeOut,
               // delay: 0.6,
-              tweeningScalar: 1.1,
+              tweeningScalar: 1.2,
               onStart:()=>{
                 // this.app.fragments.forEach((fragment)=>{
                 //   let o = new THREE.Vector3().copy(fragment._originPosition)
@@ -602,8 +602,8 @@ export default {
             [this.app.planeRosace.scale, this.app.planeGradient.scale],
             0.5,
             {
-              ease: Power4.easeOut,
-              delay: 0.2,
+              ease: Back.easeOut.config(1.4),
+              // delay: 0.2,
               x: 1,
               y: 1,
               z: 1
@@ -614,7 +614,7 @@ export default {
             [this.app.planeRosace.material, this.app.planeGradient.material],
             0.5,
             {
-              ease: Power4.easeOut,
+              ease: Back.easeOut.config(1.4),
               delay: 0.2,
               opacity: 1
             },
@@ -624,7 +624,7 @@ export default {
             this.$refs.intro.$refs.titleSVG,
             0.5,
             {
-              ease: Power4.easeOut,
+              ease: Back.easeIn.config(1.4),
               scale:0
             },
             "titleDisappear"
@@ -633,7 +633,7 @@ export default {
             [this.app.planeRosace.scale, this.app.planeGradient.scale,this.app.model.scale],
             0.5,
             {
-              ease: Power4.easeOut,
+              ease: Back.easeIn.config(1.4),
               x: 0.01,
               y: 0.01,
               z: 0.01
@@ -644,8 +644,8 @@ export default {
             [this.app.planeRosace.material, this.app.planeGradient.material, this.$refs.intro.$refs.titleSVG],
             0.5,
             {
-              ease: Power4.easeOut,
-              opacity: 0
+              ease: Back.easeIn.config(1.4),
+              opacity: 0,
             },
             "titleDisappear"
           )
@@ -655,7 +655,16 @@ export default {
             onStart:()=>{
               this.$refs.intro.showSynchro()
             }
-          });
+          })
+          .eventCallback('onComplete',()=> {
+            this.app.planeGradient.position.z = 0.15
+            this.app.fragments.forEach((fragment)=>{
+              let o = new THREE.Vector3().copy(fragment._maxPosition)
+              let rotationZ = fragment._maxRotation.z
+              fragment.position.copy(o)
+              fragment.rotation.z = rotationZ
+            })
+          })
       });
       
     },
@@ -725,21 +734,21 @@ export default {
           x:1,
           y:1,
           z:1,
-          ease: Power4.easeOut,
+          ease: Back.easeOut.config(1.4),
         },0)
         .to([this.app.planeRosace.material,this.app.planeGradient.material],0.5, {
           opacity:1,
-          ease: Power4.easeOut,
+          ease: Back.easeOut.config(1.4),
         },0)
         .to([this.app.planeRosace.scale,this.app.planeGradient.scale],0.5, {
           x:0.001,
           y:0.001,
           z:0.001,
-          ease: Power4.easeOut,
+          ease: Back.easeIn.config(1.4),
         },1)
         .to([this.app.planeRosace.material,this.app.planeGradient.material],0.5, {
           opacity:0,
-          ease: Power4.easeOut,
+          ease: Back.easeIn.config(1.4),
         },1)
         this.$refs.intro.$refs.isPlaying.style.opacity = "1"
         this.launchStep();

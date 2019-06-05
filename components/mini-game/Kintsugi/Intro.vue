@@ -77,7 +77,7 @@ export default {
   },
   data() {
     return {
-      countdown: 3,
+      countdown: 4,
       romoIsReady: false
     };
   },
@@ -199,7 +199,7 @@ export default {
     opacity: 0;
   }
   .countdown {
-    height: 100px;
+    height: 80px;
   }
   .countdown,
   .isPlaying,
