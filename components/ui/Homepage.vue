@@ -1,8 +1,9 @@
 <template>
   <div class="frame" id="homepage">
     <div id="left">
-      <div id="test">
+      <div id="container">
         <div id="background-landscape"></div>
+        <div id="background-landscape-clone"></div>
       </div>
       <div id="title-text">
         <p class="fill-en skew">The legend of</p>
@@ -77,7 +78,7 @@ export default {
     width: 60%;
     position: relative;
     // background: red;
-    #test {
+    #container {
       position: relative;
       width: 100%;
       height: 100%;
@@ -89,7 +90,7 @@ export default {
         position: absolute;
         width: inherit;
         height: 90%;
-        background: url("~static/ui/homepage/homepage_fond_contour.png");
+        background: url("~static/ui/homepage/homepage_fond.png");
         background-size: contain;
         background-position: center;
         background-repeat: no-repeat;
@@ -98,8 +99,8 @@ export default {
           content: "";
           position: absolute;
           bottom: 0;
-          width: 134px;
-          height: 255px;
+          width: 160px;
+          height: 305px;
           left: 10%;
           z-index: 3;
           background: url("~static/ui/characters/momo.png");
@@ -110,31 +111,43 @@ export default {
           content: "";
           position: absolute;
           top: 20%;
-          width: 30%;
-          height: 30%;
-          right: -5%;
+          width: 25%;
+          height: 25%;
+          right: 0;
           z-index: 3;
           background: url("~static/ui/characters/romo.png");
           background-size: 100% auto;
           background-repeat: no-repeat;
         }
       }
+      #background-landscape-clone {
+        position: absolute;
+        width: inherit;
+        height: 90%;
+        z-index: 2;
+        background: url("~static/ui/homepage/homepage_fond_fuji.png");
+        background-size: contain;
+        background-position: center;
+        background-repeat: no-repeat;
+        pointer-events: none;
+      }
     }
 
     #title-text {
       position: absolute;
-      top: 0;
-      width: 100%;
+      width: 85%;
       height: inherit;
-      left: 0;
-      display: flex;
+      left: 50%;
       flex-direction: column;
       top: 10%;
+      display: flex;
+      transform: translateX(-50%);
       p {
         align-self: flex-start;
       }
       svg {
-        width: 75%;
+        width: 80%;
+
         &:first-of-type {
           text-align: left;
           align-self: flex-start;
@@ -149,18 +162,23 @@ export default {
   }
   #right {
     width: 40%;
-    // background: yellow;
     display: flex;
     justify-content: center;
     align-items: center;
     #content {
-      max-width: 80%;
+      max-width: 85%;
       text-align: center;
       h5 {
         text-transform: uppercase;
         font-size: 40px;
+        font-family: $Jost-Book;
+
+        span {
+          font-size: 40px;
+          font-family: $Jost-Semi;
+        }
       }
-      svg{
+      svg {
         width: 40%;
       }
     }
