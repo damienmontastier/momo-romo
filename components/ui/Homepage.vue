@@ -1,9 +1,11 @@
 <template>
   <div class="frame" id="homepage">
     <div id="left">
-      <div id="background-landscape"></div>
+      <div id="test">
+        <div id="background-landscape"></div>
+      </div>
       <div id="title-text">
-        <h5 class="fill-en skew">The legend of</h5>
+        <p class="fill-en skew">The legend of</p>
         <Momo></Momo>
         <Romo></Romo>
       </div>
@@ -69,54 +71,50 @@ export default {
   }
   #left {
     position: relative;
-
     background: red;
-    #background-landscape {
+    #test {
       position: relative;
-      width: inherit;
-      height: 80%;
-      position: relative;
-      margin: 0 auto;
-      top: 50%;
-      transform: translateY(-50%);
-      background: blue;
-      background: url("~static/ui/homepage/homepage_fond_contour.png");
-      background-size: contain;
-      background-position: center;
-      background-repeat: no-repeat;
+      width: 100%;
+      // background: blue;
+      height: 90%;
 
-      &::before {
-        content: "";
+      #background-landscape {
         position: absolute;
-        left: -67px;
-        bottom: 0;
-        width: 134px;
-        height: 255px;
-        background: url("~static/ui/characters/momo.png");
-        background-size: 100% auto;
+        // background: blue;
+        display: inline;
+        width: 100%;
+        height: 100%;
+        background: url("~static/ui/homepage/homepage_fond_contour.png");
+        background-size: contain;
+        background-position: center;
         background-repeat: no-repeat;
-        z-index: 99999;
-      }
-      &::after {
-        content: "";
-        position: absolute;
-        right: -73px;
-        top: 20%;
-        width: 146px;
-        height: 71px;
-        background: url("~static/ui/characters/romo.png");
-        background-size: 100% auto;
-        background-repeat: no-repeat;
-        z-index: 99999;
+
+        &::after {
+          content: "Landscape after";
+          position: absolute;
+          top: 10%;
+          width: 20%;
+          height: 20%;
+          right: 0;
+          background: green;
+          z-index: 3;
+        }
       }
     }
+
     #title-text {
+      position: absolute;
+      top: 0;
+      width: 100%;
+      height: inherit;
+      left: 0;
       display: flex;
       flex-direction: column;
-      top: 10%;
-      position: absolute;
-      width: 100%;
-      z-index: 1;
+      // top: 10%;
+      // background: yellow;
+      p {
+        align-self: flex-start;
+      }
       svg {
         width: 75%;
         &:first-of-type {
@@ -130,6 +128,63 @@ export default {
         }
       }
     }
+    // #background-landscape {
+    //   position: relative;
+    //   width: inherit;
+    //   height: 80%;
+    //   margin: 0 auto;
+    //   top: 50%;
+    //   transform: translateY(-50%);
+    //   background: blue;
+    //   background: url("~static/ui/homepage/homepage_fond_contour.png");
+    //   background-size: contain;
+    //   background-position: center;
+    //   background-repeat: no-repeat;
+
+    //   &::before {
+    //     content: "";
+    //     position: absolute;
+    //     left: -67px;
+    //     bottom: 0;
+    //     width: 134px;
+    //     height: 255px;
+    //     background: url("~static/ui/characters/momo.png");
+    //     background-size: 100% auto;
+    //     background-repeat: no-repeat;
+    //   }
+    //   &::after {
+    //     content: "";
+    //     position: absolute;
+    //     right: -73px;
+    //     top: 20%;
+    //     width: 146px;
+    //     height: 71px;
+    //     background:pink;
+    //     // background: url("~static/ui/characters/romo.png");
+    //     // background-size: 100% auto;
+    //     // background-repeat: no-repeat;
+    //     z-index: 3;
+    //   }
+    // }
+    // #title-text {
+    //   display: flex;
+    //   flex-direction: column;
+    //   top: 10%;
+    //   position: absolute;
+    //   width: 100%;
+    //   svg {
+    //     width: 75%;
+    //     &:first-of-type {
+    //       text-align: left;
+    //       align-self: flex-start;
+    //       margin-bottom: -5%;
+    //     }
+    //     &:not(:first-of-type) {
+    //       text-align: right;
+    //       align-self: flex-end;
+    //     }
+    //   }
+    // }
   }
   #right {
     background: yellow;
