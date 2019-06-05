@@ -134,7 +134,7 @@ export default {
 
     #title-text {
       position: absolute;
-      width: 580px;
+      width: 600px;
       height: inherit;
       left: 50%;
       flex-direction: column;
@@ -165,7 +165,7 @@ export default {
     justify-content: center;
     align-items: center;
     #content {
-      max-width: 85%;
+      max-width: 80%;
       text-align: center;
       h5 {
         text-transform: uppercase;
