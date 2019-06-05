@@ -87,8 +87,8 @@ export default {
 
       #background-landscape {
         position: absolute;
-        width: inherit;
-        height: 85%;
+        width: 700px;
+        height: 90%;
         background: url("~static/ui/homepage/homepage_fond.png");
         background-size: contain;
         background-position: center;
@@ -109,9 +109,9 @@ export default {
         &::after {
           content: "";
           position: absolute;
-          top: 20%;
+          top: 25%;
           width: 25%;
-          height: 25%;
+          height: 15%;
           right: 0;
           z-index: 3;
           background: url("~static/ui/characters/romo.png");
@@ -121,8 +121,8 @@ export default {
       }
       #background-landscape-clone {
         position: absolute;
-        width: inherit;
-        height: 85%;
+        width: 700px;
+        height: 90%;
         z-index: 2;
         background: url("~static/ui/homepage/homepage_fond_fuji.png");
         background-size: contain;
@@ -134,18 +134,18 @@ export default {
 
     #title-text {
       position: absolute;
-      width: 85%;
+      width: 580px;
       height: inherit;
       left: 50%;
       flex-direction: column;
-      top: 10%;
+      top: 120px;
       display: flex;
       transform: translateX(-50%);
       p {
         align-self: flex-start;
       }
       svg {
-        width: 75%;
+        width: 80%;
 
         &:first-of-type {
           text-align: left;
@@ -185,7 +185,7 @@ export default {
 }
 
 .content {
-  margin-bottom: 100px;
+  margin-bottom: 60px;
   &:last-child {
     margin: 0;
   }
