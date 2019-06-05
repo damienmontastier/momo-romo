@@ -11,24 +11,26 @@
       </div>
     </div>
     <div id="right">
-      <div class="skew">
-        <h5 clas="book">
-          An Interactive Tale About
-          <span class="semi">Wabi-Sabi</span>
-        </h5>
+      <div id="content">
+        <div class="skew content">
+          <h5 class="book">
+            An Interactive Tale About
+            <span class="semi">Wabi-Sabi</span>
+          </h5>
+        </div>
+        <buttonHomepage class="content"></buttonHomepage>
+        <div class="skew content">
+          <p class="book">
+            This is a
+            <span class="semi">two players game</span>
+            where cooperation is key!
+            Make sure to be a duo
+            before launching the game.
+          </p>
+        </div>
       </div>
-      <!-- put button here-->
-      <div class="skew">
-        <p class="book">
-          This is a
-          <span class="semi">two players game</span>
-          where cooperation is key!
-          Make sure to be a duo
-          before launching the game.
-        </p>
-      </div>
+      <!-- <button @click="$emit('increment')">Next</button> -->
     </div>
-    <!-- <button @click="$emit('increment')">Next</button> -->
   </div>
 </template>
 
@@ -37,11 +39,13 @@ import { mapState, mapMutations } from "vuex";
 import { TweenMax } from "gsap";
 import Momo from "@/components/svg/momo";
 import Romo from "@/components/svg/romo";
+import buttonHomepage from "@/components/svg/button-homepage";
 
 export default {
   components: {
     Momo,
-    Romo
+    Romo,
+    buttonHomepage
   },
   data() {
     return {};
@@ -67,37 +71,52 @@ export default {
 
   #left,
   #right {
-    width: 50%;
+    // width: 50%;
   }
   #left {
+    width: 60%;
     position: relative;
-    background: red;
+    // background: red;
     #test {
       position: relative;
       width: 100%;
-      // background: blue;
-      height: 90%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
 
       #background-landscape {
         position: absolute;
-        // background: blue;
-        display: inline;
-        width: 100%;
-        height: 100%;
+        width: inherit;
+        height: 90%;
         background: url("~static/ui/homepage/homepage_fond_contour.png");
         background-size: contain;
         background-position: center;
         background-repeat: no-repeat;
 
-        &::after {
-          content: "Landscape after";
+        &::before {
+          content: "";
           position: absolute;
-          top: 10%;
-          width: 20%;
-          height: 20%;
-          right: 0;
-          background: green;
+          bottom: 0;
+          width: 134px;
+          height: 255px;
+          left: 10%;
           z-index: 3;
+          background: url("~static/ui/characters/momo.png");
+          background-size: 100% auto;
+          background-repeat: no-repeat;
+        }
+        &::after {
+          content: "";
+          position: absolute;
+          top: 20%;
+          width: 30%;
+          height: 30%;
+          right: -5%;
+          z-index: 3;
+          background: url("~static/ui/characters/romo.png");
+          background-size: 100% auto;
+          background-repeat: no-repeat;
         }
       }
     }
@@ -110,8 +129,7 @@ export default {
       left: 0;
       display: flex;
       flex-direction: column;
-      // top: 10%;
-      // background: yellow;
+      top: 10%;
       p {
         align-self: flex-start;
       }
@@ -128,66 +146,31 @@ export default {
         }
       }
     }
-    // #background-landscape {
-    //   position: relative;
-    //   width: inherit;
-    //   height: 80%;
-    //   margin: 0 auto;
-    //   top: 50%;
-    //   transform: translateY(-50%);
-    //   background: blue;
-    //   background: url("~static/ui/homepage/homepage_fond_contour.png");
-    //   background-size: contain;
-    //   background-position: center;
-    //   background-repeat: no-repeat;
-
-    //   &::before {
-    //     content: "";
-    //     position: absolute;
-    //     left: -67px;
-    //     bottom: 0;
-    //     width: 134px;
-    //     height: 255px;
-    //     background: url("~static/ui/characters/momo.png");
-    //     background-size: 100% auto;
-    //     background-repeat: no-repeat;
-    //   }
-    //   &::after {
-    //     content: "";
-    //     position: absolute;
-    //     right: -73px;
-    //     top: 20%;
-    //     width: 146px;
-    //     height: 71px;
-    //     background:pink;
-    //     // background: url("~static/ui/characters/romo.png");
-    //     // background-size: 100% auto;
-    //     // background-repeat: no-repeat;
-    //     z-index: 3;
-    //   }
-    // }
-    // #title-text {
-    //   display: flex;
-    //   flex-direction: column;
-    //   top: 10%;
-    //   position: absolute;
-    //   width: 100%;
-    //   svg {
-    //     width: 75%;
-    //     &:first-of-type {
-    //       text-align: left;
-    //       align-self: flex-start;
-    //       margin-bottom: -5%;
-    //     }
-    //     &:not(:first-of-type) {
-    //       text-align: right;
-    //       align-self: flex-end;
-    //     }
-    //   }
-    // }
   }
   #right {
-    background: yellow;
+    width: 40%;
+    // background: yellow;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    #content {
+      max-width: 80%;
+      text-align: center;
+      h5 {
+        text-transform: uppercase;
+        font-size: 40px;
+      }
+      svg{
+        width: 40%;
+      }
+    }
+  }
+}
+
+.content {
+  margin-bottom: 100px;
+  &:last-child {
+    margin: 0;
   }
 }
 </style>
