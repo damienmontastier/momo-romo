@@ -19,7 +19,7 @@
             <span class="semi">Wabi-Sabi</span>
           </h5>
         </div>
-        <buttonHomepage class="content"></buttonHomepage>
+        <buttonHomepage @click.native="$emit('increment')" class="content"></buttonHomepage>
         <div class="skew content">
           <p class="book">
             This is a
@@ -70,14 +70,13 @@ export default {
   position: relative;
   display: flex;
 
-  #left,
-  #right {
-    // width: 50%;
-  }
+  // #left,
+  // #right {
+  //   // width: 50%;
+  // }
   #left {
     width: 60%;
     position: relative;
-    // background: red;
     #container {
       position: relative;
       width: 100%;
@@ -89,7 +88,7 @@ export default {
       #background-landscape {
         position: absolute;
         width: inherit;
-        height: 90%;
+        height: 85%;
         background: url("~static/ui/homepage/homepage_fond.png");
         background-size: contain;
         background-position: center;
@@ -123,7 +122,7 @@ export default {
       #background-landscape-clone {
         position: absolute;
         width: inherit;
-        height: 90%;
+        height: 85%;
         z-index: 2;
         background: url("~static/ui/homepage/homepage_fond_fuji.png");
         background-size: contain;
@@ -146,7 +145,7 @@ export default {
         align-self: flex-start;
       }
       svg {
-        width: 80%;
+        width: 75%;
 
         &:first-of-type {
           text-align: left;
