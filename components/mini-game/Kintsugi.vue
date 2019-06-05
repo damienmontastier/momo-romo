@@ -700,8 +700,8 @@ export default {
           this.app.model.scale.set(1.2,1.2,1.2)
           this.app.model.position.z = 0.7
           this.app.fragments.forEach((fragment)=>{
-            fragment.position.copy(fragment._maxPosition)
-            fragment.rotation.z = fragment._maxRotation.z
+            fragment.position.copy(fragment._originPosition)
+            fragment.rotation.z = fragment._originRotation.z
           })
         }
       },"endGameAppear")

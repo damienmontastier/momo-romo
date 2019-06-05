@@ -31,6 +31,9 @@ import { mapState } from "vuex";
 import { TweenMax } from "gsap";
 import isReady from './isReady'
 import Countdown from '@/components/mini-game/Kintsugi/Countdown'
+import { Vector3 } from 'three';
+
+const MeshLine = require( 'three.meshline' );
 
 class App {
   constructor() {
@@ -103,7 +106,6 @@ class App {
     );
     if (intersects[0]) {
       let piece = intersects[0].object;
-      console.log(piece);
       if (
         piece.name === 0 ||
         this.currentFracture.children[piece.name - 1].triggered === true
@@ -123,7 +125,10 @@ class App {
 
   triggerFracturePiece(piece) {
     piece.triggered = true;
-    piece.material.color.set(0x00ff00);
+    // piece.material.transparent = true;
+    piece.material.opacity = 1;
+    piece.material.color.set(new THREE.Color(0xffff00));
+    
     if (this.socket) {
       this.socket.emit("custom-event", {
         name: "kintsugi mini-game",
@@ -188,8 +193,11 @@ class App {
 
       this.fractures.forEach(fracture => {
         fracture.children.forEach((piece, index) => {
-          piece.material.color.set(new THREE.Color(0xff0000));
+          // piece.material.color.set(new THREE.Color(0xff0000));
+          piece.material.transparent = true;
+          piece.material.opacity = 0;
           piece.name = index;
+          // piece.visible = false
           // console.log(piece)
         });
       });
@@ -243,18 +251,34 @@ class App {
   launchFracture(fracture) {
     if (this.fractures[fracture]) {
       this.currentFracture = this.fractures[fracture];
+
+
       
       setTimeout(()=>{
+        let geometry = new THREE.Geometry();
+        this.currentFracture.children.forEach((piece)=>{
+          let v = piece.getWorldPosition(new THREE.Vector3())
+          geometry.vertices.push( v );
+        })
+        console.log(MeshLine)
+        var line = new MeshLine.MeshLine();
+        line.setGeometry( geometry );
+
+        let material = new MeshLine.MeshLineMaterial({
+          lineWidth: 0.25,
+          color: new THREE.Color(0x000000),
+          dashArray: 2
+        });
+
+        let mesh = new THREE.Mesh( line.geometry, material ); // this syntax could definitely be improved!
+        this.scene.add( mesh );
+        mesh.position.z = 1.1;
+
         let box = new THREE.Box3().setFromObject(this.currentFracture)
-        let p = box.getCenter()
-        // var geometry = new THREE.SphereGeometry( 1, 32, 32 );
-        // var material = new THREE.MeshBasicMaterial( {color: 0xffff00} );
-        // var sphere = new THREE.Mesh(geometry,material);
-        // this.scene.add( sphere );
-        // sphere.position.copy(p)
+        let p = box.getCenter(new THREE.Vector3())
         this.camera.position.x = p.x
         this.camera.position.y = p.y
-        this.camera.position.z = 40
+        this.camera.position.z = 30
       },1000)
 
 
@@ -387,8 +411,8 @@ export default {
     },
     debugLaunchFracture() {
       console.log('debugLaunchFracture')
-      this.app.bringCloser([0,1], 5);
-      this.app.launchFracture(0)
+      this.app.bringCloser([2], 5);
+      this.app.launchFracture(1)
     }
   },
   components: {

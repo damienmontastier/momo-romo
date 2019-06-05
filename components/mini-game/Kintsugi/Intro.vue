@@ -28,7 +28,7 @@
       <button-circle-red jpn="スタート" en="LAUNCH GAME" letter="E"/>
     </div>
     
-    <div class="countdown" @click="launchCountdown" ref="countdown">
+    <div class="countdown" ref="countdown">
       <Countdown :countdown="countdown"/>
     </div>
     <div class="isPlaying" ref="isPlaying">
@@ -87,6 +87,7 @@ export default {
     },
     launchMinigame() {
       this.$refs.launchButton.style.opacity = "0"
+      this.$refs.launchButton.style.pointerEvents = "none"
       this.$refs.tuto.style.opacity = "0"
       this.$refs.synchro.style.opacity = "0"
       this.$parent.launchCountdown()
@@ -110,6 +111,7 @@ export default {
     setRomoReady() {
       this.romoIsReady = true
       this.$refs.launchButton.style.opacity = "1"
+      this.$refs.launchButton.style.pointerEvents = "auto"
       console.log('romo is ready')
     }
   },
@@ -197,6 +199,7 @@ export default {
     left: calc(50% - 100px);
     z-index: 10000;
     opacity: 0;
+    pointer-events: none;
   }
   .countdown {
     height: 80px;
