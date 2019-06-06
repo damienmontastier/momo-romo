@@ -15,7 +15,9 @@
           <Countdown :countdown="1"/>
         </div>
       </div>
-      <div class="swipe"></div>
+      <div class="swipe" ref="swipe">
+        <div id="cursor"></div>
+      </div>
     </div>
     <div class="debug">
       <button @click="debugLaunchFracture()">launchFracture</button>
@@ -36,11 +38,12 @@ import { Vector3 } from 'three';
 const MeshLine = require( 'three.meshline' );
 
 class App {
-  constructor() {
+  constructor($refs) {
     window.addEventListener("resize", this.onWindowResize.bind(this));
     window.addEventListener("orientationchange", this.onOrientationChange.bind(this));
+    this.$refs = $refs
     this.loaded = false;
-    this.mouse = new THREE.Vector2();
+    this.mouse = new THREE.Vector2(100000,100000);
     this.raycaster = new THREE.Raycaster();
   }
 
@@ -100,27 +103,81 @@ class App {
 
   raycast() {
     this.raycaster.setFromCamera(this.mouse, this.camera);
-    let intersects = this.raycaster.intersectObjects(
-      this.currentFracture.children.filter(f => !f._triggered),
-      true
-    );
-    if (intersects[0]) {
-      let piece = intersects[0].object;
-      if (
-        piece.name === 0 ||
-        this.currentFracture.children[piece.name - 1].triggered === true
-      ) {
-        this.triggerFracturePiece(piece);
-        if (
-          piece.name ===
-          this.currentFracture.children[
-            this.currentFracture.children.length - 1
-          ].name
-        ) {
-          this.endFracture();
+    // let intersects = this.raycaster.intersectObjects(
+    //   this.currentFracture.children.filter(f => !f._triggered),
+    //   true
+    // );
+    // if (intersects[0]) {
+    //   let piece = intersects[0].object;
+    //   if (
+    //     piece.name === 0 ||
+    //     this.currentFracture.children[piece.name - 1].triggered === true
+    //   ) {
+    //     this.triggerFracturePiece(piece);
+    //     if (
+    //       piece.name ===
+    //       this.currentFracture.children[
+    //         this.currentFracture.children.length - 1
+    //       ].name
+    //     ) {
+    //       this.endFracture();
+    //     }
+    //   }
+    // }
+
+    // this.currentFracture.children[0].triggered = true
+
+    let intersect = this.raycaster.intersectObject(this.shadowPlane)
+    if(intersect[0]) {
+      let point = intersect[0].point
+
+      let piece = this.currentFracture.children.slice().reverse().find((piece)=>piece.triggered)
+
+      let index;
+      if(piece === undefined) {
+        index = 0
+      } else {
+        index = piece.name + 1
+      }
+
+      let target = this.currentFracture.children.find((piece)=>piece.name === index)
+
+      if(target) {
+        let p = target.getWorldPosition(new THREE.Vector3())
+        let d = p.distanceTo(point)
+        
+        if(d < 1.5) {
+          this.triggerFracturePiece(target)
+          this.updateCursor(p,true)
+          if(target.name === this.currentFracture.children[this.currentFracture.children.length - 1].name) {
+            this.endFracture();
+          }
         }
       }
     }
+  }
+
+  projectVectorToScreen(vector) {
+    vector.project(this.camera)
+    vector.x = ( vector.x + 1) * window.innerWidth / 2;
+    vector.y = - ( vector.y - 1) * window.innerHeight / 2;
+    vector.z = 0;
+    return vector
+  }
+
+  updateCursor(vector,tween = false) {
+    vector = this.projectVectorToScreen(vector)
+    // if(tween) {
+
+    // } else {
+    //   this.$refs.swipe.style.left = vector.x + 'px'
+    //   this.$refs.swipe.style.top = vector.y+ 'px'
+    // }
+
+    TweenMax.to(this.$refs.swipe,tween ? 0.25 : 0, {
+      x:vector.x,
+      y:vector.y
+    })
   }
 
   triggerFracturePiece(piece) {
@@ -139,6 +196,13 @@ class App {
         }
       });
     }
+  }
+
+  addShadowPlane() {
+    var geometry = new THREE.PlaneGeometry( 100, 100, 1 );
+    var material = new THREE.MeshBasicMaterial( {transparent:true, opacity:0} );
+    this.shadowPlane = new THREE.Mesh( geometry, material );
+    this.scene.add( this.shadowPlane );
   }
 
   loadBowl() {
@@ -255,37 +319,49 @@ class App {
 
       
       setTimeout(()=>{
+        this.createFractureUI(this.currentFracture)
+      },1100)
+
+
+    }
+  }
+
+  createFractureUI(fracture) {
         let geometry = new THREE.Geometry();
         this.currentFracture.children.forEach((piece)=>{
           let v = piece.getWorldPosition(new THREE.Vector3())
           geometry.vertices.push( v );
         })
-        console.log(MeshLine)
-        var line = new MeshLine.MeshLine();
+
+        let line = new MeshLine.MeshLine();
         line.setGeometry( geometry );
 
         let material = new MeshLine.MeshLineMaterial({
-          lineWidth: 0.25,
-          color: new THREE.Color(0x000000),
-          dashArray: 2
+          lineWidth: 0.2,
+          color: new THREE.Color(0xff5736),
+          // dashArray: 2
         });
 
-        let mesh = new THREE.Mesh( line.geometry, material ); // this syntax could definitely be improved!
+        let mesh = new THREE.Mesh( line.geometry, material );
         this.scene.add( mesh );
-        mesh.position.z = 1.1;
+        mesh.position.z = 0.5;
 
         let box = new THREE.Box3().setFromObject(this.currentFracture)
         let p = box.getCenter(new THREE.Vector3())
         this.camera.position.x = p.x
         this.camera.position.y = p.y
         this.camera.position.z = 30
-      },1000)
 
+        //cursor UI
+        setTimeout(()=>{
+          this.$refs.swipe.style.opacity = '1'
+          this.updateCursor(this.currentFracture.children[0].getWorldPosition(new THREE.Vector3()))
+        },100)
 
-    }
   }
 
   endFracture() {
+    console.log('endfracture')
     if (this.socket) {
       this.socket.emit("custom-event", {
         name: "kintsugi mini-game",
@@ -359,7 +435,7 @@ export default {
     window.addEventListener("mousemove", this.onMouseMove.bind(this), false);
     window.addEventListener("mousedown", this.onMouseDown.bind(this), false);
     window.addEventListener("mouseup", this.onMouseUp.bind(this), false);
-    this.app = new App()
+    this.app = new App(this.$refs)
     this.init();
     this.createSocketEvents();
   },
@@ -385,6 +461,7 @@ export default {
     init() {
       this.app.init(this.$refs.canvas, this.socket, this.roomID);
       this.app.loadBowl();
+      this.app.addShadowPlane();
       // setTimeout(() => {
       //   this.app.launchFracture(0);
       // }, 2000);
@@ -398,7 +475,7 @@ export default {
     },
     onTouchMove(event) {
       // if(event){
-      console.log("touch move");
+      // console.log("touch move");
       this.mouse.x = (event.touches[0].clientX / window.innerWidth) * 2 - 1;
       this.mouse.y = -(event.touches[0].clientY / window.innerHeight) * 2 + 1;
       // }
@@ -411,8 +488,8 @@ export default {
     },
     debugLaunchFracture() {
       console.log('debugLaunchFracture')
-      this.app.bringCloser([2], 5);
-      this.app.launchFracture(1)
+      this.app.bringCloser([0,1], 5);
+      this.app.launchFracture(0)
     }
   },
   components: {
@@ -459,6 +536,24 @@ export default {
     .container {
       margin: auto;
       height: 100px;
+    }
+  }
+
+  .swipe {
+    position: absolute;
+    top: -20px;
+    left: -20px;
+    display:flex;
+    pointer-events: none;
+    opacity: 0;
+
+    #cursor {
+      margin: auto;
+      height: 40px;
+      width: 40px;
+      background: $white;
+      border: $red 3px solid;
+      border-radius: 100%;
     }
   }
 }
