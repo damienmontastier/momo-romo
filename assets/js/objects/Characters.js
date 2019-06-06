@@ -317,9 +317,9 @@ export default class Characters {
                 let y = this.romo.position.y
 
                 TweenMax.to(this.romo.position, .3, {
-                    x: x + (this.coordinate.x * this.speed) / 25,
-                    y: y + (this.coordinate.y * this.speed) / 25,
-                    ease: Power4.easeOut
+                    x: x + (this.coordinate.x * this.speed) / 40,
+                    y: y + (this.coordinate.y * this.speed) / 40,
+                    ease: Power4.easeInOut
                 })
             }
         }

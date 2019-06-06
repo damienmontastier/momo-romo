@@ -195,11 +195,6 @@ export default class Level {
         this.renderer.setSize(window.innerWidth, window.innerHeight);
     }
 
-    testfunc() {
-        console.log('test function')
-
-    }
-
 
     nextToMinigame(value) {
         if (value && !this.isMiniGameLaunched) {
@@ -225,7 +220,6 @@ export default class Level {
                 const delta = this.clock.getDelta() * 5000;
                 this.time += delta;
                 animate.animate.update(delta)
-                // console.log(animate.animate)
                 if (this.momo.body.position.x >= animate.position.x - 1.5 && this.momo.body.position.x <= animate.position.x + 1.5) {
                     if (animate.animate.name = "cat") {
                         if (!this.animateRunning) {
