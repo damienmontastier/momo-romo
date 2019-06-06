@@ -55,7 +55,7 @@ export default class Editor {
 
         // axes
         this.scene.add(new THREE.AxesHelper(20));
-        this.scene.background = new THREE.Color(0x808080);
+        this.scene.background = new THREE.Color(0xfdf9eb);
 
         this.scene.add(this.stagesGroup);
 

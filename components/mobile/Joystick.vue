@@ -160,7 +160,7 @@ export default {
     transform: translate(-50%, -50%);
 
     #stick {
-      position: relative;
+      position: absolute;
       background: white;
       border: 2px solid $a;
       width: 100px;
@@ -168,6 +168,7 @@ export default {
       border-radius: 50px;
       top: calc(50% - 50px);
       left: calc(50% - 50px);
+      z-index: 9;
     }
   }
   svg {
@@ -177,7 +178,8 @@ export default {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    z-index: -1;
+    z-index: 1;
+    pointer-events: none;
   }
 }
 </style>

@@ -324,16 +324,18 @@ export default class Characters {
             }
         }
 
-        //TODO Ne pas sortir du cadre
+        // TODO Ne pas sortir du cadre
 
         // if (this.romo) {
-        //     var frustum = new THREE.Frustum();
+            // var frustum = new THREE.Frustum();
 
-        //     this.camera.updateMatrixWorld();
-        //     this.camera.matrixWorldInverse.getInverse(this.camera.matrixWorld);
-        //     frustum.setFromMatrix(new THREE.Matrix4().multiplyMatrices(this.camera.projectionMatrix, this.camera.matrixWorldInverse));
+            // // this.camera.updateMatrixWorld();
+            // this.camera.matrixWorldInverse.getInverse(this.camera.matrixWorld);
+            // frustum.setFromMatrix(new THREE.Matrix4().multiplyMatrices(this.camera.projectionMatrix, this.camera.matrixWorldInverse));
 
-        //     var pos = new THREE.Vector3(this.romo.position.x, this.romo.position.y, this.romo.position.z);
+            // var pos = new THREE.Vector3(this.romo.position.x, this.romo.position.y, this.romo.position.z);
+
+            // console.log(frustum.intersectsObject(pos))
         // }
     }
 
