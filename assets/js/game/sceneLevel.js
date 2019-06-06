@@ -151,7 +151,6 @@ export default class Level {
             animate.rotation.set(params.rotation.x, params.rotation.y, params.rotation.z)
             animate.name = params.params.json.id
             this.animatesArray.push(animate)
-            console.log(animate)
             this.scene.add(animate)
         })
     }
@@ -224,11 +223,9 @@ export default class Level {
                     if (animate.animate.name = "cat") {
                         if (!this.animateRunning) {
                             console.log('passage sur le animated')
-                            if (this.catRun) {}
                             this.launchSprite(animate.animate, "cat")
                             this.animateWait = false
                             this.animateRunning = true;
-                            console.log(animate.position)
                             let x = animate.position.x
                             TweenMax.to(animate.position, 2, {
                                 x: x + 2,
