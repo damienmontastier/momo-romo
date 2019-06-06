@@ -87,8 +87,8 @@ export default {
 
       #background-landscape {
         position: absolute;
-        width: 420px;
-        height: 90%;
+        width: 50vh;
+        height: inherit;
         background: url("~static/ui/homepage/homepage_fond.png");
         background-size: contain;
         background-position: center;
@@ -109,7 +109,7 @@ export default {
         &::after {
           content: "";
           position: absolute;
-          top: 15vh;
+          top: 20vh;
           width: 200px;
           height: 100px;
           right: -150px;
@@ -121,8 +121,8 @@ export default {
       }
       #background-landscape-clone {
         position: absolute;
-        width: 420px;
-        height: 90%;
+        width: 50vh;
+        height: inherit;
         z-index: 2;
         background: url("~static/ui/homepage/homepage_fond_fuji.png");
         background-size: contain;
