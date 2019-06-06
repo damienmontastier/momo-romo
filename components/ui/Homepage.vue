@@ -87,7 +87,7 @@ export default {
 
       #background-landscape {
         position: absolute;
-        width: 700px;
+        width: 420px;
         height: 90%;
         background: url("~static/ui/homepage/homepage_fond.png");
         background-size: contain;
@@ -100,7 +100,7 @@ export default {
           bottom: 0;
           width: 160px;
           height: 305px;
-          left: 10%;
+          left: -80px;
           z-index: 3;
           background: url("~static/ui/characters/momo.png");
           background-size: 100% auto;
@@ -112,7 +112,7 @@ export default {
           top: 15vh;
           width: 200px;
           height: 100px;
-          right: 0;
+          right: -150px;
           z-index: 3;
           background: url("~static/ui/characters/romo.png");
           background-size: 100% auto;
@@ -121,7 +121,7 @@ export default {
       }
       #background-landscape-clone {
         position: absolute;
-        width: 700px;
+        width: 420px;
         height: 90%;
         z-index: 2;
         background: url("~static/ui/homepage/homepage_fond_fuji.png");
