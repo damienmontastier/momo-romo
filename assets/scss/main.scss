@@ -154,3 +154,28 @@ canvas {
   letter-spacing: 1px;
   text-transform: uppercase;
 }
+
+
+.selector {
+  &:hover {
+    &::after {
+      border-radius: 50px;
+      width: 100px;
+      height: 100px;
+    }
+  }
+
+  &:after {
+    content: "";
+    width: 0;
+    height: 0;
+    display: block;
+    background: $black;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: -1;
+    transition: all 0.25s cubic-bezier(0.445, 0.05, 0.55, 0.95);
+  }
+}

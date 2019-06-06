@@ -30,7 +30,6 @@
           </p>
         </div>
       </div>
-      <!-- <button @click="$emit('increment')">Next</button> -->
     </div>
   </div>
 </template>
@@ -70,10 +69,6 @@ export default {
   position: relative;
   display: flex;
 
-  // #left,
-  // #right {
-  //   // width: 50%;
-  // }
   #left {
     width: 60%;
     position: relative;
