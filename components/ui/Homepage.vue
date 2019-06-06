@@ -109,9 +109,9 @@ export default {
         &::after {
           content: "";
           position: absolute;
-          top: 25%;
-          width: 25%;
-          height: 15%;
+          top: 15vh;
+          width: 200px;
+          height: 100px;
           right: 0;
           z-index: 3;
           background: url("~static/ui/characters/romo.png");
@@ -134,11 +134,11 @@ export default {
 
     #title-text {
       position: absolute;
-      width: 600px;
+      width: 75vh;
       height: inherit;
       left: 50%;
       flex-direction: column;
-      top: 120px;
+      top: 10vh;
       display: flex;
       transform: translateX(-50%);
       p {
@@ -162,8 +162,9 @@ export default {
   #right {
     width: 40%;
     display: flex;
-    justify-content: center;
     align-items: center;
+    flex-direction: column;
+    justify-content: space-around;
     #content {
       max-width: 80%;
       text-align: center;
@@ -179,13 +180,14 @@ export default {
       }
       svg {
         width: 40%;
+        height: auto;
       }
     }
   }
 }
 
 .content {
-  margin-bottom: 60px;
+  margin-bottom: 8vh;
   &:last-child {
     margin: 0;
   }
