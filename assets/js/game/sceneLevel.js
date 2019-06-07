@@ -109,15 +109,21 @@ export default class Level {
     }
 
     init() {
-        this.fixedProps.forEach(prop => {
-            this.addFixedProp(prop)
-        });
-        this.platforms.forEach(platform => {
-            this.addPlatforms(platform)
-        });
-        this.animates.forEach(animate => {
-            this.addAnimate(animate)
-        });
+        if (this.fixedProps) {
+            this.fixedProps.forEach(prop => {
+                this.addFixedProp(prop)
+            });
+        }
+        if (this.platforms) {
+            this.platforms.forEach(platform => {
+                this.addPlatforms(platform)
+            });
+        }
+        if (this.animates) {
+            this.animates.forEach(animate => {
+                this.addAnimate(animate)
+            });
+        }
     }
 
     addFixedProp(props) {
