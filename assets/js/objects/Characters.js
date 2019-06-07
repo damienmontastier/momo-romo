@@ -319,10 +319,6 @@ export default class Characters {
                     })
                 }
             }
-
-            // TODO Ne pas sortir du cadre
-
-
         }
     }
 

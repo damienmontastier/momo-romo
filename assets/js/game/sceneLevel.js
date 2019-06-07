@@ -15,15 +15,12 @@ import {
 
 
 const visibleHeightAtZDepth = (depth, camera) => {
-    // compensate for cameras not positioned at z=0
     const cameraOffset = camera.position.z;
     if (depth < cameraOffset) depth -= cameraOffset;
     else depth += cameraOffset;
 
-    // vertical fov in radians
     const vFOV = camera.fov * Math.PI / 180;
 
-    // Math.abs to ensure the result is always positive
     return 2 * Math.tan(vFOV / 2) * Math.abs(depth);
 };
 
@@ -244,7 +241,7 @@ export default class Level {
                 const delta = this.clock.getDelta() * 5000;
                 this.time += delta;
                 animate.animate.update(delta)
-                if (this.momo.body.position.x >= animate.position.x - 1.5 && this.momo.body.position.x <= animate.position.x + 1.5) {
+                if (this.romo.position.x >= animate.position.x - 1.5 && this.romo.position.x <= animate.position.x + 1.5) {
                     if (animate.animate.name = "cat") {
                         if (!this.animateRunning) {
                             console.log('passage sur le animated')
@@ -268,9 +265,7 @@ export default class Level {
                 }
             });
         }
-
-        //TODO tween position caméra
-
+        
         if (this.romo) {
             let width = visibleWidthAtZDepth(this.romo.position.z, this.camera)
             let height = visibleHeightAtZDepth(this.romo.position.z, this.camera)
