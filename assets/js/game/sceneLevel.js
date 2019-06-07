@@ -13,6 +13,25 @@ import {
     Power4
 } from 'gsap';
 
+
+const visibleHeightAtZDepth = (depth, camera) => {
+    // compensate for cameras not positioned at z=0
+    const cameraOffset = camera.position.z;
+    if (depth < cameraOffset) depth -= cameraOffset;
+    else depth += cameraOffset;
+
+    // vertical fov in radians
+    const vFOV = camera.fov * Math.PI / 180;
+
+    // Math.abs to ensure the result is always positive
+    return 2 * Math.tan(vFOV / 2) * Math.abs(depth);
+};
+
+const visibleWidthAtZDepth = (depth, camera) => {
+    const height = visibleHeightAtZDepth(depth, camera);
+    return height * camera.aspect;
+};
+
 export default class Level {
     constructor(opts, store) {
 
@@ -252,11 +271,17 @@ export default class Level {
 
         //TODO tween position caméra
 
+        if (this.romo) {
+            let width = visibleWidthAtZDepth(this.romo.position.z, this.camera)
+            let height = visibleHeightAtZDepth(this.romo.position.z, this.camera)
+
+            this.romo.position.x = Math.max(0, Math.min(width - 8, this.romo.position.x))
+            this.romo.position.y = Math.max(0, Math.min(height - 4.5, this.romo.position.y))
+        }
         this.cannonDebugRenderer.update()
 
         if (this.characters) {
             this.characters.update()
-            // this.camera.position.set(this.momo.position.x, 2, 15)
             TweenMax.to(this.camera.position, 1, {
                 x: this.momo.position.x,
                 y: 2,

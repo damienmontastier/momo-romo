@@ -307,32 +307,23 @@ export default class Characters {
     }
 
     updateRomoPosition() {
-        if (this.socket) {
-            if (this.speed) {
-                let x = this.romo.position.x
-                let y = this.romo.position.y
+        if (this.romo) {
+            if (this.socket) {
+                if (this.speed) {
+                    let x = this.romo.position.x
+                    let y = this.romo.position.y
+                    TweenMax.to(this.romo.position, .3, {
+                        x: x + (this.coordinate.x * this.speed) / 50,
+                        y: y + (this.coordinate.y * this.speed) / 50,
 
-                TweenMax.to(this.romo.position, .3, {
-                    x: x + (this.coordinate.x * this.speed) / 40,
-                    y: y + (this.coordinate.y * this.speed) / 40,
-                    ease: Power4.easeInOut
-                })
+                    })
+                }
             }
+
+            // TODO Ne pas sortir du cadre
+
+
         }
-
-        // TODO Ne pas sortir du cadre
-
-        // if (this.romo) {
-        // var frustum = new THREE.Frustum();
-
-        // // this.camera.updateMatrixWorld();
-        // this.camera.matrixWorldInverse.getInverse(this.camera.matrixWorld);
-        // frustum.setFromMatrix(new THREE.Matrix4().multiplyMatrices(this.camera.projectionMatrix, this.camera.matrixWorldInverse));
-
-        // var pos = new THREE.Vector3(this.romo.position.x, this.romo.position.y, this.romo.position.z);
-
-        // console.log(frustum.intersectsObject(pos))
-        // }
     }
 
     update() {
