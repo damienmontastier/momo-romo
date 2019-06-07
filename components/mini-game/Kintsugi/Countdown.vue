@@ -941,26 +941,28 @@
 </template>
 
 <script>
-import {TweenMax} from 'gsap'
+import { TweenMax } from "gsap";
 export default {
   props: {
     countdown: Number
   },
   watch: {
     countdown() {
-      console.log('tl')
       let tl = new TimelineMax();
-      tl
-      .to(this.$refs.countdown,0.25, {
+      tl.to(this.$refs.countdown, 0.25, {
         ease: Back.easeOut.config(1.4),
         scale: 1,
-        opacity:1
-      })
-      .to(this.$refs.countdown,0.25, {
-        ease: Back.easeIn.config(1.4),
-        scale: 0,
-        opacity:0
-      },0.5)
+        opacity: 1
+      }).to(
+        this.$refs.countdown,
+        0.25,
+        {
+          ease: Back.easeIn.config(1.4),
+          scale: 0,
+          opacity: 0
+        },
+        0.5
+      );
     }
   }
 };

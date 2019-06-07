@@ -27,7 +27,7 @@
     <div class="launchButton" @click="launchMinigame" ref="launchButton">
       <button-circle-red jpn="スタート" en="LAUNCH GAME" letter="E"/>
     </div>
-    
+
     <div class="countdown" ref="countdown">
       <Countdown :countdown="countdown"/>
     </div>
@@ -40,7 +40,7 @@
       </span>
     </div>
     <div class="tryAgain" ref="tryAgain">
-      <span class="skew ">
+      <span class="skew">
         <div class="inline fill-en">try again!</div>
       </span>
     </div>
@@ -83,14 +83,14 @@ export default {
   },
   methods: {
     showSynchro() {
-      this.$refs.synchro.style.opacity = "1"
+      this.$refs.synchro.style.opacity = "1";
     },
     launchMinigame() {
-      this.$refs.launchButton.style.opacity = "0"
-      this.$refs.launchButton.style.pointerEvents = "none"
-      this.$refs.tuto.style.opacity = "0"
-      this.$refs.synchro.style.opacity = "0"
-      this.$parent.launchCountdown()
+      this.$refs.launchButton.style.opacity = "0";
+      this.$refs.launchButton.style.pointerEvents = "none";
+      this.$refs.tuto.style.opacity = "0";
+      this.$refs.synchro.style.opacity = "0";
+      this.$parent.launchCountdown();
     },
     launchCountdown() {
       this.$refs.tryAgain.style.opacity = "0";
@@ -109,10 +109,10 @@ export default {
       }, 1000);
     },
     setRomoReady() {
-      this.romoIsReady = true
-      this.$refs.launchButton.style.opacity = "1"
-      this.$refs.launchButton.style.pointerEvents = "auto"
-      console.log('romo is ready')
+      this.romoIsReady = true;
+      this.$refs.launchButton.style.opacity = "1";
+      this.$refs.launchButton.style.pointerEvents = "auto";
+      console.log("romo is ready");
     }
   },
   props: {
@@ -222,16 +222,14 @@ export default {
 
   .endTitle {
     // height: 100px;
-     bottom: 100px;
+    bottom: 100px;
     transform: scale(0);
     #greatSVG {
-      
       width: 100%;
       height: 125px;
       display: flex;
     }
     svg {
-      
       margin: auto;
       height: 100%;
     }

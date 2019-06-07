@@ -12,7 +12,7 @@
       </div>
       <div class="countdown">
         <div class="container">
-          <Countdown :countdown="1"/>
+          <Countdown :countdown="countdown"/>
         </div>
       </div>
       <div class="swipe" ref="swipe">
@@ -20,7 +20,10 @@
       </div>
     </div>
     <div class="debug">
-      <button @click="debugLaunchFracture()">launchFracture</button>
+      <button @click="debugLaunchFracture([0,1],0)">0</button>
+      <button @click="debugLaunchFracture([2],1)">1</button>
+      <button @click="debugLaunchFracture([3],2)">2</button>
+      <button @click="cancelCurrentFracture()">cancel</button>
     </div>
   </div>
 </template>
@@ -31,33 +34,36 @@ import OrbitControls from "orbit-controls-es6";
 import ObjectLoader from "~/assets/js/utils/ObjectLoader";
 import { mapState } from "vuex";
 import { TweenMax } from "gsap";
-import isReady from './isReady'
-import Countdown from '@/components/mini-game/Kintsugi/Countdown'
-import { Vector3 } from 'three';
+import isReady from "./isReady";
+import Countdown from "@/components/mini-game/Kintsugi/Countdown";
+import { Vector3 } from "three";
 
-const MeshLine = require( 'three.meshline' );
+const MeshLine = require("three.meshline");
 
 class App {
-  constructor($refs) {
+  constructor($parent) {
     window.addEventListener("resize", this.onWindowResize.bind(this));
-    window.addEventListener("orientationchange", this.onOrientationChange.bind(this));
-    this.$refs = $refs
+    window.addEventListener(
+      "orientationchange",
+      this.onOrientationChange.bind(this)
+    );
+    this.$parent = $parent;
     this.loaded = false;
-    this.mouse = new THREE.Vector2(100000,100000);
+    this.mouse = new THREE.Vector2(100000, 100000);
     this.raycaster = new THREE.Raycaster();
   }
 
-  init(ref, socket, roomID) {
-    this.socket = socket;
-    this.roomID = roomID;
-    this.ref = ref;
+  init() {
+    this.socket = this.$parent.socket;
+    this.roomID = this.$parent.roomID;
+    this.canvas = this.$parent.$refs.canvas;
     this.WIDTH = window.innerWidth;
     this.HEIGHT = window.innerHeight;
 
     // renderer
     this.renderer = new THREE.WebGLRenderer({ antialias: true });
     this.renderer.setSize(this.WIDTH, this.HEIGHT);
-    this.ref.appendChild(this.renderer.domElement);
+    this.canvas.appendChild(this.renderer.domElement);
 
     // scene
     this.scene = new THREE.Scene();
@@ -76,7 +82,7 @@ class App {
     // this.controls.enabled = true;
 
     // ambient light
-    this.scene.add(new THREE.AmbientLight(0xffffff,4));
+    this.scene.add(new THREE.AmbientLight(0xffffff, 4));
     this.scene.background = new THREE.Color("#fefbf0");
 
     // directional light
@@ -127,29 +133,39 @@ class App {
 
     // this.currentFracture.children[0].triggered = true
 
-    let intersect = this.raycaster.intersectObject(this.shadowPlane)
-    if(intersect[0]) {
-      let point = intersect[0].point
+    let intersect = this.raycaster.intersectObject(this.shadowPlane);
+    if (intersect[0]) {
+      let point = intersect[0].point;
 
-      let piece = this.currentFracture.children.slice().reverse().find((piece)=>piece.triggered)
+      let piece = this.currentFracture.children
+        .slice()
+        .reverse()
+        .find(piece => piece.triggered);
 
       let index;
-      if(piece === undefined) {
-        index = 0
+      if (piece === undefined) {
+        index = 0;
       } else {
-        index = piece.name + 1
+        index = piece.name + 1;
       }
 
-      let target = this.currentFracture.children.find((piece)=>piece.name === index)
+      let target = this.currentFracture.children.find(
+        piece => piece.name === index
+      );
 
-      if(target) {
-        let p = target.getWorldPosition(new THREE.Vector3())
-        let d = p.distanceTo(point)
-        
-        if(d < 1.5) {
-          this.triggerFracturePiece(target)
-          this.updateCursor(p,true)
-          if(target.name === this.currentFracture.children[this.currentFracture.children.length - 1].name) {
+      if (target) {
+        let p = target.getWorldPosition(new THREE.Vector3());
+        let d = p.distanceTo(point);
+
+        if (d < 1.5) {
+          this.triggerFracturePiece(target);
+          this.updateCursor(p, true);
+          if (
+            target.name ===
+            this.currentFracture.children[
+              this.currentFracture.children.length - 1
+            ].name
+          ) {
             this.endFracture();
           }
         }
@@ -158,26 +174,20 @@ class App {
   }
 
   projectVectorToScreen(vector) {
-    vector.project(this.camera)
-    vector.x = ( vector.x + 1) * window.innerWidth / 2;
-    vector.y = - ( vector.y - 1) * window.innerHeight / 2;
+    vector.project(this.camera);
+    vector.x = ((vector.x + 1) * window.innerWidth) / 2;
+    vector.y = (-(vector.y - 1) * window.innerHeight) / 2;
     vector.z = 0;
-    return vector
+    return vector;
   }
 
-  updateCursor(vector,tween = false) {
-    vector = this.projectVectorToScreen(vector)
-    // if(tween) {
+  updateCursor(vector, tween = false) {
+    vector = this.projectVectorToScreen(vector);
 
-    // } else {
-    //   this.$refs.swipe.style.left = vector.x + 'px'
-    //   this.$refs.swipe.style.top = vector.y+ 'px'
-    // }
-
-    TweenMax.to(this.$refs.swipe,tween ? 0.25 : 0, {
-      x:vector.x,
-      y:vector.y
-    })
+    TweenMax.to(this.$parent.$refs.swipe, tween ? 0.25 : 0, {
+      x: vector.x,
+      y: vector.y
+    });
   }
 
   triggerFracturePiece(piece) {
@@ -185,7 +195,7 @@ class App {
     // piece.material.transparent = true;
     piece.material.opacity = 1;
     piece.material.color.set(new THREE.Color(0xffff00));
-    
+
     if (this.socket) {
       this.socket.emit("custom-event", {
         name: "kintsugi mini-game",
@@ -199,10 +209,13 @@ class App {
   }
 
   addShadowPlane() {
-    var geometry = new THREE.PlaneGeometry( 100, 100, 1 );
-    var material = new THREE.MeshBasicMaterial( {transparent:true, opacity:0} );
-    this.shadowPlane = new THREE.Mesh( geometry, material );
-    this.scene.add( this.shadowPlane );
+    var geometry = new THREE.PlaneGeometry(100, 100, 1);
+    var material = new THREE.MeshBasicMaterial({
+      transparent: true,
+      opacity: 0
+    });
+    this.shadowPlane = new THREE.Mesh(geometry, material);
+    this.scene.add(this.shadowPlane);
   }
 
   loadBowl() {
@@ -211,30 +224,30 @@ class App {
       format: "glb"
     }).then(object => {
       this.model = object.scene.children[0].children[1];
-      this.model.position.y = - 3
+      this.model.position.y = -3;
       this.model.children.forEach((c, index) => {
         c._originPosition = c.getWorldPosition(new THREE.Vector3());
         c._originRotation = c.rotation;
-          let ratio = 1
+        let ratio = 1;
 
-          if (index === 0) {
-            let position = new THREE.Vector3(-5.697, -9.130, 0)
-            c.position.add(position.multiplyScalar(ratio));
-            let euler = new THREE.Euler(0, 0, THREE.Math.degToRad(29.7)*ratio)
-            c.rotation.copy(euler);
-          } else if (index === 1) {
-            let position = new THREE.Vector3(8.308, 3.160, 0)
-            c.position.add(position.multiplyScalar(ratio));
-            c.rotation.set(0, 0, THREE.Math.degToRad(-18.05)*ratio);
-          } else if (index === 2) {
-            let position = new THREE.Vector3(-7.943, 10.734, 0)
-            c.position.add(position.multiplyScalar(ratio));
-            c.rotation.set(0, 0, THREE.Math.degToRad(-21.57)*ratio);
-          } else if (index === 3) {
-            let position = new THREE.Vector3(5.338, 10.434, 0)
-            c.position.add(position.multiplyScalar(ratio));
-            c.rotation.set(0, 0, THREE.Math.degToRad(12.69)*ratio);
-          }
+        if (index === 0) {
+          let position = new THREE.Vector3(-5.697, -9.13, 0);
+          c.position.add(position.multiplyScalar(ratio));
+          let euler = new THREE.Euler(0, 0, THREE.Math.degToRad(29.7) * ratio);
+          c.rotation.copy(euler);
+        } else if (index === 1) {
+          let position = new THREE.Vector3(8.308, 3.16, 0);
+          c.position.add(position.multiplyScalar(ratio));
+          c.rotation.set(0, 0, THREE.Math.degToRad(-18.05) * ratio);
+        } else if (index === 2) {
+          let position = new THREE.Vector3(-7.943, 10.734, 0);
+          c.position.add(position.multiplyScalar(ratio));
+          c.rotation.set(0, 0, THREE.Math.degToRad(-21.57) * ratio);
+        } else if (index === 3) {
+          let position = new THREE.Vector3(5.338, 10.434, 0);
+          c.position.add(position.multiplyScalar(ratio));
+          c.rotation.set(0, 0, THREE.Math.degToRad(12.69) * ratio);
+        }
         c._maxPosition = c.position.clone();
         c._maxRotation = c.rotation.clone();
         // c.children[1].rotation.z = THREE.Math.degToRad(index*10)
@@ -272,6 +285,9 @@ class App {
   }
 
   bringCloser(targets, step) {
+    let tl = new TimelineMax();
+    tl.add("start", 0);
+
     step = 6 - (step + 1);
     let ratio = step / 6;
 
@@ -281,10 +297,10 @@ class App {
       .sub(target1._originPosition.clone())
       .multiplyScalar(ratio)
       .add(target1._originPosition.clone());
-    TweenMax.to(target1.position, 0.5, { x: p1.x, y: p1.y, z: p1.z });
+    tl.to(target1.position, 0.5, { x: p1.x, y: p1.y, z: p1.z }, "start");
 
     let r1 = target1._maxRotation.clone();
-    TweenMax.to(target1.rotation, 0.5, { z: r1.z * ratio });
+    tl.to(target1.rotation, 0.5, { z: r1.z * ratio }, "start");
 
     if (targets[1]) {
       let target2 = this.fragments[targets[1]];
@@ -293,11 +309,17 @@ class App {
         .sub(target2._originPosition.clone())
         .multiplyScalar(ratio)
         .add(target2._originPosition.clone());
-      TweenMax.to(target2.position, 0.5, { x: p2.x, y: p2.y, z: p2.z });
+      tl.to(target2.position, 0.5, { x: p2.x, y: p2.y, z: p2.z }, "start");
 
       let r2 = target2._maxRotation.clone();
-      TweenMax.to(target2.rotation, 0.5, { z: r2.z * ratio });
+      tl.to(target2.rotation, 0.5, { z: r2.z * ratio }, "start");
     }
+
+    return new Promise((resolve, reject) => {
+      tl.eventCallback("onComplete", () => {
+        resolve();
+      });
+    });
   }
 
   spread(targets) {
@@ -312,56 +334,59 @@ class App {
     }
   }
 
-  launchFracture(fracture) {
+  setCurrentFracture(fracture, fragments) {
     if (this.fractures[fracture]) {
       this.currentFracture = this.fractures[fracture];
-
-
-      
-      setTimeout(()=>{
-        this.createFractureUI(this.currentFracture)
-      },1100)
-
-
+      this.currentFragments = fragments;
+    } else {
+      console.error("la fracture n existe pas");
+      return false;
     }
+
+    return this;
+  }
+
+  zoomToFracture(fracture) {
+    let box = new THREE.Box3().setFromObject(this.fractures[fracture]);
+    let p = box.getCenter(new THREE.Vector3());
+    this.camera.position.x = p.x;
+    this.camera.position.y = p.y;
+    this.camera.position.z = 30;
   }
 
   createFractureUI(fracture) {
-        let geometry = new THREE.Geometry();
-        this.currentFracture.children.forEach((piece)=>{
-          let v = piece.getWorldPosition(new THREE.Vector3())
-          geometry.vertices.push( v );
-        })
+    let currentFracture = this.fractures[fracture];
+    let geometry = new THREE.Geometry();
+    currentFracture.children.forEach(piece => {
+      let v = piece.getWorldPosition(new THREE.Vector3());
+      geometry.vertices.push(v);
+    });
 
-        let line = new MeshLine.MeshLine();
-        line.setGeometry( geometry );
+    let line = new MeshLine.MeshLine();
+    line.setGeometry(geometry);
 
-        let material = new MeshLine.MeshLineMaterial({
-          lineWidth: 0.2,
-          color: new THREE.Color(0xff5736),
-          // dashArray: 2
-        });
+    let material = new MeshLine.MeshLineMaterial({
+      lineWidth: 0.2,
+      color: new THREE.Color(0xff5736)
+      // dashArray: 2
+    });
 
-        let mesh = new THREE.Mesh( line.geometry, material );
-        this.scene.add( mesh );
-        mesh.position.z = 0.5;
+    this.lineUI = new THREE.Mesh(line.geometry, material);
+    this.scene.add(this.lineUI);
+    this.lineUI.position.z = 0.5;
 
-        let box = new THREE.Box3().setFromObject(this.currentFracture)
-        let p = box.getCenter(new THREE.Vector3())
-        this.camera.position.x = p.x
-        this.camera.position.y = p.y
-        this.camera.position.z = 30
-
-        //cursor UI
-        setTimeout(()=>{
-          this.$refs.swipe.style.opacity = '1'
-          this.updateCursor(this.currentFracture.children[0].getWorldPosition(new THREE.Vector3()))
-        },100)
-
+    //cursor UI
+    // setTimeout(()=>{
+    this.$parent.$refs.swipe.style.opacity = "1";
+    this.updateCursor(
+      currentFracture.children[0].getWorldPosition(new THREE.Vector3())
+    );
+    // },100)
   }
 
   endFracture() {
-    console.log('endfracture')
+    console.log("endfracture");
+    clearInterval(this.$parent.timerInterval);
     if (this.socket) {
       this.socket.emit("custom-event", {
         name: "kintsugi mini-game",
@@ -373,6 +398,7 @@ class App {
       });
     }
     this.currentFracture = null;
+    this.currentFragments = null;
   }
 
   onWindowResize() {
@@ -385,15 +411,15 @@ class App {
   }
 
   onOrientationChange() {
-    let orientation = screen.orientation.angle
-    if(orientation === 90 || orientation === -90) {
-      this.orientation = "landscape"
+    let orientation = screen.orientation.angle;
+    if (orientation === 90 || orientation === -90) {
+      this.orientation = "landscape";
     } else if (orientation === 0 || orientation === -0) {
-      this.orientation = "portrait"
+      this.orientation = "portrait";
     }
     this.camera.aspect = window.innerHeight / window.innerWidth;
     this.camera.updateProjectionMatrix();
-    this.renderer.setSize(window.innerHeight,window.innerWidth);
+    this.renderer.setSize(window.innerHeight, window.innerWidth);
   }
 }
 
@@ -403,22 +429,19 @@ export default {
       // app: new App(),
       mouse: new THREE.Vector2(),
       isMouseDown: false,
-      isReady: false
+      isReady: false,
+      timer: 10,
+      timerInterval: null,
+      countdown: 4
     };
   },
   computed: {
     ...mapState({
       socket: state => state.synchro.socket,
       roomID: state => state.synchro.roomID
-    }),
-    // loaded() {
-    //   return this.app.loaded;
-    // }
+    })
   },
   watch: {
-    // loaded(val) {
-    //   console.log("isLoaded");
-    // },
     mouse: {
       handler: function() {
         this.app.mouse = this.mouse;
@@ -426,16 +449,12 @@ export default {
       deep: true
     }
   },
-  // created() {
-  //     TouchEmulator();
-  // },
   mounted() {
-    // TouchEmulator();
     window.addEventListener("touchmove", this.onTouchMove.bind(this), false);
     window.addEventListener("mousemove", this.onMouseMove.bind(this), false);
     window.addEventListener("mousedown", this.onMouseDown.bind(this), false);
     window.addEventListener("mouseup", this.onMouseUp.bind(this), false);
-    this.app = new App(this.$refs)
+    this.app = new App(this);
     this.init();
     this.createSocketEvents();
   },
@@ -444,16 +463,16 @@ export default {
       if (this.socket) {
         this.socket.on("kintsugi mini-game", params => {
           if (params.id === "launch fracture") {
-            this.app.launchFracture(params.fracture);
+            this.launchFracture(params.fracture, params.fragments);
           }
           if (params.id === "bring closer") {
             this.app.bringCloser(params.fragments, params.step);
           }
           if (params.id === "cancel fracture") {
-            this.app.spread(params.fragments);
+            this.cancelFracture(params.fragments);
           }
           if (params.id === "romo is ready") {
-            this.isReady = true
+            this.isReady = true;
           }
         });
       }
@@ -462,9 +481,18 @@ export default {
       this.app.init(this.$refs.canvas, this.socket, this.roomID);
       this.app.loadBowl();
       this.app.addShadowPlane();
-      // setTimeout(() => {
-      //   this.app.launchFracture(0);
-      // }, 2000);
+    },
+    startTimer() {
+      this.timerInterval = setInterval(() => {
+        this.timer--;
+        console.log(this.timer);
+        if (this.timer === 0) {
+          console.log("timer ecoulé");
+          clearInterval(this.timerInterval);
+          this.fail();
+          this.timer = 10;
+        }
+      }, 1000);
     },
     onMouseMove(event) {
       if (this.isMouseDown) {
@@ -486,14 +514,57 @@ export default {
     onMouseUp(event) {
       this.isMouseDown = false;
     },
-    debugLaunchFracture() {
-      console.log('debugLaunchFracture')
-      this.app.bringCloser([0,1], 5);
-      this.app.launchFracture(0)
+    launchFracture(fracture, fragments) {
+      this.launchCountdown().then(() => {
+        this.app
+          .setCurrentFracture(fracture, fragments)
+          .createFractureUI(fracture);
+        this.startTimer();
+      });
+      setTimeout(() => {
+        this.app.zoomToFracture(fracture);
+      }, 1000);
+    },
+    fail() {
+      if (this.socket) {
+        this.socket.emit("custom-event", {
+          name: "kintsugi mini-game",
+          in: this.roomID,
+          args: {
+            id: "cancel fracture",
+            fragments: this.app.currentFragments
+          }
+        });
+      }
+    },
+    cancelFracture(fragments) {
+      console.log(fragments);
+      this.app.spread(fragments);
+    },
+    launchCountdown() {
+      return new Promise((resolve, reject) => {
+        this.countdown = 3;
+        this.countdownInterval = setInterval(() => {
+          this.countdown--;
+          console.log(this.countdown);
+          if (this.countdown === 0) {
+            clearInterval(this.countdownInterval);
+            console.log("coutdown écoulé");
+            resolve();
+          }
+        }, 1000);
+      });
+    },
+    debugLaunchFracture(fragments, fracture) {
+      console.log("debugLaunchFracture");
+      this.app.bringCloser(fragments, 5);
+
+      this.launchFracture(fracture, fragments);
     }
   },
   components: {
-    isReady,Countdown
+    isReady,
+    Countdown
   }
 };
 </script>
@@ -503,7 +574,7 @@ export default {
 .ui {
   position: absolute;
   left: 0px;
-  top:0px;
+  top: 0px;
   z-index: 2;
   width: 100%;
   height: 100%;
@@ -511,25 +582,24 @@ export default {
     opacity: 0;
     position: absolute;
     left: 0px;
-    top:0px;
+    top: 0px;
     // z-index: 2;
     width: 100%;
     height: 100%;
-    background: rgba(200,200,200,0.7);
+    background: rgba(200, 200, 200, 0.7);
     display: flex;
     .container {
       margin: auto;
       display: flex;
       justify-content: center;
       flex-direction: column;
-      
     }
   }
   .countdown {
     position: absolute;
     left: 0px;
-    top:0px;
-    // z-index: 2;
+    top: 0px;
+    z-index: 2;
     width: 100%;
     height: 100%;
     display: flex;
@@ -543,7 +613,7 @@ export default {
     position: absolute;
     top: -20px;
     left: -20px;
-    display:flex;
+    display: flex;
     pointer-events: none;
     opacity: 0;
 
@@ -558,15 +628,15 @@ export default {
   }
 }
 .debug {
-    position: absolute;
-    bottom: 0px;
-    left: 0px;
-    width: 100%;
-    display: flex;
-    flex-direction: row;
-    z-index: 20;
-    button {
-      background: white;
-    }
+  position: absolute;
+  bottom: 0px;
+  left: 0px;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  z-index: 20;
+  button {
+    background: white;
+  }
 }
 </style>
