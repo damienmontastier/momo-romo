@@ -396,11 +396,8 @@ class App {
 
         this.fractures.forEach(fracture => {
           fracture.children.forEach(piece => {
-            // piece.material.color.set(new THREE.Color(0xff0000));
-            // console.log(piece)
-            // piece.material.transparent = true
-            // piece.material.opacity = 0;
             piece.visible = false;
+            piece.material.color.set(0xffff00);
           });
         });
 
@@ -463,7 +460,6 @@ class App {
   triggerFracturePiece(piece) {
     piece.triggered = true;
     piece.visible = true;
-    piece.material.color.set(0x00ff00);
   }
 
   onWindowResize() {
@@ -513,17 +509,17 @@ export default {
         this.socket.on("kintsugi mini-game", params => {
           if (params.id === "next fracture") {
             this.nextFracture();
-          }
-          if (params.id === "piece triggered") {
+          } else if (params.id === "piece triggered") {
             // console.log(params.index)
             let fracture = this.app.fractures[this.currentFracture];
             // console.log(fracture.children[params.index])
             this.app.triggerFracturePiece(fracture.children[params.index]);
-          }
-          if (params.id === "romo is ready") {
+          } else if (params.id === "romo is ready") {
             this.$refs.intro.setRomoReady();
             // this.$refs.intro.romoIsReady = true
             // console.log('romo is ready')
+          } else if (params.id === "cancel fracture") {
+            this.cancelFracture(params.fragments)
           }
         });
       }
@@ -851,10 +847,10 @@ export default {
       this.$refs.steps.style.opacity = "0";
       this.$refs.intro.$refs.tryAgain.style.opacity = "1";
     },
-    cancelFracture() {
-      if (this.gameModel[this.currentFracture]) {
-        let fragments = this.gameModel[this.currentFracture].fragments;
-        this.app.spread(fragments);
+    fail() {
+      this.$refs.intro.$refs.isPlaying.style.opacity = "0";
+      let fragments = this.gameModel[this.currentFracture].fragments
+      this.cancelFracture(fragments)
         if (this.socket) {
           this.socket.emit("custom-event", {
             name: "kintsugi mini-game",
@@ -865,23 +861,26 @@ export default {
             }
           });
         }
-        this.runningInterval = 0;
-        if (this.tweening) {
-          this.tweening.kill();
-        }
-        this.currentStep = 0;
-
-        //STOP la fracture vient de se cancel -> ecran TODO
-        this.tryAgain();
-        setTimeout(() => {
-          this.launchCountdown();
-        }, 2000);
-
-        // this.startKeyPressInterval();
-        //STOP
-        this.resetUI();
+    },
+    cancelFracture(fragments) {
+      this.app.spread(fragments);
+      let fracture = this.app.fractures[this.currentFracture]
+      fracture.children.forEach((piece)=>{
+        piece.visible = false
+      })
+      this.runningInterval = 0;
+      if (this.tweening) {
+        this.tweening.kill();
       }
-      // this.currentFracture--
+      this.currentStep = 0;
+      this.fractureEnded = false;
+
+      this.tryAgain();
+      setTimeout(() => {
+        this.launchCountdown();
+      }, 2000);
+
+      this.resetUI();
     },
     startFracture() {
       this.$refs.keys.style.opacity = "1";
@@ -945,7 +944,7 @@ export default {
               });
           } else if (this.runningInterval > 0) {
             console.log("wrong key");
-            this.cancelFracture();
+            this.fail()
           }
         }
       }
@@ -963,7 +962,7 @@ export default {
         onComplete: () => {
           if (!this.fractureEnded) {
             console.log("wrong");
-            this.cancelFracture();
+            this.fail()
           }
           // this.runningInterval = this.interval;
         }

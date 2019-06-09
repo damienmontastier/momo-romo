@@ -1,10 +1,10 @@
 <template>
   <div id="kintsugi">
     <!-- <div class="title">kintsugi mobile mini game {{roomID}}</div> -->
-    <!-- <is-ready v-if="!isReady"/> -->
+    <is-ready v-if="!isReady"/>
     <div ref="canvas" id="canvas"></div>
     <div class="ui">
-      <div class="isPlaying">
+      <div class="isPlaying" ref="momoIsPlaying">
         <div class="container">
           <span class="skew fill-en">momo is playing</span>
           <p class="skew book">stay ready for your turn</p>
@@ -76,6 +76,7 @@ class App {
       10000
     );
     this.camera.position.set(0, 0, 80);
+    this.camera.originPosition = new THREE.Vector3().copy(this.camera.position);
 
     // controls
     // this.controls = new OrbitControls(this.camera);
@@ -91,7 +92,7 @@ class App {
     // this.scene.add(this.light);
 
     // axes
-    this.scene.add(new THREE.AxesHelper(20));
+    // this.scene.add(new THREE.AxesHelper(20));
 
     //animation loop
     this.renderer.setAnimationLoop(this.render.bind(this));
@@ -109,29 +110,6 @@ class App {
 
   raycast() {
     this.raycaster.setFromCamera(this.mouse, this.camera);
-    // let intersects = this.raycaster.intersectObjects(
-    //   this.currentFracture.children.filter(f => !f._triggered),
-    //   true
-    // );
-    // if (intersects[0]) {
-    //   let piece = intersects[0].object;
-    //   if (
-    //     piece.name === 0 ||
-    //     this.currentFracture.children[piece.name - 1].triggered === true
-    //   ) {
-    //     this.triggerFracturePiece(piece);
-    //     if (
-    //       piece.name ===
-    //       this.currentFracture.children[
-    //         this.currentFracture.children.length - 1
-    //       ].name
-    //     ) {
-    //       this.endFracture();
-    //     }
-    //   }
-    // }
-
-    // this.currentFracture.children[0].triggered = true
 
     let intersect = this.raycaster.intersectObject(this.shadowPlane);
     if (intersect[0]) {
@@ -166,7 +144,7 @@ class App {
               this.currentFracture.children.length - 1
             ].name
           ) {
-            this.endFracture();
+            this.$parent.success();
           }
         }
       }
@@ -192,9 +170,7 @@ class App {
 
   triggerFracturePiece(piece) {
     piece.triggered = true;
-    // piece.material.transparent = true;
-    piece.material.opacity = 1;
-    piece.material.color.set(new THREE.Color(0xffff00));
+    piece.visible = true
 
     if (this.socket) {
       this.socket.emit("custom-event", {
@@ -270,12 +246,9 @@ class App {
 
       this.fractures.forEach(fracture => {
         fracture.children.forEach((piece, index) => {
-          // piece.material.color.set(new THREE.Color(0xff0000));
-          piece.material.transparent = true;
-          piece.material.opacity = 0;
+          piece.material.color.set(new THREE.Color(0xffff00));
+          piece.visible = false
           piece.name = index;
-          // piece.visible = false
-          // console.log(piece)
         });
       });
 
@@ -354,6 +327,10 @@ class App {
     this.camera.position.z = 30;
   }
 
+  resetCamera() {
+    this.camera.position.copy(this.camera.originPosition);
+  }
+
   createFractureUI(fracture) {
     let currentFracture = this.fractures[fracture];
     let geometry = new THREE.Geometry();
@@ -384,21 +361,14 @@ class App {
     // },100)
   }
 
+  removeFractureUI() {
+    this.$parent.$refs.swipe.style.opacity = "0";
+    this.lineUI.visible = false;
+  }
+
   endFracture() {
-    console.log("endfracture");
-    clearInterval(this.$parent.timerInterval);
-    if (this.socket) {
-      this.socket.emit("custom-event", {
-        name: "kintsugi mini-game",
-        in: this.roomID,
-        args: {
-          id: "next fracture",
-          fracture: this.currentFracture
-        }
-      });
-    }
-    this.currentFracture = null;
-    this.currentFragments = null;
+    this.resetCamera()
+    this.removeFractureUI()
   }
 
   onWindowResize() {
@@ -464,14 +434,11 @@ export default {
         this.socket.on("kintsugi mini-game", params => {
           if (params.id === "launch fracture") {
             this.launchFracture(params.fracture, params.fragments);
-          }
-          if (params.id === "bring closer") {
+          } else if (params.id === "bring closer") {
             this.app.bringCloser(params.fragments, params.step);
-          }
-          if (params.id === "cancel fracture") {
+          } else if (params.id === "cancel fracture") {
             this.cancelFracture(params.fragments);
-          }
-          if (params.id === "romo is ready") {
+          } else if (params.id === "romo is ready") {
             this.isReady = true;
           }
         });
@@ -483,6 +450,7 @@ export default {
       this.app.addShadowPlane();
     },
     startTimer() {
+      this.timer = 10;
       this.timerInterval = setInterval(() => {
         this.timer--;
         console.log(this.timer);
@@ -515,7 +483,9 @@ export default {
       this.isMouseDown = false;
     },
     launchFracture(fracture, fragments) {
-      this.launchCountdown().then(() => {
+      this.$refs.momoIsPlaying.style.opacity = "0"
+      this.launchCountdown()
+      .then(() => {
         this.app
           .setCurrentFracture(fracture, fragments)
           .createFractureUI(fracture);
@@ -526,6 +496,11 @@ export default {
       }, 1000);
     },
     fail() {
+      console.log("fail");
+      this.app.currentFracture.children.forEach((piece)=>{
+        piece.triggered = false
+        piece.visible = 0
+      })
       if (this.socket) {
         this.socket.emit("custom-event", {
           name: "kintsugi mini-game",
@@ -536,6 +511,21 @@ export default {
           }
         });
       }
+      this.endFracture()
+    },
+    success() {
+      console.log("success");
+      if (this.socket) {
+        this.socket.emit("custom-event", {
+          name: "kintsugi mini-game",
+          in: this.roomID,
+          args: {
+            id: "next fracture",
+            fracture: this.currentFracture
+          }
+        });
+      }
+      this.endFracture()
     },
     cancelFracture(fragments) {
       console.log(fragments);
@@ -546,7 +536,7 @@ export default {
         this.countdown = 3;
         this.countdownInterval = setInterval(() => {
           this.countdown--;
-          console.log(this.countdown);
+          console.log("coutdown", this.countdown);
           if (this.countdown === 0) {
             clearInterval(this.countdownInterval);
             console.log("coutdown écoulé");
@@ -555,12 +545,27 @@ export default {
         }, 1000);
       });
     },
+    endFracture() {
+      clearInterval(this.timerInterval);
+      this.app.currentFracture = null;
+      this.app.currentFragments = null;
+      this.app.endFracture()
+      this.$refs.momoIsPlaying.style.opacity = "1"
+    },
     debugLaunchFracture(fragments, fracture) {
       console.log("debugLaunchFracture");
       this.app.bringCloser(fragments, 5);
 
       this.launchFracture(fracture, fragments);
     }
+  },
+  beforeDestroy() {
+    window.removeEventListener("touchmove", this.onTouchMove.bind(this));
+    window.removeEventListener("mousemove", this.onMouseMove.bind(this));
+    window.removeEventListener("mousedown", this.onMouseDown.bind(this));
+    window.removeEventListener("mouseup", this.onMouseUp.bind(this));
+    window.removeEventListener("resize", this.app.onWindowResize.bind(this));
+    window.removeEventListener("orientationchange",this.app.onOrientationChange.bind(this));
   },
   components: {
     isReady,
@@ -579,7 +584,7 @@ export default {
   width: 100%;
   height: 100%;
   .isPlaying {
-    opacity: 0;
+    // opacity: 0;
     position: absolute;
     left: 0px;
     top: 0px;

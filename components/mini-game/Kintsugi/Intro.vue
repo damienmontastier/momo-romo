@@ -78,7 +78,8 @@ export default {
   data() {
     return {
       countdown: 4,
-      romoIsReady: false
+      romoIsReady: false,
+      interval: null
     };
   },
   methods: {
@@ -97,12 +98,15 @@ export default {
       this.$refs.isPlaying.style.opacity = "0";
       this.$refs.countdown.style.opacity = "1";
       this.countdown = 3;
-      let interval = setInterval(() => {
+      if(this.interval) {
+        clearInterval(this.interval)
+      }
+      this.interval = setInterval(() => {
         if (this.countdown == 0) {
           this.countdown = 4;
           console.log("countdown ended");
           this.$emit("startfracture");
-          clearInterval(interval);
+          clearInterval(this.interval);
         } else {
           this.countdown--;
         }
@@ -182,12 +186,14 @@ export default {
       }
     }
     .gif {
-      width: 50px;
-      height: 50px;
-      background: $black;
+      width: 160px;
+      height: 160px;
+      // background: $black;
       position: absolute;
-      bottom: 108px;
-      left: calc(50% - 25px);
+      bottom: 80px;
+      left: calc(50% - 80px);
+      background: url("~static/ui/kintsugi/mini-game/tuto-touche.gif");
+      background-size: cover;
     }
   }
   .launchButton {
@@ -195,7 +201,8 @@ export default {
     height: 200px;
     // background: #f00;
     position: absolute;
-    bottom: calc(150px - 100px);
+    // bottom: calc(150px - 100px);
+    bottom: 60px;
     left: calc(50% - 100px);
     z-index: 10000;
     opacity: 0;
