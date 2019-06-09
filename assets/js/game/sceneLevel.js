@@ -93,7 +93,7 @@ export default class Level {
 
         this.scene.background = new THREE.Color(0xfdf9eb);
 
-        this.scene.add(new THREE.AxesHelper(20));
+        // this.scene.add(new THREE.AxesHelper(20));
 
         this.worldPhysic();
 
@@ -333,7 +333,7 @@ export default class Level {
             this.romo.position.x = Math.max(0, Math.min(this.momo.position.x + 8, this.romo.position.x))
             // this.romo.position.y = Math.max(0, Math.min(height, this.romo.position.y))
         }
-        this.cannonDebugRenderer.update()
+        // this.cannonDebugRenderer.update()
 
         if (this.characters) {
             this.characters.update()
