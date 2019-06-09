@@ -27,8 +27,8 @@
     <div class="launchButton" @click="launchMinigame" ref="launchButton">
       <button-circle-red jpn="スタート" en="LAUNCH GAME" letter="E"/>
     </div>
-    
-    <div class="countdown" @click="launchCountdown" ref="countdown">
+
+    <div class="countdown" ref="countdown">
       <Countdown :countdown="countdown"/>
     </div>
     <div class="isPlaying" ref="isPlaying">
@@ -40,7 +40,7 @@
       </span>
     </div>
     <div class="tryAgain" ref="tryAgain">
-      <span class="skew ">
+      <span class="skew">
         <div class="inline fill-en">try again!</div>
       </span>
     </div>
@@ -77,40 +77,46 @@ export default {
   },
   data() {
     return {
-      countdown: 3,
-      romoIsReady: false
+      countdown: 4,
+      romoIsReady: false,
+      interval: null
     };
   },
   methods: {
     showSynchro() {
-      this.$refs.synchro.style.opacity = "1"
+      this.$refs.synchro.style.opacity = "1";
     },
     launchMinigame() {
-      this.$refs.launchButton.style.opacity = "0"
-      this.$refs.tuto.style.opacity = "0"
-      this.$refs.synchro.style.opacity = "0"
-      this.$parent.launchCountdown()
+      this.$refs.launchButton.style.opacity = "0";
+      this.$refs.launchButton.style.pointerEvents = "none";
+      this.$refs.tuto.style.opacity = "0";
+      this.$refs.synchro.style.opacity = "0";
+      this.$parent.launchCountdown();
     },
     launchCountdown() {
       this.$refs.tryAgain.style.opacity = "0";
       this.$refs.isPlaying.style.opacity = "0";
       this.$refs.countdown.style.opacity = "1";
       this.countdown = 3;
-      let interval = setInterval(() => {
+      if(this.interval) {
+        clearInterval(this.interval)
+      }
+      this.interval = setInterval(() => {
         if (this.countdown == 0) {
           this.countdown = 4;
           console.log("countdown ended");
           this.$emit("startfracture");
-          clearInterval(interval);
+          clearInterval(this.interval);
         } else {
           this.countdown--;
         }
       }, 1000);
     },
     setRomoReady() {
-      this.romoIsReady = true
-      this.$refs.launchButton.style.opacity = "1"
-      console.log('romo is ready')
+      this.romoIsReady = true;
+      this.$refs.launchButton.style.opacity = "1";
+      this.$refs.launchButton.style.pointerEvents = "auto";
+      console.log("romo is ready");
     }
   },
   props: {
@@ -180,12 +186,14 @@ export default {
       }
     }
     .gif {
-      width: 50px;
-      height: 50px;
-      background: $black;
+      width: 160px;
+      height: 160px;
+      // background: $black;
       position: absolute;
-      bottom: 108px;
-      left: calc(50% - 25px);
+      bottom: 80px;
+      left: calc(50% - 80px);
+      background: url("~static/ui/kintsugi/mini-game/tuto-touche.gif");
+      background-size: cover;
     }
   }
   .launchButton {
@@ -193,13 +201,15 @@ export default {
     height: 200px;
     // background: #f00;
     position: absolute;
-    bottom: calc(150px - 100px);
+    // bottom: calc(150px - 100px);
+    bottom: 60px;
     left: calc(50% - 100px);
     z-index: 10000;
     opacity: 0;
+    pointer-events: none;
   }
   .countdown {
-    height: 100px;
+    height: 80px;
   }
   .countdown,
   .isPlaying,
@@ -219,16 +229,14 @@ export default {
 
   .endTitle {
     // height: 100px;
-     bottom: 100px;
+    bottom: 100px;
     transform: scale(0);
     #greatSVG {
-      
       width: 100%;
       height: 125px;
       display: flex;
     }
     svg {
-      
       margin: auto;
       height: 100%;
     }

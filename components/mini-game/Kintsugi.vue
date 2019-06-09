@@ -53,7 +53,7 @@
       <button @click="()=>{$refs.intro.setRomoReady()}">set momo ready</button>
       <button @click="launchEndGame()">end game</button>
       <!-- <button @click="launchStep()">Start</button>
-      <button @click="cancelFracture()">Cancel</button> -->
+      <button @click="cancelFracture()">Cancel</button>-->
     </div>
   </div>
 </template>
@@ -77,6 +77,9 @@ const MomoSpriteJson = require("~/static/ui/kintsugi/mini-game/sprites/momo/powe
 
 import MomoMoodSprite from "~/static/ui/kintsugi/mini-game/sprites/moods/face_momo.png";
 const MomoMoodSpriteJson = require("~/static/ui/kintsugi/mini-game/sprites/moods/face_momo.json");
+
+import BrushSprite from "~/static/sprites/brush/brush.png";
+const BrushSpriteJson = require("~/static/sprites/brush/brush.json");
 
 Number.prototype.map = function(in_min, in_max, out_min, out_max) {
   return ((this - in_min) * (out_max - out_min)) / (in_max - in_min) + out_min;
@@ -123,7 +126,7 @@ class App {
     // this.controls.enabled = true;
 
     // ambient light
-    this.scene.add(new THREE.AmbientLight(0xffffff,4));
+    this.scene.add(new THREE.AmbientLight(0xffffff, 4));
     this.scene.background = new THREE.Color("#fefbf0");
 
     // directional light
@@ -142,16 +145,39 @@ class App {
     this.renderer.setAnimationLoop(this.render.bind(this));
   }
 
+  addBrush() {
+    return new Promise((resolve, reject) => {
+      new Sprite(BrushSprite, BrushSpriteJson.sprites, {
+        wTiles: 4,
+        hTiles: 2
+      }).then(brush => {
+        this.brush = brush;
+        this.brush.scale.set(50, 50, 50);
+        this.brush.position.z = 2;
+        this.brush.position.x = 60;
+        this.brush.position.y = -5;
+        this.brush.rotation.z = THREE.Math.degToRad(30);
+
+        this.scene.add(this.brush);
+        this.brush
+          .newSprites()
+          .addState("loop")
+          .start();
+      });
+      resolve();
+    });
+  }
+
   addMomo() {
     this.momoGroup = new THREE.Group();
     this.scene.add(this.momoGroup);
 
-    return new Promise((resolve,reject)=>{
+    return new Promise((resolve, reject) => {
       new Sprite(MomoSprite, MomoSpriteJson.sprites, {
         wTiles: 8,
         hTiles: 8
-      }).then((momo)=>{
-        this.momo = momo
+      }).then(momo => {
+        this.momo = momo;
         this.momo.scale.set(55, 55, 55);
         this.momo.position.z = 2;
         this.momo.position.x = -65;
@@ -162,10 +188,9 @@ class App {
           .newSprites()
           .addState("wait")
           .start();
-        })
-      resolve()
-    })
-
+      });
+      resolve();
+    });
   }
 
   addTitle() {
@@ -293,6 +318,9 @@ class App {
     if (this.momo) {
       this.momo.update(delta);
     }
+    if (this.brush) {
+      this.brush.update(delta);
+    }
     this.renderer.render(this.scene, this.camera);
   }
 
@@ -304,32 +332,36 @@ class App {
       }).then(object => {
         // console.log(object.scene.children[0].children[1])
         // this.model = object.scene.children[0].children[1].children[0];
-        this.model = object.scene.children[0].children[1]
-        this.model.scale.set(0.00001, 0.00001, 0.00001);
+        this.model = object.scene.children[0].children[1];
+        this.model.scale.set(1.2, 1.2, 1.2);
         this.model.children.forEach((c, index) => {
           c._originPosition = c.getWorldPosition(new THREE.Vector3());
           c._originRotation = c.rotation;
           c._originScale = c.scale;
 
-          let ratio = 1
+          let ratio = 1;
 
           if (index === 0) {
-            let position = new THREE.Vector3(-2.697, -9.130, 0)
+            let position = new THREE.Vector3(-5.697, -9.13, 0);
             c.position.add(position.multiplyScalar(ratio));
-            let euler = new THREE.Euler(0, 0, THREE.Math.degToRad(29.7)*ratio)
+            let euler = new THREE.Euler(
+              0,
+              0,
+              THREE.Math.degToRad(29.7) * ratio
+            );
             c.rotation.copy(euler);
           } else if (index === 1) {
-            let position = new THREE.Vector3(14.308, -3.160, 0)
+            let position = new THREE.Vector3(8.308, 3.16, 0);
             c.position.add(position.multiplyScalar(ratio));
-            c.rotation.set(0, 0, THREE.Math.degToRad(-18.05)*ratio);
+            c.rotation.set(0, 0, THREE.Math.degToRad(-18.05) * ratio);
           } else if (index === 2) {
-            let position = new THREE.Vector3(-4.943, 10.734, 0)
+            let position = new THREE.Vector3(-7.943, 10.734, 0);
             c.position.add(position.multiplyScalar(ratio));
-            c.rotation.set(0, 0, THREE.Math.degToRad(-21.57)*ratio);
+            c.rotation.set(0, 0, THREE.Math.degToRad(-21.57) * ratio);
           } else if (index === 3) {
-            let position = new THREE.Vector3(8.338, 10.434, 0)
+            let position = new THREE.Vector3(5.338, 10.434, 0);
             c.position.add(position.multiplyScalar(ratio));
-            c.rotation.set(0, 0, THREE.Math.degToRad(12.69)*ratio);
+            c.rotation.set(0, 0, THREE.Math.degToRad(12.69) * ratio);
           }
           // c.position.multiplyScalar(3);
           c._maxPosition = c.position.clone();
@@ -343,7 +375,7 @@ class App {
         this.fragments.push(this.model.getObjectByName("bowlpart_1"));
         this.fragments.push(this.model.getObjectByName("bowlpart_2"));
         this.fragments.push(this.model.getObjectByName("bowlpart_3"));
-        console.log(this.fragments)
+        console.log(this.fragments);
         // console.log(fragments)
 
         // this.fragments.forEach((fragment)=>{
@@ -364,17 +396,14 @@ class App {
 
         this.fractures.forEach(fracture => {
           fracture.children.forEach(piece => {
-            // piece.material.color.set(new THREE.Color(0xff0000));
-            // console.log(piece)
-            // piece.material.transparent = true
-            // piece.material.opacity = 0;
-            piece.visible = false
+            piece.visible = false;
+            piece.material.color.set(0xffff00);
           });
         });
 
         this.scene.add(this.model);
         this.model.position.z = 0.2;
-        this.model.position.y = -5
+        this.model.position.y = -5;
         this.loaded = true;
         resolve();
       });
@@ -431,7 +460,6 @@ class App {
   triggerFracturePiece(piece) {
     piece.triggered = true;
     piece.visible = true;
-    piece.material.color.set(0x00ff00);
   }
 
   onWindowResize() {
@@ -481,17 +509,17 @@ export default {
         this.socket.on("kintsugi mini-game", params => {
           if (params.id === "next fracture") {
             this.nextFracture();
-          }
-          if (params.id === "piece triggered") {
+          } else if (params.id === "piece triggered") {
             // console.log(params.index)
             let fracture = this.app.fractures[this.currentFracture];
             // console.log(fracture.children[params.index])
             this.app.triggerFracturePiece(fracture.children[params.index]);
-          }
-          if(params.id === 'romo is ready') {
-            this.$refs.intro.setRomoReady()
+          } else if (params.id === "romo is ready") {
+            this.$refs.intro.setRomoReady();
             // this.$refs.intro.romoIsReady = true
             // console.log('romo is ready')
+          } else if (params.id === "cancel fracture") {
+            this.cancelFracture(params.fragments)
           }
         });
       }
@@ -503,9 +531,10 @@ export default {
       });
       promises.push(this.app.loadBowl());
       promises.push(this.app.addMomo());
+      promises.push(this.app.addBrush());
       Promise.all(promises).then(() => {
         console.log("3D ASSETS LOADED");
-        this.tweeningScalar = 0.5
+        this.tweeningScalar = 1;
         let tl = new TimelineMax();
         tl.delay(1)
           .add("titleAppear", 0)
@@ -525,45 +554,45 @@ export default {
             this.$refs.intro.$refs.titleSVG,
             0.5,
             {
-              ease: Power4.easeOut,
+              ease: Back.easeOut.config(1.4),
               // delay: -0.5,
               opacity: 1,
-              scale:1
+              scale: 1
             },
             "titleAppear"
           )
-          .to(
-            this.app.model.scale,
-            0.5,
-            {
-              ease: Power4.easeOut,
-              delay: 0.1,
-              x: 1.2,
-              y: 1.2,
-              z: 1.2
-            },
-            "titleAppear"
-          )
+          // .to(
+          //   this.app.model.scale,
+          //   1,
+          //   {
+          //     ease: Power4.easeOut,
+          //     delay: 0.1,
+          //     x: 1.2,
+          //     y: 1.2,
+          //     z: 1.2
+          //   },
+          //   "titleAppear"
+          // )
           .to(
             this,
             3,
             {
               ease: Power4.easeOut,
               // delay: 0.6,
-              tweeningScalar: 1.1,
-              onStart:()=>{
+              tweeningScalar: 1.2,
+              onStart: () => {
                 // this.app.fragments.forEach((fragment)=>{
                 //   let o = new THREE.Vector3().copy(fragment._originPosition)
                 //   console.log(o)
                 // })
               },
-              onUpdate:()=>{
-                this.app.fragments.forEach((fragment)=>{
-                  let o = new THREE.Vector3().copy(fragment._maxPosition)
-                  let rotationZ = fragment._maxRotation.z
-                  fragment.position.copy(o.multiplyScalar(this.tweeningScalar))
-                  fragment.rotation.z = rotationZ * this.tweeningScalar
-                })
+              onUpdate: () => {
+                this.app.fragments.forEach(fragment => {
+                  let o = new THREE.Vector3().copy(fragment._maxPosition);
+                  let rotationZ = fragment._maxRotation.z;
+                  fragment.position.copy(o.multiplyScalar(this.tweeningScalar));
+                  fragment.rotation.z = rotationZ * this.tweeningScalar;
+                });
               }
             },
             "titleAppear"
@@ -572,8 +601,8 @@ export default {
             [this.app.planeRosace.scale, this.app.planeGradient.scale],
             0.5,
             {
-              ease: Power4.easeOut,
-              delay: 0.2,
+              ease: Back.easeOut.config(1.4),
+              // delay: 0.2,
               x: 1,
               y: 1,
               z: 1
@@ -584,7 +613,7 @@ export default {
             [this.app.planeRosace.material, this.app.planeGradient.material],
             0.5,
             {
-              ease: Power4.easeOut,
+              ease: Back.easeOut.config(1.4),
               delay: 0.2,
               opacity: 1
             },
@@ -594,16 +623,20 @@ export default {
             this.$refs.intro.$refs.titleSVG,
             0.5,
             {
-              ease: Power4.easeOut,
-              scale:0
+              ease: Back.easeIn.config(1.4),
+              scale: 0
             },
             "titleDisappear"
           )
           .to(
-            [this.app.planeRosace.scale, this.app.planeGradient.scale,this.app.model.scale],
+            [
+              this.app.planeRosace.scale,
+              this.app.planeGradient.scale,
+              this.app.model.scale
+            ],
             0.5,
             {
-              ease: Power4.easeOut,
+              ease: Back.easeIn.config(1.4),
               x: 0.01,
               y: 0.01,
               z: 0.01
@@ -611,10 +644,14 @@ export default {
             "titleDisappear"
           )
           .to(
-            [this.app.planeRosace.material, this.app.planeGradient.material, this.$refs.intro.$refs.titleSVG],
+            [
+              this.app.planeRosace.material,
+              this.app.planeGradient.material,
+              this.$refs.intro.$refs.titleSVG
+            ],
             0.5,
             {
-              ease: Power4.easeOut,
+              ease: Back.easeIn.config(1.4),
               opacity: 0
             },
             "titleDisappear"
@@ -622,12 +659,20 @@ export default {
           .to(this.$refs.intro.$refs.tuto, 1, {
             ease: Power4.easeOut,
             opacity: 1,
-            onStart:()=>{
-              this.$refs.intro.showSynchro()
+            onStart: () => {
+              this.$refs.intro.showSynchro();
             }
+          })
+          .eventCallback("onComplete", () => {
+            this.app.planeGradient.position.z = 0.15;
+            this.app.fragments.forEach(fragment => {
+              let o = new THREE.Vector3().copy(fragment._maxPosition);
+              let rotationZ = fragment._maxRotation.z;
+              fragment.position.copy(o);
+              fragment.rotation.z = rotationZ;
+            });
           });
       });
-      
     },
     nextFracture() {
       this.runningInterval = 0;
@@ -637,42 +682,55 @@ export default {
       this.currentStep = 0;
       this.currentFracture++;
       this.fractureEnded = false;
-      if(this.currentFracture >= this.gameModel.length) {
-        this.launchEndGame()
+      if (this.currentFracture >= this.gameModel.length) {
+        this.launchEndGame();
       } else {
         this.resetUI();
         this.launchCountdown();
       }
-
     },
     launchEndGame() {
-      console.log('end game')
-      this.$refs.intro.$refs.isPlaying.style.opacity = "0"
-      this.$refs.keys.style.opacity = "0"
-      this.$refs.steps.style.opacity = "0"
+      console.log("end game");
+      this.$refs.intro.$refs.isPlaying.style.opacity = "0";
+      this.$refs.keys.style.opacity = "0";
+      this.$refs.steps.style.opacity = "0";
       let tl = new TimelineMax();
-      tl
-      .add("endGameAppear", 0)
-      .to([this.app.planeRosace.scale,this.app.planeGradient.scale],0.5,{
-        x:1,
-        y:1,
-        z:1,
-        onStart:()=>{
-          this.app.model.scale.set(1.2,1.2,1.2)
-          this.app.model.position.z = 0.7
-          this.app.fragments.forEach((fragment)=>{
-            fragment.position.copy(fragment._maxPosition)
-            fragment.rotation.z = fragment._maxRotation.z
-          })
-        }
-      },"endGameAppear")
-      .to([this.app.planeRosace.material,this.app.planeGradient.material],0.5,{
-        opacity:1
-      },"endGameAppear")
-      .to(this.$refs.intro.$refs.endTitle,0.5,{
-        opacity:1,
-        scale:1
-      },"endGameAppear")
+      tl.add("endGameAppear", 0)
+        .to(
+          [this.app.planeRosace.scale, this.app.planeGradient.scale],
+          0.5,
+          {
+            x: 1,
+            y: 1,
+            z: 1,
+            onStart: () => {
+              this.app.model.scale.set(1.2, 1.2, 1.2);
+              this.app.model.position.z = 0.7;
+              this.app.fragments.forEach(fragment => {
+                fragment.position.copy(fragment._originPosition);
+                fragment.rotation.z = fragment._originRotation.z;
+              });
+            }
+          },
+          "endGameAppear"
+        )
+        .to(
+          [this.app.planeRosace.material, this.app.planeGradient.material],
+          0.5,
+          {
+            opacity: 1
+          },
+          "endGameAppear"
+        )
+        .to(
+          this.$refs.intro.$refs.endTitle,
+          0.5,
+          {
+            opacity: 1,
+            scale: 1
+          },
+          "endGameAppear"
+        );
     },
     launchCountdown() {
       this.app.momo
@@ -682,36 +740,55 @@ export default {
         .start();
       this.$refs.keys.style.opacity = "0";
       this.$refs.steps.style.opacity = "1";
-      this.app.model.scale.set(1.2,1.2,1.2)
-      this.app.model.position.y = 0
+      this.app.model.scale.set(1.2, 1.2, 1.2);
+      this.app.model.position.y = 0;
       this.$refs.intro.launchCountdown();
     },
     nextStep() {
       if (this.currentStep === this.controls.length - 1) {
         console.log("next step");
-        let tl = new TimelineMax()
-        tl
-        .to([this.app.planeRosace.scale,this.app.planeGradient.scale],0.5, {
-          x:1,
-          y:1,
-          z:1,
-          ease: Power4.easeOut,
-        },0)
-        .to([this.app.planeRosace.material,this.app.planeGradient.material],0.5, {
-          opacity:1,
-          ease: Power4.easeOut,
-        },0)
-        .to([this.app.planeRosace.scale,this.app.planeGradient.scale],0.5, {
-          x:0.001,
-          y:0.001,
-          z:0.001,
-          ease: Power4.easeOut,
-        },1)
-        .to([this.app.planeRosace.material,this.app.planeGradient.material],0.5, {
-          opacity:0,
-          ease: Power4.easeOut,
-        },1)
-        this.$refs.intro.$refs.isPlaying.style.opacity = "1"
+        let tl = new TimelineMax();
+        tl.to(
+          [this.app.planeRosace.scale, this.app.planeGradient.scale],
+          0.5,
+          {
+            x: 1,
+            y: 1,
+            z: 1,
+            ease: Back.easeOut.config(1.4)
+          },
+          0
+        )
+          .to(
+            [this.app.planeRosace.material, this.app.planeGradient.material],
+            0.5,
+            {
+              opacity: 1,
+              ease: Back.easeOut.config(1.4)
+            },
+            0
+          )
+          .to(
+            [this.app.planeRosace.scale, this.app.planeGradient.scale],
+            0.5,
+            {
+              x: 0.001,
+              y: 0.001,
+              z: 0.001,
+              ease: Back.easeIn.config(1.4)
+            },
+            1
+          )
+          .to(
+            [this.app.planeRosace.material, this.app.planeGradient.material],
+            0.5,
+            {
+              opacity: 0,
+              ease: Back.easeIn.config(1.4)
+            },
+            1
+          );
+        this.$refs.intro.$refs.isPlaying.style.opacity = "1";
         this.launchStep();
         this.currentStep++;
         this.fractureEnded = true;
@@ -721,7 +798,8 @@ export default {
             in: this.roomID,
             args: {
               id: "launch fracture",
-              fracture: this.currentFracture
+              fracture: this.currentFracture,
+              fragments: this.gameModel[this.currentFracture].fragments
             }
           });
         }
@@ -765,14 +843,14 @@ export default {
       });
     },
     tryAgain() {
-      this.$refs.keys.style.opacity = '0'
-      this.$refs.steps.style.opacity = '0'
-      this.$refs.intro.$refs.tryAgain.style.opacity = '1'
+      this.$refs.keys.style.opacity = "0";
+      this.$refs.steps.style.opacity = "0";
+      this.$refs.intro.$refs.tryAgain.style.opacity = "1";
     },
-    cancelFracture() {
-      if (this.gameModel[this.currentFracture]) {
-        let fragments = this.gameModel[this.currentFracture].fragments;
-        this.app.spread(fragments);
+    fail() {
+      this.$refs.intro.$refs.isPlaying.style.opacity = "0";
+      let fragments = this.gameModel[this.currentFracture].fragments
+      this.cancelFracture(fragments)
         if (this.socket) {
           this.socket.emit("custom-event", {
             name: "kintsugi mini-game",
@@ -783,23 +861,26 @@ export default {
             }
           });
         }
-        this.runningInterval = 0;
-        if (this.tweening) {
-          this.tweening.kill();
-        }
-        this.currentStep = 0;
-
-        //STOP la fracture vient de se cancel -> ecran TODO
-        this.tryAgain()
-        setTimeout(()=>{
-          this.launchCountdown();
-        },2000)
-        
-        // this.startKeyPressInterval();
-        //STOP
-        this.resetUI();
+    },
+    cancelFracture(fragments) {
+      this.app.spread(fragments);
+      let fracture = this.app.fractures[this.currentFracture]
+      fracture.children.forEach((piece)=>{
+        piece.visible = false
+      })
+      this.runningInterval = 0;
+      if (this.tweening) {
+        this.tweening.kill();
       }
-      // this.currentFracture--
+      this.currentStep = 0;
+      this.fractureEnded = false;
+
+      this.tryAgain();
+      setTimeout(() => {
+        this.launchCountdown();
+      }, 2000);
+
+      this.resetUI();
     },
     startFracture() {
       this.$refs.keys.style.opacity = "1";
@@ -863,7 +944,7 @@ export default {
               });
           } else if (this.runningInterval > 0) {
             console.log("wrong key");
-            this.cancelFracture();
+            this.fail()
           }
         }
       }
@@ -881,7 +962,7 @@ export default {
         onComplete: () => {
           if (!this.fractureEnded) {
             console.log("wrong");
-            this.cancelFracture();
+            this.fail()
           }
           // this.runningInterval = this.interval;
         }
@@ -908,7 +989,7 @@ export default {
     // }
   },
   created() {
-    if(this.socket) {
+    if (this.socket) {
       this.socket.emit("custom-event", {
         name: "router",
         in: this.roomID,
@@ -940,17 +1021,16 @@ $border: 3px;
   position: relative;
   -webkit-clip-path: polygon(0 3%, 100% 0%, 100% 97%, 0% 100%);
   clip-path: polygon(0 3%, 100% 0%, 100% 97%, 0% 100%);
-  
 
   &::after {
-    content: '';
+    content: "";
     height: 96.9%;
     width: 100%;
     top: 1.6%;
     left: 0px;
     // background: red;
     border: 5px solid $black;
-    transform: skew(0,-1.4deg);
+    transform: skew(0, -1.4deg);
     position: absolute;
     z-index: 2;
   }

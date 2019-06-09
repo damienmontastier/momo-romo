@@ -1,5 +1,7 @@
 <template>
-  <div id="portrait">return fdp</div>
+  <div id="portrait">
+    <div>retourne fdp</div>
+  </div>
 </template>
 
 <script>
@@ -14,6 +16,10 @@ export default {};
   position: absolute;
   left: 0px;
   top: 0px;
+  display: flex;
+  div {
+    margin: auto;
+  }
 }
 @media screen and (orientation: portrait) {
   // CSS applied when the device is in portrait mode

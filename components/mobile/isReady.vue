@@ -45,6 +45,7 @@ export default {
   },
   methods: {
     onTouchStart(event) {
+      console.log('touchstart')
       this.touchStart = event.touches[0].clientY
     },
     onTouchEnd(event) {
@@ -100,7 +101,7 @@ export default {
   margin-bottom: 8px; 
 }
 #isReady {
-  
+  z-index: 3;
   height: 100vh;
   width: 100vw;
   position: absolute;
