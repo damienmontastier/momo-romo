@@ -54,7 +54,7 @@ export default {
       resetLoaded: "game/resetLoaded"
     })
   },
-  beforeDestroy() {
+  destroyed() {
     this.resetLoaded();
   }
 };

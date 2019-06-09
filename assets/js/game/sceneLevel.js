@@ -87,8 +87,9 @@ export default class Level {
 
         this.scene = new THREE.Scene();
 
-        this.scene.add(new THREE.AxesHelper(20));
+        this.scene.background = new THREE.Color(0xfdf9eb);
 
+        this.scene.add(new THREE.AxesHelper(20));
 
         this.worldPhysic();
 
@@ -216,6 +217,22 @@ export default class Level {
         this.renderer.setSize(window.innerWidth, window.innerHeight);
     }
 
+    getScreenPos(x, y, z, cam) {
+        const vec = new THREE.Vector3();
+
+        const sizeX = window.innerWidth
+        const sizeY = window.innerHeight
+        const wh = sizeX * 0.5;
+        const hh = sizeY * 0.5;
+
+        vec.set(x, y, z);
+
+        vec.x = (vec.x * wh) + wh;
+        vec.y = -(vec.y * hh) + hh;
+
+        return [vec.x, vec.y];
+    }
+
 
     nextToMinigame(value) {
         if (value && !this.isMiniGameLaunched) {
@@ -265,13 +282,15 @@ export default class Level {
                 }
             });
         }
-        
-        if (this.romo) {
-            let width = visibleWidthAtZDepth(this.romo.position.z, this.camera)
-            let height = visibleHeightAtZDepth(this.romo.position.z, this.camera)
 
-            this.romo.position.x = Math.max(0, Math.min(width - 8, this.romo.position.x))
-            this.romo.position.y = Math.max(0, Math.min(height - 4.5, this.romo.position.y))
+        if (this.romo) {
+
+            let test = this.getScreenPos(this.romo.position.x, this.romo.position.y, this.romo.position.z, this.camera)
+            console.log(test)
+            // let width = visibleWidthAtZDepth(this.momo.position.z, this.camera)
+            // let height = visibleHeightAtZDepth(this.romo.position.z, this.camera)
+            // this.romo.position.x = Math.max(0, Math.min(width, this.romo.position.x))
+            // this.romo.position.y = Math.max(0, Math.min(height - 4.5, this.romo.position.y))
         }
         this.cannonDebugRenderer.update()
 
