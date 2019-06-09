@@ -5,8 +5,8 @@
         <span class="skew fill-en">Select your keyboard</span>
       </div>
       <ul>
-        <li class="stroke skew" ref="azerty" @click="changeKeyboard('azerty')">Azerty</li>
-        <li class="stroke skew" ref="qwerty" @click="changeKeyboard('qwerty')">Qwerty</li>
+        <li class="stroke skew selector" ref="azerty" @click="changeKeyboard('azerty')">Azerty</li>
+        <li class="stroke skew selector" ref="qwerty" @click="changeKeyboard('qwerty')">Qwerty</li>
       </ul>
     </div>
   </div>
@@ -35,6 +35,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import "~assets/scss/main.scss";
+
 #choose-keyboard {
   background: white;
   height: 100%;

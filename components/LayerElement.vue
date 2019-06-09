@@ -130,10 +130,19 @@ export default {
   margin-bottom: 20px;
   background: white;
   padding: 5px;
+  height: 200px;
+  overflow: auto;
 
+  p {
+    margin-bottom: 20px;
+  }
   li {
+    margin-bottom: 10px;
     cursor: pointer;
     padding-left: 10px;
+    &:last-of-type {
+      margin-bottom: 0;
+    }
     &:hover {
       background: #f7fcf7;
     }

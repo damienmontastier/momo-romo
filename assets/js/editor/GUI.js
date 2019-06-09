@@ -6,9 +6,9 @@ if (process.client) {
         }
 
         update(target) {
-            console.log('fdsfs',target)
             this.remove();
             this.target = target;
+            console.log(this.target)
             this.init();
         }
 
@@ -42,13 +42,13 @@ if (process.client) {
             this.scale = this.addFolder('scale');
             this.scale.open();
 
-            if (this.target.mesh._type == "FixedProp") {
-                this.scale.add(this.target.scale, 'x').name('scale').onChange(() => {
-                    this.target.scale.y = this.target.scale.x
-                });
-            } else if (this.target.mesh._type == "Platform") {
+            if (this.target.mesh._type == "Platform") {
                 this.scale.add(this.target.scale, 'x').name('x (width)').onChange(() => {
                     this.target.scale.x
+                });
+            } else {
+                this.scale.add(this.target.scale, 'x').name('scale').onChange(() => {
+                    this.target.scale.y = this.target.scale.x
                 });
             }
             this.position.add(params, 'alignOnGrid')

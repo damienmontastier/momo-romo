@@ -1,19 +1,17 @@
 <template>
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 134 136">
+  <svg width="300" height="300" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 134 140">
     <defs>
-      <path ref="circlePath" id="circlePath" d="M7,69a60,60 0 1,0 120,0a60,60 0 1,0 -120,0"></path>
+      <path ref="circlePath" id="circlePath" d="M9,70a58,58 0 1,0 116,0a58,58 0 1,0 -116,0"></path>
     </defs>
     <g>
-      <text x="50%" y="50%" class="button-letter-center" id="letter">{{letter}}</text>
+      <circle id="circle" ref="circle" cx="67" cy="70" r="70" fill="transparent"></circle>
 
-      <text ref="textCurved" id="textCurved" fill="#000">
+      <text ref="textCurved" id="textCurved">
         <textPath side="right" ref="pathTextCurved" id="pathTextCurved" xlink:href="#circlePath">
-          <tspan class="button-curved-en">• {{en}}</tspan>
-          <tspan class="button-curved-jpn">• {{jpn}}</tspan>
+          <tspan class="button-curved-en">• Launch Game</tspan>
+          <tspan class="button-curved-jpn">• ホームマ</tspan>
         </textPath>
       </text>
-
-      <circle id="circle" ref="circle" cx="67" cy="69" r="60" fill="transparent"></circle>
     </g>
   </svg>
 </template>
@@ -64,10 +62,12 @@ export default {
 @import "~assets/scss/main.scss";
 
 svg {
-  // width: 150px;
-  // height: 150px;
   width: 100%;
   height: 100%;
+}
+
+#circle {
+  fill: $a;
 }
 
 #text,
@@ -76,12 +76,8 @@ svg {
   pointer-events: none;
 }
 
-#border {
-  fill: #f3765a;
-}
-
-#letter {
-  text-anchor: middle;
-  alignment-baseline: central;
+.button-curved-jpn,
+.button-curved-en {
+  fill: $white;
 }
 </style>

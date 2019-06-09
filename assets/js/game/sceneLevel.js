@@ -5,20 +5,51 @@ import CANNON from 'cannon'
 import physicParams from '../physics/physicParams';
 import Characters from '../objects/Characters';
 import cannonDebugRenderer from '../physics/CannonDebugRenderer'
+import AnimatedProp from "@/assets/js/objects/AnimatedProp";
+import Sprite from "@/assets/js/objects/Sprite";
+
 import {
     TweenMax,
     Power4
 } from 'gsap';
 
+
+const visibleHeightAtZDepth = (depth, camera) => {
+    const cameraOffset = camera.position.z;
+    if (depth < cameraOffset) depth -= cameraOffset;
+    else depth += cameraOffset;
+
+    const vFOV = camera.fov * Math.PI / 180;
+
+    return 2 * Math.tan(vFOV / 2) * Math.abs(depth);
+};
+
+const visibleWidthAtZDepth = (depth, camera) => {
+    const height = visibleHeightAtZDepth(depth, camera);
+    return height * camera.aspect;
+};
+
 export default class Level {
     constructor(opts, store) {
+
         this.canvas = document.getElementById("canvas")
         this.textureAtlas = opts.textureAtlas; // textureAtlas
+
         this.fixedProps = opts.levelParams.props.fixed; // Fixed Props
+
+        this.animates = opts.levelParams.animates; // Animate Props
+        this.animatesArray = []
+
         this.levelParams = {
             ...opts.levelParams
         };
         this.platforms = this.levelParams.platforms
+
+        this.animateRunning = false
+        this.animateWait = false
+
+        this.clock = new THREE.Clock()
+
 
         new Characters(store).then((characters) => {
             this.characters = characters
@@ -49,7 +80,8 @@ export default class Level {
         // this.camera = new THREE.OrthographicCamera(
         //     window.innerWidth / - 20, window.innerWidth / 20, window.innerHeight / 20, window.innerHeight / - 20, .1, 1000
         // );
-        this.camera.position.z = 10;
+        this.camera.position.z = 15;
+        this.camera.position.y = 3;
 
         this.controls = new OrbitControls(this.camera);
 
@@ -57,8 +89,11 @@ export default class Level {
 
         this.scene = new THREE.Scene();
 
-        this.scene.add(new THREE.AxesHelper(20));
+        this.scene.add(this.camera)
 
+        this.scene.background = new THREE.Color(0xfdf9eb);
+
+        this.scene.add(new THREE.AxesHelper(20));
 
         this.worldPhysic();
 
@@ -95,12 +130,22 @@ export default class Level {
     }
 
     init() {
-        this.fixedProps.forEach(prop => {
-            this.addFixedProp(prop)
-        });
-        this.platforms.forEach(platform => {
-            this.addPlatforms(platform)
-        });
+        if (this.fixedProps) {
+            this.fixedProps.forEach(prop => {
+                this.addFixedProp(prop)
+            });
+        }
+        if (this.platforms) {
+            this.platforms.forEach(platform => {
+                this.addPlatforms(platform)
+            });
+        }
+        if (this.animates) {
+            this.animates.forEach(animate => {
+                this.addAnimate(animate)
+            });
+        }
+        this.addMask()
     }
 
     addFixedProp(props) {
@@ -125,6 +170,17 @@ export default class Level {
         }
         this.fixedProps.push(prop);
         this.scene.add(prop)
+    }
+
+    addAnimate(params) {
+        new AnimatedProp(params).then((animate) => {
+            animate.scale.set(params.scale.x, params.scale.y, params.scale.z)
+            animate.position.set(params.position.x, params.position.y, params.position.z)
+            animate.rotation.set(params.rotation.x, params.rotation.y, params.rotation.z)
+            animate.name = params.params.json.id
+            this.animatesArray.push(animate)
+            this.scene.add(animate)
+        })
     }
 
     addCharactere() {
@@ -165,6 +221,52 @@ export default class Level {
         this.camera.updateProjectionMatrix();
         this.renderer.setSize(window.innerWidth, window.innerHeight);
     }
+    addMask() {
+        var singleGeometry = new THREE.Geometry();
+
+        let width = visibleWidthAtZDepth(this.romo.position.z, this.camera)
+        let height = visibleHeightAtZDepth(this.romo.position.z, this.camera)
+
+        var geometryTopBottom = new THREE.PlaneGeometry(width, height, 1)
+
+        var geometryLeftRight = new THREE.PlaneGeometry(width, height, 1)
+
+        var BoxGeometryTop = new THREE.Mesh(geometryTopBottom, material);
+        BoxGeometryTop.position.set(0, height / 2 + 1.5, 0)
+        BoxGeometryTop.rotation.set(0, THREE.Math.degToRad(4), 0)
+        BoxGeometryTop.updateMatrix()
+        singleGeometry.merge(BoxGeometryTop.geometry, BoxGeometryTop.matrix)
+
+        var BoxGeometryBottom = new THREE.Mesh(geometryTopBottom, material);
+        BoxGeometryBottom.position.set(0, -(height / 2) - 2.25, 0)
+        BoxGeometryBottom.rotation.set(0, THREE.Math.degToRad(2), 0)
+        BoxGeometryBottom.updateMatrix()
+        singleGeometry.merge(BoxGeometryBottom.geometry, BoxGeometryBottom.matrix)
+
+        var BoxGeometryLeft = new THREE.Mesh(geometryLeftRight, material);
+        BoxGeometryLeft.position.set(-(width / 2) - 4, 0, 0)
+        BoxGeometryLeft.updateMatrix()
+        singleGeometry.merge(BoxGeometryLeft.geometry, BoxGeometryLeft.matrix)
+
+        var BoxGeometryRight = new THREE.Mesh(geometryLeftRight, material);
+        BoxGeometryRight.position.set((width / 2) + 4, 0, 0)
+
+        BoxGeometryRight.updateMatrix()
+        singleGeometry.merge(BoxGeometryRight.geometry, BoxGeometryRight.matrix)
+
+        var material = new THREE.MeshBasicMaterial({
+            // color: 0xf9f6eb,
+            color: 0xff0000,
+        });
+
+        let masks = new THREE.Mesh(singleGeometry, material)
+
+        masks.position.set(0, 0, -8)
+
+        this.scene.add(masks)
+
+        this.camera.add(masks);
+    }
 
 
     nextToMinigame(value) {
@@ -186,11 +288,59 @@ export default class Level {
     render() {
         // this.camera.lookAt(this.camera.position)
 
+        if (this.animatesArray.length) {
+            this.animatesArray.forEach(animate => {
+                const delta = this.clock.getDelta() * 5000;
+                this.time += delta;
+                animate.animate.update(delta)
+                if (this.romo.position.x >= animate.position.x - 1.5 && this.romo.position.x <= animate.position.x + 1.5) {
+                    if (animate.animate.name = "cat") {
+                        if (!this.animateRunning) {
+                            console.log('passage sur le animated')
+                            this.launchSprite(animate.animate, "cat")
+                            this.animateWait = false
+                            this.animateRunning = true;
+                            let x = animate.position.x
+                            TweenMax.to(animate.position, 2, {
+                                x: x + 2,
+                                ease: Power4.easeIn,
+                            })
+                        }
+                    }
+                } else {
+                    if (!this.animateWait) {
+                        this.launchSprite(animate.animate, "wait")
+
+                        this.animateWait = true
+                        // this.animateRunning = false;
+                    }
+                }
+            });
+        }
+
+        // if(this.momo){
+        //     this.plane.position.x = this.momo.position.x
+        // }
+
+        if (this.romo) {
+
+            // let test = this.getScreenPos(this.romo.position.x, this.romo.position.y, this.romo.position.z, this.camera)
+            // let position = this.toScreenPosition(this.romo, this.camera)
+
+            // this.plane.position.x = this.momo.position.x
+            // let width = visibleWidthAtZDepth(this.romo.position.z, this.camera)
+            // let height = visibleHeightAtZDepth(this.romo.position.z, this.camera)
+            this.romo.position.x = Math.max(0, Math.min(this.momo.position.x + 8, this.romo.position.x))
+            // this.romo.position.y = Math.max(0, Math.min(height, this.romo.position.y))
+        }
         this.cannonDebugRenderer.update()
 
         if (this.characters) {
             this.characters.update()
-            // this.camera.position.set(this.momo.position.x, 2, 10)
+            TweenMax.to(this.camera.position, 1, {
+                x: this.momo.position.x,
+                ease: Power0.easeIn
+            })
         }
 
         if (this.minigameProps) {
@@ -204,5 +354,12 @@ export default class Level {
         this.physicParams.update()
 
         this.renderer.render(this.scene, this.camera);
+    }
+    launchSprite(character, id) {
+        character
+            .newSprites()
+            .addState(id)
+            .start()
+        this.currentSpriteID = id;
     }
 }

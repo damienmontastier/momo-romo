@@ -1,32 +1,31 @@
 {
-    "sprites": [
-        {
+    "sprites": [{
             "id": "turn",
-            "durationTile":500,
+            "durationTile": 500,
             "start": 0,
-            "end":4 
+            "end": 4
         },
         {
             "id": "walk",
-            "durationTile":500,
+            "durationTile": 500,
             "start": 5,
-            "end":16 
+            "end": 16
         },
         {
             "id": "wait",
-            "durationTile":500,
+            "durationTile": 500,
             "start": 17,
-            "end":29 
+            "end": 29
         },
         {
             "id": "jump",
-            "durationTile":500,
+            "durationTile": 500,
             "start": 30,
             "end": 41
         },
         {
             "id": "jump to walk",
-            "durationTile":500,
+            "durationTile": 500,
             "start": 13,
             "end": 15
         }

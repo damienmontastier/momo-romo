@@ -114,7 +114,6 @@ export default class Stage extends THREE.Object3D {
 
         let animates = [];
         this.animates.filter(animate => animate.visible).forEach((animate) => {
-            console.log('animate paraaaams', animate)
             animates.push({
                 position: {
                     x: animate.position.x,
@@ -132,10 +131,11 @@ export default class Stage extends THREE.Object3D {
                     z: animate.scale.z,
                 },
                 params: {
-                    w: animate.wTiles,
-                    h: animate.hTiles,
-                    png: animate.textureURL,
-                    json: animate.json
+                    id: animate.animate.name,
+                    w: animate.animate.wTiles,
+                    h: animate.animate.hTiles,
+                    png: animate.animate.textureURL,
+                    json: animate.animate.json
                 }
             })
         });
@@ -240,6 +240,7 @@ export default class Stage extends THREE.Object3D {
     }
 
     addAnimate(params) {
+
         new AnimatedProp(params).then((animate) => {
 
             let position = typeof params.position == "undefined" || undefined ? new THREE.Vector3(0, 0, 0) : params.position
