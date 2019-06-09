@@ -1,6 +1,8 @@
 {
-    "id": "petals",
-    "durationTile": "700",
-    "start": 0,
-    "end": 72
+    "sprites": [{
+        "id": "petals",
+        "durationTile": "700",
+        "start": 0,
+        "end": 72
+    }]
 }

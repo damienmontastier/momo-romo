@@ -158,9 +158,10 @@ export default {
     background-image: url("~static/ui/mobile/joystick/joystick_center.png");
     background-size: cover;
     transform: translate(-50%, -50%);
+    z-index: 1;
 
     #stick {
-      position: relative;
+      position: absolute;
       background: white;
       border: 2px solid $a;
       width: 100px;
@@ -177,7 +178,8 @@ export default {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    z-index: -1;
+    z-index: 0;
+    pointer-events: none;
   }
 }
 </style>

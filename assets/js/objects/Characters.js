@@ -70,9 +70,16 @@ export default class Characters {
                 this.romo.add(body);
                 this.romo.add(mood);
 
+                this.animeRomo()
+
                 resolve(this)
             })
         });
+    }
+
+    animeRomo() {
+        this.launchSprite(this.romo.children[0], "normal")
+        this.launchSprite(this.romo.children[1], "win")
     }
 
     addAnimate() {
@@ -162,19 +169,31 @@ export default class Characters {
 
     jump(value) {
         if (value) {
+            if (this.movementState.walking) {
+                if (this.moveLeft) {
+                    this.body.velocity.x = -3
+                } else {
+                    this.body.velocity.x = 3
+                }
+            }
             this.body.velocity.y = 8
+            this.movementState.jump = true
             this.canJump = false
             this.launchSprite(this.momo, "jump")
+
+            this.launchSprite(this.romo.children[0], "romo")
+            this.launchSprite(this.romo.children[1], "power")
+
             this.canMove = false;
         }
     }
 
     movement() {
         this.forceValue.set(0, 0, 0)
-
         if (this.canMove) {
 
             if (this.moveLeft !== undefined || this.moveRight !== undefined) {
+
                 if (this.moveLeft && this.moveRight) {
                     this.bothWays = true
                     this.forceValue.x = 0
@@ -182,7 +201,7 @@ export default class Characters {
                     this.bothWays = false
 
                     if (this.moveLeft) {
-                        this.forceValue.x = -6;
+                        this.forceValue.x = -4;
                         if (!this.movementState.walking) {
                             if (this.momo.scale.x == 1) {
                                 this.turnToWalk()
@@ -200,7 +219,7 @@ export default class Characters {
                     }
 
                     if (this.moveRight) {
-                        this.forceValue.x = 6;
+                        this.forceValue.x = 4;
                         if (!this.movementState.walking) {
                             if (this.momo.scale.x == -1) {
                                 this.turnToWalk()
@@ -222,6 +241,12 @@ export default class Characters {
     }
 
     move() {
+        if (this.movementState.jump && this.moveLeft && this.movementState.walking) {
+            this.momo.scale.set(-1, 1, 1)
+        }
+        if (this.movementState.jump && this.moveRight && this.movementState.walking) {
+            this.momo.scale.set(1, 1, 1)
+        }
         if (this.moveLeft || this.moveRight || !this.canJump && !this.bothWays) {
             let accelerationValue = new CANNON.Vec3(this.forceValue.x, 0, 0);
             this.body.force = accelerationValue
@@ -275,56 +300,40 @@ export default class Characters {
             .start()
     }
 
-    updateSpritePosition() {
+    updateMomoPosition() {
         if (this.momo) {
             this.momo.position.copy(this.momo.body.position)
         }
     }
 
     updateRomoPosition() {
-        // console.log(this.romo.children[0])
-        // this.launchSprite(this.romo.children[0], "romo")
+        if (this.romo) {
+            if (this.socket) {
+                if (this.speed) {
+                    let x = this.romo.position.x
+                    let y = this.romo.position.y
+                    TweenMax.to(this.romo.position, .3, {
+                        x: x + (this.coordinate.x * this.speed) / 50,
+                        y: y + (this.coordinate.y * this.speed) / 50,
 
-        if (this.socket) {
-            if (this.speed) {
-                let x = this.romo.position.x
-                let y = this.romo.position.y
-
-                // if (frustum.containsPoint(pos)) {
-                TweenMax.to(this.romo.position, .3, {
-                    x: x + (this.coordinate.x * this.speed) / 25,
-                    y: y + (this.coordinate.y * this.speed) / 25,
-                    ease: Power4.easeOut
-                })
-                // } else {
-                //     if (this.coordinate.x < 0) {
-                //         TweenMax.to(this.romo.position, .5, {
-                //             x: x + (this.coordinate.x * this.speed) / 25,
-                //             y: y + (this.coordinate.y * this.speed) / 25,
-                //             ease: Power4.easeOut
-                //         })
-                //     }
-                // }
+                    })
+                }
             }
         }
-        // if (this.romo) {
-        //     var frustum = new THREE.Frustum();
-
-        //     this.camera.updateMatrixWorld();
-        //     this.camera.matrixWorldInverse.getInverse(this.camera.matrixWorld);
-        //     frustum.setFromMatrix(new THREE.Matrix4().multiplyMatrices(this.camera.projectionMatrix, this.camera.matrixWorldInverse));
-
-        //     var pos = new THREE.Vector3(this.romo.position.x, this.romo.position.y, this.romo.position.z);
-        // }
     }
 
     update() {
         const delta = this.clock.getDelta() * 5000;
         this.time += delta;
         this.momo.update(delta)
+
         this.romo.children[0].update(delta)
-        this.updateSpritePosition()
+        this.romo.children[1].update(delta)
+
+        this.updateMomoPosition()
+
         this.updateRomoPosition()
+
         this.movement()
         this.move()
     }

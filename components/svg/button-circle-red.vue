@@ -62,9 +62,7 @@ export default {
     this.circle.addEventListener("mouseover", this.turn);
     this.circle.addEventListener("mouseleave", this.stop);
   },
-  created() {
-    console.log(this.around);
-  },
+  created() {},
   methods: {
     turn() {
       this.hover.pause();
