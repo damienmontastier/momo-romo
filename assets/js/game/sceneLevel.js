@@ -50,6 +50,7 @@ export default class Level {
 
         this.clock = new THREE.Clock()
 
+
         new Characters(store).then((characters) => {
             this.characters = characters
             this.momo = this.characters.momo
@@ -79,13 +80,16 @@ export default class Level {
         // this.camera = new THREE.OrthographicCamera(
         //     window.innerWidth / - 20, window.innerWidth / 20, window.innerHeight / 20, window.innerHeight / - 20, .1, 1000
         // );
-        this.camera.position.z = 10;
+        this.camera.position.z = 15;
+        this.camera.position.y = 3;
 
         this.controls = new OrbitControls(this.camera);
 
         this.controls.enablePan = false
 
         this.scene = new THREE.Scene();
+
+        this.scene.add(this.camera)
 
         this.scene.background = new THREE.Color(0xfdf9eb);
 
@@ -141,6 +145,7 @@ export default class Level {
                 this.addAnimate(animate)
             });
         }
+        this.addMask()
     }
 
     addFixedProp(props) {
@@ -216,21 +221,51 @@ export default class Level {
         this.camera.updateProjectionMatrix();
         this.renderer.setSize(window.innerWidth, window.innerHeight);
     }
+    addMask() {
+        var singleGeometry = new THREE.Geometry();
 
-    getScreenPos(x, y, z, cam) {
-        const vec = new THREE.Vector3();
+        let width = visibleWidthAtZDepth(this.romo.position.z, this.camera)
+        let height = visibleHeightAtZDepth(this.romo.position.z, this.camera)
 
-        const sizeX = window.innerWidth
-        const sizeY = window.innerHeight
-        const wh = sizeX * 0.5;
-        const hh = sizeY * 0.5;
+        var geometryTopBottom = new THREE.PlaneGeometry(width, height, 1)
 
-        vec.set(x, y, z);
+        var geometryLeftRight = new THREE.PlaneGeometry(width, height, 1)
 
-        vec.x = (vec.x * wh) + wh;
-        vec.y = -(vec.y * hh) + hh;
+        var BoxGeometryTop = new THREE.Mesh(geometryTopBottom, material);
+        BoxGeometryTop.position.set(0, height / 2 + 1.5, 0)
+        BoxGeometryTop.rotation.set(0, THREE.Math.degToRad(4), 0)
+        BoxGeometryTop.updateMatrix()
+        singleGeometry.merge(BoxGeometryTop.geometry, BoxGeometryTop.matrix)
 
-        return [vec.x, vec.y];
+        var BoxGeometryBottom = new THREE.Mesh(geometryTopBottom, material);
+        BoxGeometryBottom.position.set(0, -(height / 2) - 2.25, 0)
+        BoxGeometryBottom.rotation.set(0, THREE.Math.degToRad(2), 0)
+        BoxGeometryBottom.updateMatrix()
+        singleGeometry.merge(BoxGeometryBottom.geometry, BoxGeometryBottom.matrix)
+
+        var BoxGeometryLeft = new THREE.Mesh(geometryLeftRight, material);
+        BoxGeometryLeft.position.set(-(width / 2) - 4, 0, 0)
+        BoxGeometryLeft.updateMatrix()
+        singleGeometry.merge(BoxGeometryLeft.geometry, BoxGeometryLeft.matrix)
+
+        var BoxGeometryRight = new THREE.Mesh(geometryLeftRight, material);
+        BoxGeometryRight.position.set((width / 2) + 4, 0, 0)
+
+        BoxGeometryRight.updateMatrix()
+        singleGeometry.merge(BoxGeometryRight.geometry, BoxGeometryRight.matrix)
+
+        var material = new THREE.MeshBasicMaterial({
+            // color: 0xf9f6eb,
+            color: 0xff0000,
+        });
+
+        let masks = new THREE.Mesh(singleGeometry, material)
+
+        masks.position.set(0, 0, -8)
+
+        this.scene.add(masks)
+
+        this.camera.add(masks);
     }
 
 
@@ -283,14 +318,20 @@ export default class Level {
             });
         }
 
+        // if(this.momo){
+        //     this.plane.position.x = this.momo.position.x
+        // }
+
         if (this.romo) {
 
-            let test = this.getScreenPos(this.romo.position.x, this.romo.position.y, this.romo.position.z, this.camera)
-            console.log(test)
-            // let width = visibleWidthAtZDepth(this.momo.position.z, this.camera)
+            // let test = this.getScreenPos(this.romo.position.x, this.romo.position.y, this.romo.position.z, this.camera)
+            // let position = this.toScreenPosition(this.romo, this.camera)
+
+            // this.plane.position.x = this.momo.position.x
+            // let width = visibleWidthAtZDepth(this.romo.position.z, this.camera)
             // let height = visibleHeightAtZDepth(this.romo.position.z, this.camera)
-            // this.romo.position.x = Math.max(0, Math.min(width, this.romo.position.x))
-            // this.romo.position.y = Math.max(0, Math.min(height - 4.5, this.romo.position.y))
+            this.romo.position.x = Math.max(0, Math.min(this.momo.position.x + 8, this.romo.position.x))
+            // this.romo.position.y = Math.max(0, Math.min(height, this.romo.position.y))
         }
         this.cannonDebugRenderer.update()
 
@@ -298,8 +339,6 @@ export default class Level {
             this.characters.update()
             TweenMax.to(this.camera.position, 1, {
                 x: this.momo.position.x,
-                y: 2,
-                z: 15,
                 ease: Power0.easeIn
             })
         }
