@@ -2,14 +2,14 @@
     <div id="page">
         <div class="container" ref="container">
             <div class="video_container" ref="video-container1">
-                <video :src="video1" muted preload="none" ref="video1"></video>
+                <video :src="video1" muted preload="none" ref="video1" controls></video>
             </div>
             <div class="video_container" ref="video-container2">
-                <video :src="video2" muted preload="none" ref="video2"></video>
+                <video :src="video2" muted preload="none" ref="video2" controls></video>
             </div>
             <div class="video_container third" ref="video-container3">
                 <div class="third_container">
-                    <video :src="video3" muted preload="none" ref="video3"></video>
+                    <video :src="video3" muted preload="none" ref="video3" controls></video>
                 </div>
             </div>
         </div>
@@ -110,12 +110,16 @@ export default {
             this.$refs['video-container3'].style.top = box.top + 'px';
 
             let width = box.right - video1.left
-
+            
             let tl = new TimelineMax()
             tl.to(this.$refs['video-container3'],2.5, {
                 width: width,
                 ease: Power4.easeOut
             })
+            .to(this.$refs['video-container1'],2.5, {
+                opacity: 0,
+                ease: Power4.easeOut
+            },0)
         }
     },
 }
@@ -130,11 +134,13 @@ export default {
             margin: auto;
             width: 90vw;
             height: 80vh;
+            // max-width: 1214px;
+            // max-height: 686px;
             display: flex;
             justify-content: space-evenly;
             // position: relative;
             .video_container {
-                // width: 33.33333333%;
+                // max-width: 33.33333333%;
                 display: flex;
                 opacity: 0;
                 video {
@@ -142,6 +148,7 @@ export default {
                     max-width: unset;
                     overflow: hidden;
                     border: 3px solid #000;
+                    // object-fit: cover;
                 }
                 &.third {
                     z-index: 2;
