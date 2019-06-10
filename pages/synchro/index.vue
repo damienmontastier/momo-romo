@@ -22,7 +22,7 @@
     <div id="bottom">
       <div id="desktop" class="center">
         <div id="momo-chara"></div>
-        <div id="keyboard-animation" v-if="!isReady"></div>
+        <!-- <div id="keyboard-animation" v-if="!isReady"></div> -->
       </div>
       <div id="mobile" class="center" v-if="qrcode">
         <div id="mobile-container" v-if="!isReady">
@@ -32,6 +32,9 @@
           <div ref="qrcode" id="qrcode" v-html="qrcode"></div>
         </div>
         <div v-else id="synchronize"></div>
+      </div>
+      <div id="mobile" v-else>
+        <p>Loading QRCODE</p>
       </div>
     </div>
 
@@ -107,7 +110,11 @@ export default {
 
 <style lang="scss" scoped>
 @import "~assets/scss/main.scss";
-
+.center {
+  flex-direction: column;
+  width: 400px;
+  margin: 0 auto;
+}
 #qrcode {
   height: 150px;
   width: 150px;
@@ -128,128 +135,46 @@ export default {
     display: inline-flex;
     height: 50%;
     width: 100%;
-    align-items: center;
 
     #momo,
     #romo {
       width: 50%;
-      height: 50%;
+      height: 100%;
+      display: flex;
+      align-items: center;
 
-      .center {
-        margin: 0 auto;
-        max-width: 70%;
-        display: flex;
-        flex-direction: column;
+      svg {
+        width: 100%;
+        height: 100%;
+        margin-top: -20px;
       }
 
-      h5.stroke {
-        align-self: flex-start;
-      }
-      h5.fill-jpn {
+      h5 {
+        &:first-child {
+          align-self: flex-start;
+        }
         align-self: flex-end;
+        margin-top: -20px;
       }
     }
   }
+  #desktop,
+  #mobile {
+    width: 50%;
+  }
   #bottom {
-    height: 50%;
     width: 100%;
     display: inline-flex;
-
-    #desktop,
-    #mobile {
-      width: 50%;
-      position: relative;
-    }
+    position: absolute;
+    bottom: 25px;
 
     #desktop {
       #momo-chara {
-        width: 368px;
-        height: 384px;
+        width: 269px;
+        height: 269px;
         background-image: url("~static/ui/synchro/momo.png");
         animation: play 1.2s steps(12) infinite;
         animation-direction: reverse;
-      }
-      #keyboard-animation {
-        width: 160px;
-        height: 120px;
-        border-radius: 45px;
-        background: white;
-        border: 4px solid $a;
-        position: relative;
-        left: -5%;
-
-        &::after {
-          content: "";
-          width: 30px;
-          height: 30px;
-          background: white;
-          border-bottom: 4px solid $a;
-          border-left: 4px solid $a;
-          display: block;
-          top: 50%;
-          position: absolute;
-          left: 0;
-          transform: translate(-50%, -50%) rotate(45deg);
-        }
-      }
-    }
-
-    #mobile {
-      &-container {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-
-        a {
-          background: white;
-          border: 4px solid $a;
-          border-radius: 30px;
-          padding: 10px;
-          text-decoration: none;
-          position: relative;
-
-          &::after {
-            content: "";
-            width: 100%;
-            position: absolute;
-            bottom: -15%;
-            border-radius: 30px;
-            z-index: -1;
-            left: 0;
-            height: 100%;
-            background: $a;
-          }
-        }
-        #qrcode {
-          width: 150px;
-          height: 150px;
-          background: white;
-          border: 4px solid $a;
-          border-radius: 30px;
-          padding: 10px;
-          margin-top: 15%;
-          position: relative;
-
-          &::after {
-            content: "";
-            width: 30px;
-            height: 30px;
-            background: white;
-            border-top: 4px solid $a;
-            border-left: 4px solid $a;
-            display: block;
-            top: 0;
-            position: absolute;
-            left: 50%;
-            transform: translate(-50%, -50%) rotate(45deg);
-          }
-        }
-      }
-      #synchronize {
-        background-image: url("~static/ui/synchro/romo.png");
-        animation: playRomo 0.8s steps(3) infinite alternate;
-        height: 314px;
-        width: 307px;
       }
     }
   }
@@ -260,7 +185,7 @@ export default {
     background-position-x: 0px;
   }
   to {
-    background-position-x: 4613px;
+    background-position-x: 3229px;
   }
 }
 @keyframes playRomo {

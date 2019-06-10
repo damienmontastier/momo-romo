@@ -1,14 +1,19 @@
 <template>
   <div class="frame" id="homepage">
-    <div id="left">
-      <div id="container">
-        <div id="background-landscape"></div>
-        <div id="background-landscape-clone"></div>
+    <div ref="left" id="left">
+      <div id="test">
+        <div id="title-text">
+          <p class="fill-en skew">The legend of</p>
+          <Momo></Momo>
+          <Romo></Romo>
+        </div>
       </div>
-      <div id="title-text">
-        <p class="fill-en skew">The legend of</p>
-        <Momo></Momo>
-        <Romo></Romo>
+      <div id="container">
+        <div ref="backgroundLandscape" id="background-landscape">
+          <div ref="momo" id="momo"></div>
+          <div ref="romo" id="romo"></div>
+        </div>
+        <div ref="backgroundLandscapeClone" id="background-landscape-clone"></div>
       </div>
     </div>
     <div id="right">
@@ -51,8 +56,34 @@ export default {
     return {};
   },
   computed: {},
-  mounted() {},
-  methods: {}
+  mounted() {
+    this.left = this.$refs.left;
+    this.backgrounds = [
+      this.$refs.backgroundLandscape,
+      this.$refs.backgroundLandscapeClone
+    ];
+    this.characters = [this.$refs.momo, this.$refs.romo];
+
+    window.addEventListener("mousemove", this.handleMouseMove);
+  },
+  methods: {
+    handleMouseMove(event) {
+      let x = event.x - window.innerWidth / 2;
+      let y = event.y - window.innerWidth / 2;
+
+      TweenMax.to(this.backgrounds, 0.5, {
+        x: x / 50,
+        y: y / 50,
+        ease: Power4.easeOut
+      });
+      TweenMax.to(this.characters, 1, {
+        x: x / 30,
+        y: y / 40,
+        zIndex: "5 !important",
+        ease: Power4.easeOut
+      });
+    }
+  }
 };
 </script>
 
@@ -60,6 +91,10 @@ export default {
 @import "~assets/scss/main.scss";
 #home {
   background: $white;
+}
+#test{
+  // z-index: 1;
+  position: relative;
 }
 .frame {
   border: none;
@@ -88,27 +123,25 @@ export default {
         background-size: contain;
         background-position: center;
         background-repeat: no-repeat;
-
-        &::before {
-          content: "";
+        z-index: 0;
+        #momo {
           position: absolute;
           bottom: 0;
           width: 160px;
           height: 305px;
           left: -80px;
-          z-index: 3;
+          z-index: 6;
           background: url("~static/ui/characters/momo.png");
           background-size: 100% auto;
           background-repeat: no-repeat;
         }
-        &::after {
-          content: "";
+        #romo {
           position: absolute;
           top: 20vh;
           width: 200px;
           height: 100px;
           right: -150px;
-          z-index: 3;
+          z-index: 3 !important;
           background: url("~static/ui/characters/romo.png");
           background-size: 100% auto;
           background-repeat: no-repeat;
@@ -118,7 +151,7 @@ export default {
         position: absolute;
         width: 50vh;
         height: inherit;
-        z-index: 2;
+        z-index:9;
         background: url("~static/ui/homepage/homepage_fond_fuji.png");
         background-size: contain;
         background-position: center;
@@ -135,6 +168,7 @@ export default {
       flex-direction: column;
       top: 10vh;
       display: flex;
+      z-index: 2;
       transform: translateX(-50%);
       p {
         align-self: flex-start;

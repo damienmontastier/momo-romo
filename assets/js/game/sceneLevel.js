@@ -192,7 +192,7 @@ export default class Level {
         let size = platform.scale
         let position = platform.position
         let rotation = platform.rotation
-        var axis = new CANNON.Vec3(0, 0, 1);
+        let axis = new CANNON.Vec3(0, 0, 1);
 
         let platform_material = new CANNON.Material("platform_material")
 
@@ -222,47 +222,49 @@ export default class Level {
         this.renderer.setSize(window.innerWidth, window.innerHeight);
     }
     addMask() {
-        var singleGeometry = new THREE.Geometry();
+        let singleGeometry = new THREE.Geometry();
 
         let width = visibleWidthAtZDepth(this.romo.position.z, this.camera)
         let height = visibleHeightAtZDepth(this.romo.position.z, this.camera)
 
-        var geometryTopBottom = new THREE.PlaneGeometry(width, height, 1)
+        let geometryTopBottom = new THREE.PlaneGeometry(width, height, 1)
 
-        var geometryLeftRight = new THREE.PlaneGeometry(width, height, 1)
+        let geometryLeftRight = new THREE.PlaneGeometry(width, height, 1)
 
-        var BoxGeometryTop = new THREE.Mesh(geometryTopBottom, material);
+        let BoxGeometryTop = new THREE.Mesh(geometryTopBottom, material);
         BoxGeometryTop.position.set(0, height / 2 + 1.5, 0)
         BoxGeometryTop.rotation.set(0, THREE.Math.degToRad(4), 0)
         BoxGeometryTop.updateMatrix()
         singleGeometry.merge(BoxGeometryTop.geometry, BoxGeometryTop.matrix)
 
-        var BoxGeometryBottom = new THREE.Mesh(geometryTopBottom, material);
+        let BoxGeometryBottom = new THREE.Mesh(geometryTopBottom, material);
         BoxGeometryBottom.position.set(0, -(height / 2) - 2.25, 0)
         BoxGeometryBottom.rotation.set(0, THREE.Math.degToRad(2), 0)
         BoxGeometryBottom.updateMatrix()
         singleGeometry.merge(BoxGeometryBottom.geometry, BoxGeometryBottom.matrix)
 
-        var BoxGeometryLeft = new THREE.Mesh(geometryLeftRight, material);
+        let BoxGeometryLeft = new THREE.Mesh(geometryLeftRight, material);
         BoxGeometryLeft.position.set(-(width / 2) - 4, 0, 0)
         BoxGeometryLeft.updateMatrix()
         singleGeometry.merge(BoxGeometryLeft.geometry, BoxGeometryLeft.matrix)
 
-        var BoxGeometryRight = new THREE.Mesh(geometryLeftRight, material);
+        let BoxGeometryRight = new THREE.Mesh(geometryLeftRight, material);
         BoxGeometryRight.position.set((width / 2) + 4, 0, 0)
 
         BoxGeometryRight.updateMatrix()
         singleGeometry.merge(BoxGeometryRight.geometry, BoxGeometryRight.matrix)
 
-        var material = new THREE.MeshBasicMaterial({
+        let material = new THREE.MeshBasicMaterial({
             // color: 0xf9f6eb,
             color: 0xff0000,
         });
 
+
         let masks = new THREE.Mesh(singleGeometry, material)
 
-        masks.position.set(0, 0, -8)
 
+        masks.position.set(0, 0, -8)
+      
         this.scene.add(masks)
 
         this.camera.add(masks);
