@@ -337,16 +337,16 @@ export default class Level {
 
         Promise.all(promises).then(() => {
             console.log('finish render')
+            //Move caméra 
 
             this.finish = true
-            //Run le game
+
             TweenMax.to(this.camera.position, 1, {
                 x: this.momo.position.x + 3,
                 ease: Power0.easeIn
             })
-            // this.masks.position.set(0, 0, -8)
 
-            TweenMax.to(this.masks.position, 1, {
+            TweenMax.to(this.masks.position, .5, {
                 x: 0,
                 x: 0,
                 z: -8,
