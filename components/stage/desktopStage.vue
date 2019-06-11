@@ -70,7 +70,7 @@ export default {
   components: {
     MiniGame
   },
-  beforeDestroy() {
+  destroyed() {
     // this.game.reset();
   }
 };

@@ -300,10 +300,16 @@ class App {
     let p1 = target1._maxPosition.clone();
     TweenMax.to(target1.position, 0.5, { x: p1.x, y: p1.y, z: p1.z });
 
+    let r1 = target1._maxRotation.clone();
+    TweenMax.to(target1.rotation, 0.5, { z: r1.z });
+
     if (targets[1]) {
       let target2 = this.fragments[targets[1]];
       let p2 = target2._maxPosition.clone();
       TweenMax.to(target2.position, 0.5, { x: p2.x, y: p2.y, z: p2.z });
+
+      let r2 = target2._maxRotation.clone();
+      TweenMax.to(target2.rotation, 0.5, { z: r2.z });
     }
   }
 
