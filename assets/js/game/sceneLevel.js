@@ -222,54 +222,54 @@ export default class Level {
         this.renderer.setSize(window.innerWidth, window.innerHeight);
     }
     addMask() {
-        this.singleGeometry = new THREE.Geometry();
+        let singleGeometry = new THREE.Geometry();
 
-        let width = visibleWidthAtZDepth(this.romo.position.z, this.camera)
-        let height = visibleHeightAtZDepth(this.romo.position.z, this.camera)
+        let width = visibleWidthAtZDepth(0, this.camera)
+        let height = visibleHeightAtZDepth(0, this.camera)
 
-        let geometryTopBottom = new THREE.PlaneGeometry(width, height, 1)
-        let geometryLeftRight = new THREE.PlaneGeometry(width / 2, height, 1)
-
-        let BoxGeometryTop = new THREE.Mesh(geometryTopBottom, material);
-        BoxGeometryTop.position.set(0, height / 2 + 1.5, 0)
-        BoxGeometryTop.rotation.set(0, THREE.Math.degToRad(4), 0)
-        BoxGeometryTop.updateMatrix()
-        this.singleGeometry.merge(BoxGeometryTop.geometry, BoxGeometryTop.matrix)
-
-        let BoxGeometryBottom = new THREE.Mesh(geometryTopBottom, material);
-        BoxGeometryBottom.position.set(0, -(height / 2) - 2.25, 0)
-        BoxGeometryBottom.rotation.set(0, THREE.Math.degToRad(2), 0)
-        BoxGeometryBottom.updateMatrix()
-        this.singleGeometry.merge(BoxGeometryBottom.geometry, BoxGeometryBottom.matrix)
-
-        let BoxGeometryLeft = new THREE.Mesh(geometryLeftRight, material);
-        BoxGeometryLeft.position.set(-10, 0, 0)
-        BoxGeometryLeft.updateMatrix()
-        this.singleGeometry.merge(BoxGeometryLeft.geometry, BoxGeometryLeft.matrix)
-
-        let BoxGeometryRight = new THREE.Mesh(geometryLeftRight, material);
-        BoxGeometryRight.position.set(10, 0, 0)
-        BoxGeometryRight.updateMatrix()
-        this.singleGeometry.merge(BoxGeometryRight.geometry, BoxGeometryRight.matrix)
-
+        let geometryLeftRight = new THREE.PlaneGeometry(width / 2, height, 32);
+        let geometryTopBottom = new THREE.PlaneGeometry(width, height / 2, 32);
         let material = new THREE.MeshBasicMaterial({
             color: 0x2d2d2d,
-        });
-
-        let masks = new THREE.Mesh(this.singleGeometry, material)
-
-        var outlineMaterial = new THREE.MeshBasicMaterial({
-            color: 0xf9f6eb,
             side: THREE.DoubleSide
         });
-        let outlineMesh = new THREE.Mesh(this.singleGeometry, outlineMaterial);
-        outlineMesh.scale.set(1, 1.01, 1);
-        masks.add(outlineMesh);
 
+        let plane = new THREE.Mesh(geometryLeftRight, material); // Left
+        plane.position.set(-width / 2, 0, 0);
+        plane.updateMatrix()
+        singleGeometry.merge(plane.geometry, plane.matrix);
+
+        plane = new THREE.Mesh(geometryLeftRight, material); // Right
+        plane.position.set(width / 2, 0, 0);
+        plane.updateMatrix()
+        singleGeometry.merge(plane.geometry, plane.matrix);
+
+        plane = new THREE.Mesh(geometryTopBottom, material); // Top
+        plane.position.set(0, height / 2, 0);
+        plane.rotation.set(0, 0, THREE.Math.degToRad(-.5))
+        plane.updateMatrix()
+        singleGeometry.merge(plane.geometry, plane.matrix);
+
+        plane = new THREE.Mesh(geometryTopBottom, material); //Bottom
+        plane.position.set(0, -height / 2, 0);
+        plane.rotation.set(0, 0, THREE.Math.degToRad(2))
+        plane.updateMatrix()
+        singleGeometry.merge(plane.geometry, plane.matrix);
+
+        let masks = new THREE.Mesh(singleGeometry, material);
+
+        let materialbis = new THREE.MeshBasicMaterial({
+            color: 0xf6f2e6, // bleu
+            side: THREE.DoubleSide
+        });
+
+        var border = new THREE.Mesh(singleGeometry, materialbis);
+        border.scale.multiplyScalar(1.01);
+        masks.add(border);
+        masks.scale.set(.6, .6, .6)
         masks.position.set(0, 0, -8)
 
-        this.scene.add(masks)
-
+        this.scene.add(masks);
         this.camera.add(masks);
     }
 
