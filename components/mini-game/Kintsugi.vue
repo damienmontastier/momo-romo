@@ -72,11 +72,8 @@ import Intro from "./Kintsugi/Intro";
 import Sprite from "@/assets/js/objects/Sprite";
 
 //sprites
-import MomoSprite from "~/static/ui/kintsugi/mini-game/sprites/momo/power_momo.png";
+import MomoSprite from "~/static/ui/kintsugi/mini-game/sprites/momo/power_momo_opti.png";
 const MomoSpriteJson = require("~/static/ui/kintsugi/mini-game/sprites/momo/power_momo.json");
-
-import MomoMoodSprite from "~/static/ui/kintsugi/mini-game/sprites/moods/face_momo.png";
-const MomoMoodSpriteJson = require("~/static/ui/kintsugi/mini-game/sprites/moods/face_momo.json");
 
 import BrushSprite from "~/static/sprites/brush/brush.png";
 const BrushSpriteJson = require("~/static/sprites/brush/brush.json");
@@ -152,16 +149,18 @@ class App {
         hTiles: 2
       }).then(brush => {
         this.brush = brush;
-        this.brush.scale.set(50, 50, 50);
+        this.brush.scale.set(45, 45, 45);
         this.brush.position.z = 2;
         this.brush.position.x = 60;
         this.brush.position.y = -5;
         this.brush.rotation.z = THREE.Math.degToRad(30);
 
+        this.brush.texture.magFilter = this.brush.texture.minFilter = THREE.NearestFilter;
+
         this.scene.add(this.brush);
         this.brush
           .newSprites()
-          .addState("loop")
+          .addState("brush")
           .start();
       });
       resolve();
@@ -247,31 +246,6 @@ class App {
         });
       })
     );
-
-    // promises.push(
-    //   new Promise((resolve, reject) => {
-    //     new THREE.TextureLoader().load(Title, texture => {
-    //       // texture.anisotropy = 0;
-    //       texture.magFilter = THREE.NearestFilter;
-    //       texture.minFilter = THREE.NearestFilter;
-    //       let geometryT = new THREE.PlaneGeometry(
-    //         100,
-    //         100,
-    //         1
-    //       );
-    //       let materialT = new THREE.MeshBasicMaterial({
-    //         opacity: 0,
-    //         map: texture,
-    //         transparent: true
-    //       });
-    //       this.planeTitle = new THREE.Mesh(geometryT, materialT);
-    //       this.titleGroup.add(this.planeTitle);
-    //       this.planeTitle.position.z = 1;
-    //       this.planeTitle.scale.set(0.01, 0.01, 0.01);
-    //       resolve();
-    //     });
-    //   })
-    // );
     return promises;
   }
 
@@ -863,6 +837,7 @@ export default {
         }
     },
     cancelFracture(fragments) {
+      this.$refs.intro.$refs.isPlaying.style.opacity = "0";
       this.app.spread(fragments);
       let fracture = this.app.fractures[this.currentFracture]
       fracture.children.forEach((piece)=>{
