@@ -228,7 +228,6 @@ export default class Level {
         let height = visibleHeightAtZDepth(this.romo.position.z, this.camera)
 
         let geometryTopBottom = new THREE.PlaneGeometry(width, height, 1)
-
         let geometryLeftRight = new THREE.PlaneGeometry(width / 2, height, 1)
 
         let BoxGeometryTop = new THREE.Mesh(geometryTopBottom, material);
@@ -254,12 +253,18 @@ export default class Level {
         this.singleGeometry.merge(BoxGeometryRight.geometry, BoxGeometryRight.matrix)
 
         let material = new THREE.MeshBasicMaterial({
-            // color: 0xf9f6eb,
-            color: 0xff0000,
+            color: 0x2d2d2d,
         });
 
-
         let masks = new THREE.Mesh(this.singleGeometry, material)
+
+        var outlineMaterial = new THREE.MeshBasicMaterial({
+            color: 0xf9f6eb,
+            side: THREE.DoubleSide
+        });
+        let outlineMesh = new THREE.Mesh(this.singleGeometry, outlineMaterial);
+        outlineMesh.scale.set(1, 1.01, 1);
+        masks.add(outlineMesh);
 
         masks.position.set(0, 0, -8)
 
