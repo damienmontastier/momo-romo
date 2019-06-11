@@ -56,6 +56,7 @@ export default class Level {
             this.momo = this.characters.momo
             this.romo = this.characters.romo
             this.romo.scale.set(2, 2, 2)
+            this.romo.position.z = 2
             this.addCharactere()
             this.loaderTexture()
         })
@@ -70,16 +71,13 @@ export default class Level {
 
         this.isAnimatedLaunched = false
 
-        //Setup Camera
         this.camera = new THREE.PerspectiveCamera(
             40,
             window.innerWidth / window.innerHeight,
             0.1,
             1000
         );
-        // this.camera = new THREE.OrthographicCamera(
-        //     window.innerWidth / - 20, window.innerWidth / 20, window.innerHeight / 20, window.innerHeight / - 20, .1, 1000
-        // );
+
         this.camera.position.z = 15;
         this.camera.position.y = 3;
 
@@ -92,8 +90,6 @@ export default class Level {
         this.scene.add(this.camera)
 
         this.scene.background = new THREE.Color(0xfdf9eb);
-
-        // this.scene.add(new THREE.AxesHelper(20));
 
         this.worldPhysic();
 
@@ -222,6 +218,7 @@ export default class Level {
         this.renderer.setSize(window.innerWidth, window.innerHeight);
     }
     addMask() {
+        this.restrictedZone = {}
         let singleGeometry = new THREE.Geometry();
 
         let width = visibleWidthAtZDepth(0, this.camera)
@@ -237,40 +234,48 @@ export default class Level {
         let plane = new THREE.Mesh(geometryLeftRight, material); // Left
         plane.position.set(-width / 2, 0, 0);
         plane.updateMatrix()
+        let planeSize = new THREE.Box3().setFromObject(plane);
+        this.restrictedZone.left = planeSize.max.x
         singleGeometry.merge(plane.geometry, plane.matrix);
 
         plane = new THREE.Mesh(geometryLeftRight, material); // Right
         plane.position.set(width / 2, 0, 0);
         plane.updateMatrix()
+        planeSize = new THREE.Box3().setFromObject(plane);
+        this.restrictedZone.right = planeSize.min.x
         singleGeometry.merge(plane.geometry, plane.matrix);
 
         plane = new THREE.Mesh(geometryTopBottom, material); // Top
         plane.position.set(0, height / 2, 0);
         plane.rotation.set(0, 0, THREE.Math.degToRad(-.5))
         plane.updateMatrix()
+        planeSize = new THREE.Box3().setFromObject(plane);
+        this.restrictedZone.top = planeSize.min.y
         singleGeometry.merge(plane.geometry, plane.matrix);
 
         plane = new THREE.Mesh(geometryTopBottom, material); //Bottom
         plane.position.set(0, -height / 2, 0);
         plane.rotation.set(0, 0, THREE.Math.degToRad(2))
         plane.updateMatrix()
+        planeSize = new THREE.Box3().setFromObject(plane);
+        this.restrictedZone.bottom = planeSize.max.y
         singleGeometry.merge(plane.geometry, plane.matrix);
 
-        let masks = new THREE.Mesh(singleGeometry, material);
+        this.masks = new THREE.Mesh(singleGeometry, material);
 
         let materialbis = new THREE.MeshBasicMaterial({
-            color: 0xf6f2e6, // bleu
+            color: 0xf6f2e6, // TODO video a mapper sur ce material
             side: THREE.DoubleSide
         });
 
         var border = new THREE.Mesh(singleGeometry, materialbis);
         border.scale.multiplyScalar(1.01);
-        masks.add(border);
-        masks.scale.set(.6, .6, .6)
-        masks.position.set(0, 0, -8)
+        this.masks.add(border);
+        this.masks.scale.set(.6, .6, .6)
+        this.masks.position.set(0, 0, -8)
 
-        this.scene.add(masks);
-        this.camera.add(masks);
+        this.scene.add(this.masks);
+        this.camera.add(this.masks);
     }
 
 
@@ -323,21 +328,12 @@ export default class Level {
             });
         }
 
-        // if(this.momo){
-        //     this.plane.position.x = this.momo.position.x
-        // }
-
-        if (this.romo) {
-
-            // let test = this.getScreenPos(this.romo.position.x, this.romo.position.y, this.romo.position.z, this.camera)
-            // let position = this.toScreenPosition(this.romo, this.camera)
-
-            // this.plane.position.x = this.momo.position.x
-            // let width = visibleWidthAtZDepth(this.romo.position.z, this.camera)
-            // let height = visibleHeightAtZDepth(this.romo.position.z, this.camera)
-            this.romo.position.x = Math.max(0, Math.min(this.momo.position.x + 8, this.romo.position.x))
-            // this.romo.position.y = Math.max(0, Math.min(height, this.romo.position.y))
+        //Eviter la sortie de Romo
+        if (this.romo && this.restrictedZone) {
+            this.romo.position.x = Math.max(1 + (this.camera.position.x + this.restrictedZone.left), Math.min(this.camera.position.x + (this.restrictedZone.right - 1), this.romo.position.x))
+            this.romo.position.y = Math.max(this.restrictedZone.bottom + .5, Math.min(this.restrictedZone.top, this.romo.position.y))
         }
+        
         this.cannonDebugRenderer.update()
 
         if (this.characters) {
