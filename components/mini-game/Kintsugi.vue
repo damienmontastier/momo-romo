@@ -1,5 +1,5 @@
 <template>
-  <div id="kintsugi">
+  <div id="kintsugi" ref="window">
     <div
       class="title"
     >kintsugi, fracture:{{this.currentFracture}}, step:{{this.currentStep}}, {{controls.length}}</div>
@@ -46,24 +46,23 @@
       </div>
     </div>
     <div id="debug">
-      <!-- <button @click="startFracture()">START</button> -->
       <button @click="nextFracture()">Next fracture</button>
-      <!-- <div>{{fractureEnded}}</div> -->
       <button @click="launchCountdown()">START coutdown</button>
       <button @click="()=>{$refs.intro.setRomoReady()}">set momo ready</button>
       <button @click="launchEndGame()">end game</button>
-      <!-- <button @click="launchStep()">Start</button>
-      <button @click="cancelFracture()">Cancel</button>-->
+      <div>{{keyboard}}</div>
     </div>
   </div>
 </template>
 
 <script>
 import * as THREE from "three";
+import {Howl, Howler} from 'howler';
 import OrbitControls from "orbit-controls-es6";
 import ObjectLoader from "~/assets/js/utils/ObjectLoader";
 import { mapState } from "vuex";
 import { TweenMax } from "gsap";
+
 import GroundTexture from "~/static/ui/kintsugi/mini-game/kintsugi_ground_texture_white.png";
 import Rosace from "~/static/ui/kintsugi/mini-game/rosace.png";
 import Title from "~/static/ui/kintsugi/mini-game/repair_the_bowl.png";
@@ -77,6 +76,10 @@ const MomoSpriteJson = require("~/static/ui/kintsugi/mini-game/sprites/momo/powe
 
 import BrushSprite from "~/static/sprites/brush/brush.png";
 const BrushSpriteJson = require("~/static/sprites/brush/brush.json");
+
+//audio
+// import audio_transition_window from "~/static/sounds/transition_windows.mp3";
+
 
 Number.prototype.map = function(in_min, in_max, out_min, out_max) {
   return ((this - in_min) * (out_max - out_min)) / (in_max - in_min) + out_min;
@@ -168,28 +171,61 @@ class App {
   }
 
   addMomo() {
+    let loader = new THREE.TextureLoader()
+
     this.momoGroup = new THREE.Group();
     this.scene.add(this.momoGroup);
 
-    return new Promise((resolve, reject) => {
-      new Sprite(MomoSprite, MomoSpriteJson.sprites, {
-        wTiles: 8,
-        hTiles: 8
-      }).then(momo => {
-        this.momo = momo;
-        this.momo.scale.set(55, 55, 55);
-        this.momo.position.z = 2;
-        this.momo.position.x = -65;
-        this.momo.position.y = -5;
+    return new Promise((resolve,reject)=>{
+        loader.load(MomoSprite,(texture)=>{
+          this.momo = new Sprite(texture, MomoSpriteJson.sprites, {
+            wTiles: 8,
+            hTiles: 8
+          })
+          this.momoMoods = new Sprite(texture, MomoSpriteJson.sprites, {
+            wTiles: 8,
+            hTiles: 8
+          })
 
-        this.momoGroup.add(this.momo);
-        this.momo
-          .newSprites()
-          .addState("wait")
-          .start();
-      });
-      resolve();
-    });
+          this.momo
+            .newSprites()
+            .addState("wait")
+            .start();
+
+          this.momoMoods.visible = false
+
+          this.momoGroup.add(this.momo);
+          this.momoGroup.add(this.momoMoods);
+
+          this.momoGroup.scale.set(55, 55, 55);
+          this.momoGroup.position.z = 2;
+          this.momoGroup.position.x = -65;
+          this.momoGroup.position.y = -5;
+
+          resolve()
+        })
+    })
+
+
+    // return new Promise((resolve, reject) => {
+    //   new Sprite(MomoSprite, MomoSpriteJson.sprites, {
+    //     wTiles: 8,
+    //     hTiles: 8
+    //   }).then(momo => {
+    //     this.momo = momo;
+    //     this.momo.scale.set(55, 55, 55);
+    //     this.momo.position.z = 2;
+    //     this.momo.position.x = -65;
+    //     this.momo.position.y = -5;
+
+    //     this.momoGroup.add(this.momo);
+    //     this.momo
+    //       .newSprites()
+    //       .addState("wait")
+    //       .start();
+    //   });
+    //   resolve();
+    // });
   }
 
   addTitle() {
@@ -292,6 +328,9 @@ class App {
     if (this.momo) {
       this.momo.update(delta);
     }
+    if (this.momoMoods) {
+      this.momoMoods.update(delta);
+    }
     if (this.brush) {
       this.brush.update(delta);
     }
@@ -379,6 +418,7 @@ class App {
         this.model.position.z = 0.2;
         this.model.position.y = -5;
         this.loaded = true;
+        this.model.scale.set(0.0001,0.0001,0.0001)
         resolve();
       });
     });
@@ -448,7 +488,7 @@ export default {
   data() {
     return {
       //   app: new App(),
-      controls: ["q", "m", "d", "l", "g", "h"],
+      // controls: ["q", "m", "d", "l", "g", "h"],
       interval: 2,
       runningInterval: 0,
       gameModel: [
@@ -468,14 +508,14 @@ export default {
       currentFracture: 0,
       currentStep: 0,
       isMiniGameStarted: false,
-      fractureEnded: false
+      fractureEnded: false,
+      isLoaded: false
     };
   },
   methods: {
     init() {
       this.app = new App();
       this.app.init(this.$refs.canvas);
-      // this.app.loadBowl();
       this.createSocketEvents();
     },
     createSocketEvents() {
@@ -490,15 +530,13 @@ export default {
             this.app.triggerFracturePiece(fracture.children[params.index]);
           } else if (params.id === "romo is ready") {
             this.$refs.intro.setRomoReady();
-            // this.$refs.intro.romoIsReady = true
-            // console.log('romo is ready')
           } else if (params.id === "cancel fracture") {
             this.cancelFracture(params.fragments)
           }
         });
       }
     },
-    appearToTitle() {
+    load() {
       let promises = [];
       this.app.addTitle().forEach(promise => {
         promises.push(promise);
@@ -506,24 +544,49 @@ export default {
       promises.push(this.app.loadBowl());
       promises.push(this.app.addMomo());
       promises.push(this.app.addBrush());
-      Promise.all(promises).then(() => {
-        console.log("3D ASSETS LOADED");
+
+      return new Promise((resolve,reject)=>{
+        Promise.all(promises).then(() => {
+          resolve()
+        })
+      })
+    },
+    windowAppear() {
+      let box = this.$refs.window.getBoundingClientRect()
+      let tl = new TimelineMax();
+      return new Promise((resolve,reject)=> {
+        tl
+        .add("appear", 0)
+        .set(this.$refs.window, {
+          opacity:1
+        })
+        .from(this.$refs.window,1, {
+          x: box.width + box.right,
+          ease: Power4.easeOut
+        },"appear")
+        .eventCallback('onComplete',()=>{
+          resolve()
+        })
+      })
+
+    },
+    appearToTitle() {
         this.tweeningScalar = 1;
         let tl = new TimelineMax();
         tl.delay(1)
           .add("titleAppear", 0)
           .add("titleDisappear", 3)
-          // .to(
-          //   this.app.planeTitle.scale,
-          //   0.5,
-          //   {
-          //     ease: Power4.easeOut,
-          //     x: 1,
-          //     y: 1,
-          //     z: 1
-          //   },
-          //   "titleAppear"
-          // )
+          .to(
+            this.app.model.scale,
+            0.5,
+            {
+              ease: Back.easeOut.config(1.4),
+              x: 1.2,
+              y: 1.2,
+              z: 1.2
+            },
+            "titleAppear"
+          )
           .to(
             this.$refs.intro.$refs.titleSVG,
             0.5,
@@ -535,18 +598,6 @@ export default {
             },
             "titleAppear"
           )
-          // .to(
-          //   this.app.model.scale,
-          //   1,
-          //   {
-          //     ease: Power4.easeOut,
-          //     delay: 0.1,
-          //     x: 1.2,
-          //     y: 1.2,
-          //     z: 1.2
-          //   },
-          //   "titleAppear"
-          // )
           .to(
             this,
             3,
@@ -646,22 +697,28 @@ export default {
               fragment.rotation.z = rotationZ;
             });
           });
-      });
     },
     nextFracture() {
+              // this.app.momoMoods.visible = true
+        this.app.momoMoods
+        .newSprites()
+        .addState("win")
+        .start();
       this.runningInterval = 0;
       if (this.tweening) {
         this.tweening.kill();
       }
-      this.currentStep = 0;
-      this.currentFracture++;
-      this.fractureEnded = false;
-      if (this.currentFracture >= this.gameModel.length) {
-        this.launchEndGame();
-      } else {
-        this.resetUI();
-        this.launchCountdown();
-      }
+      setTimeout(()=> {
+        this.currentStep = 0;
+        this.currentFracture++;
+        this.fractureEnded = false;
+        if (this.currentFracture >= this.gameModel.length) {
+          this.launchEndGame();
+        } else {
+          this.resetUI();
+          this.launchCountdown();
+        }
+      },1500)
     },
     launchEndGame() {
       console.log("end game");
@@ -707,11 +764,20 @@ export default {
         );
     },
     launchCountdown() {
+      this.app.momoMoods.visible = false
       this.app.momo
         .newSprites()
-        .addState("power start")
-        .addState("power loop")
+        .addState("power_start")
+        .addState("power_loop")
         .start();
+      
+      setTimeout(()=>{
+        this.app.momoMoods.visible = true
+        this.app.momoMoods
+        .newSprites()
+        .addState("power")
+        .start();
+      },2000)
       this.$refs.keys.style.opacity = "0";
       this.$refs.steps.style.opacity = "1";
       this.app.model.scale.set(1.2, 1.2, 1.2);
@@ -837,6 +903,10 @@ export default {
         }
     },
     cancelFracture(fragments) {
+      this.app.momoMoods
+        .newSprites()
+        .addState("loose")
+        .start();
       this.$refs.intro.$refs.isPlaying.style.opacity = "0";
       this.app.spread(fragments);
       let fracture = this.app.fractures[this.currentFracture]
@@ -853,7 +923,7 @@ export default {
       this.tryAgain();
       setTimeout(() => {
         this.launchCountdown();
-      }, 2000);
+      }, 1500);
 
       this.resetUI();
     },
@@ -947,40 +1017,66 @@ export default {
   computed: {
     ...mapState({
       socket: state => state.synchro.socket,
-      roomID: state => state.synchro.roomID
+      roomID: state => state.synchro.roomID,
+      keyboard: state => state.keyboard
     }),
+    controls() {
+      if(this.keyboard === 'azerty') {
+        return ["q", "m", "d", "l", "g", "h"]
+      } else if(this.keyboard === 'qwerty') {
+        return ["a", "l", "d", "j", "g", "h"]
+      } else {
+        return ["q", "m", "d", "l", "g", "h"]
+      }
+    } ,
     circleScale() {
       return {
         transform: `scale(${this.runningInterval.map(0, this.interval, 1, 2)})`
       };
+    },
+    countdown() {
+      if(this.refs) {
+        return this.$refs.intro.countdown
+      } else {
+        return false
+      }
+      
     }
-    // loaded() {
-    //   return this.app.loaded;
-    // }
   },
   watch: {
-    // loaded(val) {
-    //   console.log("isLoaded");
-    // }
+    countdown(countdown) {
+      console.log(countdown)
+    }
   },
   created() {
-    if (this.socket) {
-      this.socket.emit("custom-event", {
-        name: "router",
-        in: this.roomID,
-        args: {
-          id: "kintsugi"
-        }
-      });
-    }
+
   },
   mounted() {
     this.init();
     window.addEventListener("keydown", this.onKeyPress.bind(this));
-    this.appearToTitle();
+    this.load()
+    .then(()=>{
+      this.windowAppear()
+      .then(()=>{
+        this.appearToTitle();
+        if (this.socket) {
+          this.socket.emit("custom-event", {
+            name: "router",
+            in: this.roomID,
+            args: {
+              id: "kintsugi"
+            }
+          });
+        }
+      })
+      console.log("loaded")
+      this.isLoaded = true
+    })
+    
   },
-  beforeDestroy() {
+  destroyed() {
     window.removeEventListener("keydown", this.onKeyPress.bind(this));
+    window.removeEventListener("resize", this.app.onWindowResize.bind(this));
   }
 };
 </script>
@@ -996,6 +1092,8 @@ $border: 3px;
   position: relative;
   -webkit-clip-path: polygon(0 3%, 100% 0%, 100% 97%, 0% 100%);
   clip-path: polygon(0 3%, 100% 0%, 100% 97%, 0% 100%);
+  opacity: 0;
+
 
   &::after {
     content: "";

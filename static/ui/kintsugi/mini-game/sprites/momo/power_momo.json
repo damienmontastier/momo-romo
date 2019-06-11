@@ -9,7 +9,7 @@
             "id": "power_start",
             "durationTile": "900",
             "start": 41,
-            "end": 19
+            "end": 51
         },
         {
             "id": "win",
@@ -27,13 +27,13 @@
             "id": "power",
             "durationTile": "900",
             "start": 36,
-            "end": 48
+            "end": 39
         },
         {
             "id": "wait",
             "durationTile": "900",
-            "start": 36,
-            "end": 48
+            "start": 52,
+            "end": 63
         }
     ]
 }
