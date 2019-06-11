@@ -1,7 +1,7 @@
 <template>
   <div id="desktopStage">
     <div id="canvas"></div>
-    <!-- <mini-game :uid="$route.params.level" v-if="minigame"></mini-game> -->
+    <mini-game :uid="$route.params.level" v-if="minigame"></mini-game>
     <!-- <mini-game :uid="$route.params.level"></mini-game> -->
   </div>
 </template>

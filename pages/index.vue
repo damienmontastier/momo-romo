@@ -10,11 +10,12 @@ import Motion from "@/components/ui/Motion";
 import chooseQuality from "@/components/ui/chooseQuality";
 import chooseKeyboard from "@/components/ui/chooseKeyboard";
 import Homepage from "@/components/ui/Homepage";
+import Synchro from "@/components/ui/Synchro";
 
 export default {
   data() {
     return {
-      components: ["Homepage", "chooseQuality", "chooseKeyboard", "Motion"],
+      components: ["Homepage", "chooseQuality", "chooseKeyboard", "Motion", "Synchro"],
       value: 0
     };
   },
@@ -22,7 +23,8 @@ export default {
     Motion,
     chooseQuality,
     chooseKeyboard,
-    Homepage
+    Homepage,
+    Synchro
   },
   watch: {},
   computed: {

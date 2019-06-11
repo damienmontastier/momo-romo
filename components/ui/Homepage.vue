@@ -1,14 +1,17 @@
 <template>
   <div class="frame" id="homepage">
-    <div id="left">
-      <div id="container">
-        <div id="background-landscape"></div>
-        <div id="background-landscape-clone"></div>
-      </div>
+    <div ref="left" id="left">
       <div id="title-text">
         <p class="fill-en skew">The legend of</p>
         <Momo></Momo>
-        <Romo></Romo>
+        <Romo v-html="qrcode"></Romo>
+      </div>
+      <div id="container">
+        <div ref="backgroundLandscape" id="background-landscape">
+          <div ref="momo" id="momo"></div>
+          <div ref="romo" id="romo"></div>
+        </div>
+        <div ref="backgroundLandscapeClone" id="background-landscape-clone"></div>
       </div>
     </div>
     <div id="right">
@@ -35,8 +38,9 @@
 </template>
 
 <script>
-import { mapState, mapMutations } from "vuex";
+import { mapState, mapMutations, mapActions } from "vuex";
 import { TweenMax } from "gsap";
+import QRCode from "qrcode";
 import Momo from "@/components/svg/momo";
 import Romo from "@/components/svg/romo";
 import buttonHomepage from "@/components/svg/button-homepage";
@@ -48,11 +52,73 @@ export default {
     buttonHomepage
   },
   data() {
-    return {};
+    return {
+      qrcode: null
+    };
   },
-  computed: {},
-  mounted() {},
-  methods: {}
+  computed: {
+    ...mapState({
+      isSynchro: state => state.synchro.isSynchro,
+      roomID: state => state.synchro.roomID,
+      url: state => state.synchro.url,
+      socket: state => state.synchro.socket
+    })
+  },
+  mounted() {
+    this.connect({
+      device: this.$device.isMobileOrTablet,
+      // roomID: this.$device.isMobileOrTablet ? this.$route.query.id : null
+      roomID: null
+    });
+
+    this.left = this.$refs.left;
+    this.backgrounds = [
+      this.$refs.backgroundLandscape,
+      this.$refs.backgroundLandscapeClone
+    ];
+    this.characters = [this.$refs.momo, this.$refs.romo];
+
+    window.addEventListener("mousemove", this.handleMouseMove);
+  },
+  watch: {
+    roomID() {
+      this.generateQRCode();
+    }
+  },
+  methods: {
+    ...mapActions({
+      connect: "synchro/connect",
+      disconnect: "synchro/disconnect"
+    }),
+    ...mapMutations({
+      changeQRCode: "synchro/changeQRCode"
+    }),
+    generateQRCode() {
+      QRCode.toString(this.url, (error, string) => {
+        this.qrcode = string;
+        this.changeQRCode(this.qrcode);
+        // this.$refs.qrcode.innerHTML = string;
+        // if (error) console.error(error);
+        // console.log("success!");
+      });
+    },
+    handleMouseMove(event) {
+      let x = event.x - window.innerWidth / 2;
+      let y = event.y - window.innerWidth / 2;
+
+      TweenMax.to(this.backgrounds, 0.5, {
+        x: x / 50,
+        y: y / 50,
+        ease: Power4.easeOut
+      });
+      TweenMax.to(this.characters, 1, {
+        x: x / 30,
+        y: y / 40,
+        zIndex: "5 !important",
+        ease: Power4.easeOut
+      });
+    }
+  }
 };
 </script>
 
@@ -60,6 +126,10 @@ export default {
 @import "~assets/scss/main.scss";
 #home {
   background: $white;
+}
+#test {
+  // z-index: 1;
+  position: relative;
 }
 .frame {
   border: none;
@@ -88,27 +158,25 @@ export default {
         background-size: contain;
         background-position: center;
         background-repeat: no-repeat;
-
-        &::before {
-          content: "";
+        z-index: 0;
+        #momo {
           position: absolute;
           bottom: 0;
           width: 160px;
           height: 305px;
           left: -80px;
-          z-index: 3;
+          z-index: 6;
           background: url("~static/ui/characters/momo.png");
           background-size: 100% auto;
           background-repeat: no-repeat;
         }
-        &::after {
-          content: "";
+        #romo {
           position: absolute;
           top: 20vh;
           width: 200px;
           height: 100px;
           right: -150px;
-          z-index: 3;
+          z-index: 3 !important;
           background: url("~static/ui/characters/romo.png");
           background-size: 100% auto;
           background-repeat: no-repeat;
@@ -118,7 +186,7 @@ export default {
         position: absolute;
         width: 50vh;
         height: inherit;
-        z-index: 2;
+        z-index: 9;
         background: url("~static/ui/homepage/homepage_fond_fuji.png");
         background-size: contain;
         background-position: center;
@@ -135,6 +203,7 @@ export default {
       flex-direction: column;
       top: 10vh;
       display: flex;
+      z-index: 2;
       transform: translateX(-50%);
       p {
         align-self: flex-start;

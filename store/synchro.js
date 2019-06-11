@@ -10,6 +10,7 @@ export const state = () => ({
     isSynchro: false,
     serverURL: serverURL,
     url: null,
+    qrcode: null,
 })
 
 export const getters = {
@@ -72,6 +73,9 @@ export const mutations = {
     },
     setRoomID(state, roomID) {
         state.roomID = roomID;
+    },
+    changeQRCode(state, qrcode) {
+        state.qrcode = qrcode;
     },
 }
 
