@@ -4,6 +4,7 @@
       <div id="title-text">
         <p class="fill-en skew">The legend of</p>
         <Momo></Momo>
+        <And></And>
         <Romo></Romo>
       </div>
       <div id="container">

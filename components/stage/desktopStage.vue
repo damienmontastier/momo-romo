@@ -1,5 +1,7 @@
 <template>
   <div id="desktopStage">
+    <component v-on:increment="increment" v-on:loadStart="loadStart" v-bind:is="components[value]"></component>
+
     <div id="canvas"></div>
     <!-- <mini-game :uid="$route.params.level" v-if="minigame"></mini-game> -->
     <!-- <mini-game :uid="$route.params.level"></mini-game> -->
@@ -11,11 +13,20 @@ import { mapGetters, mapMutations, mapState } from "vuex";
 import Game from "@/assets/js/game/game";
 import TextureAtlas from "@/assets/js/utils/TextureAtlas";
 import MiniGame from "@/components/mini-game/MiniGame.vue";
+import readyKintsugi from "@/components/ui/readyKintsugi.vue";
+import Loader from "@/components/ui/loader.vue";
 
 export default {
+  components: {
+    MiniGame,
+    readyKintsugi,
+    Loader
+  },
   data() {
     return {
+      components: ["readyKintsugi", "Loader"],
       isLevelCompleted: false,
+      value: 0,
       minigame: true
     };
   },
@@ -45,7 +56,7 @@ export default {
   },
   watch: {
     minigame() {},
-    loaded() {
+    loaded(value) {
       this.game.start(
         {
           currentLevelParams: this.stage,
@@ -56,11 +67,21 @@ export default {
     }
   },
   methods: {
-    //FIX IT TOO MUCH CONSOLE LOG
+    increment() {
+      if (this.value === this.components.length - 1) {
+        // Move camera
+        console.log("move caméra");
+      } else {
+        this.value++;
+      }
+    },
+    loadStart() {
+      if (this.loaded) {
+        this.game.preRenderProps()
+      }
+    }
   },
-  components: {
-    MiniGame
-  },
+
   destroyed() {
     this.game.reset();
   }

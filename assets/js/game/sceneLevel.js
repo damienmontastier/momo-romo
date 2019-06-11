@@ -37,6 +37,8 @@ export default class Level {
 
         this.fixedProps = opts.levelParams.props.fixed; // Fixed Props
 
+        this.fixedPropsGroup = []; // Fixed Props
+
         this.animates = opts.levelParams.animates; // Animate Props
         this.animatesArray = []
 
@@ -56,10 +58,13 @@ export default class Level {
             this.momo = this.characters.momo
             this.romo = this.characters.romo
             this.romo.scale.set(2, 2, 2)
-            this.romo.position.z = 2
-            this.addCharactere()
-            this.loaderTexture()
+            this.romo.position.z = 2.5
+            this.romo.position.y = 1
+            this.addCharacter()
         })
+
+
+        this.loaderTexture()
 
         this.eventAnimate = new Event('launchAnimated');
 
@@ -80,6 +85,8 @@ export default class Level {
 
         this.camera.position.z = 15;
         this.camera.position.y = 3;
+
+        this.finish = false
 
         this.controls = new OrbitControls(this.camera);
 
@@ -106,6 +113,8 @@ export default class Level {
         this.canvas.appendChild(this.renderer.domElement);
 
         window.addEventListener("resize", this.onWindowResize.bind(this));
+
+        this.addMask()
     }
 
     worldPhysic() {
@@ -141,7 +150,6 @@ export default class Level {
                 this.addAnimate(animate)
             });
         }
-        this.addMask()
     }
 
     addFixedProp(props) {
@@ -158,13 +166,15 @@ export default class Level {
             })
         });
         prop.position.set(props.position.x, props.position.y, props.position.z);
+        prop.originPosition = new THREE.Vector3().copy(prop.position)
         prop.scale.set(props.scale.x, props.scale.y, props.scale.z);
         prop.rotation.set(props.rotation.x, props.rotation.y, props.rotation.z);
         prop.checkpointMinigame = props.checkpoint.minigame
         if (props.checkpoint.minigame) {
             this.minigameProps = prop
         }
-        this.fixedProps.push(prop);
+        // this.fixedProps.push(prop);
+        this.fixedPropsGroup.push(prop)
         this.scene.add(prop)
     }
 
@@ -179,7 +189,7 @@ export default class Level {
         })
     }
 
-    addCharactere() {
+    addCharacter() {
         this.scene.add(this.momo, this.romo)
         this.world.add(this.momo.body)
     }
@@ -221,32 +231,33 @@ export default class Level {
         this.restrictedZone = {}
         let singleGeometry = new THREE.Geometry();
 
-        let width = visibleWidthAtZDepth(0, this.camera)
-        let height = visibleHeightAtZDepth(0, this.camera)
+        this.width = visibleWidthAtZDepth(0, this.camera)
+        this.height = visibleHeightAtZDepth(0, this.camera)
 
-        let geometryLeftRight = new THREE.PlaneGeometry(width / 2, height, 32);
-        let geometryTopBottom = new THREE.PlaneGeometry(width, height / 2, 32);
+        let geometryLeftRight = new THREE.PlaneGeometry(this.width, this.height, 32);
+        let geometryTopBottom = new THREE.PlaneGeometry(this.width, this.height / 2, 32);
         let material = new THREE.MeshBasicMaterial({
             color: 0x2d2d2d,
+            // wireframe: true,
             side: THREE.DoubleSide
         });
 
         let plane = new THREE.Mesh(geometryLeftRight, material); // Left
-        plane.position.set(-width / 2, 0, 0);
+        plane.position.set(-this.width / 1.25, 0, 0);
         plane.updateMatrix()
         let planeSize = new THREE.Box3().setFromObject(plane);
         this.restrictedZone.left = planeSize.max.x
         singleGeometry.merge(plane.geometry, plane.matrix);
 
         plane = new THREE.Mesh(geometryLeftRight, material); // Right
-        plane.position.set(width / 2, 0, 0);
+        plane.position.set(this.width / 1.25, 0, 0);
         plane.updateMatrix()
         planeSize = new THREE.Box3().setFromObject(plane);
         this.restrictedZone.right = planeSize.min.x
         singleGeometry.merge(plane.geometry, plane.matrix);
 
         plane = new THREE.Mesh(geometryTopBottom, material); // Top
-        plane.position.set(0, height / 2, 0);
+        plane.position.set(0, this.height / 2, 0);
         plane.rotation.set(0, 0, THREE.Math.degToRad(-.5))
         plane.updateMatrix()
         planeSize = new THREE.Box3().setFromObject(plane);
@@ -254,7 +265,7 @@ export default class Level {
         singleGeometry.merge(plane.geometry, plane.matrix);
 
         plane = new THREE.Mesh(geometryTopBottom, material); //Bottom
-        plane.position.set(0, -height / 2, 0);
+        plane.position.set(0, -this.height / 2, 0);
         plane.rotation.set(0, 0, THREE.Math.degToRad(2))
         plane.updateMatrix()
         planeSize = new THREE.Box3().setFromObject(plane);
@@ -264,7 +275,8 @@ export default class Level {
         this.masks = new THREE.Mesh(singleGeometry, material);
 
         let materialbis = new THREE.MeshBasicMaterial({
-            color: 0xf6f2e6, // TODO video a mapper sur ce material
+            color: 0xff0000, // TODO video a mapper sur ce material
+            // wireframe: true,
             side: THREE.DoubleSide
         });
 
@@ -272,7 +284,16 @@ export default class Level {
         border.scale.multiplyScalar(1.01);
         this.masks.add(border);
         this.masks.scale.set(.6, .6, .6)
-        this.masks.position.set(0, 0, -8)
+
+        // TODO POUR LA TRANSITION 
+        this.camera.position.set(-this.width, 3, 15)
+
+        this.masks.position.set(this.width / 2, 0, -8)
+
+        // this.masks.position.set(0, 0, -8)
+
+        // Position finale de la caméra au lancement du jeu 
+        // this.camera.position.set(5, 3, 15)
 
         this.scene.add(this.masks);
         this.camera.add(this.masks);
@@ -293,6 +314,45 @@ export default class Level {
 
     reset() {
         this.scene = null
+    }
+
+    preRenderProps() {
+        let promises = []
+        for (let i = 0; i < this.fixedPropsGroup.length; i++) {
+            let test = new Promise((resolve, reject) => {
+                setTimeout(() => {
+                    this.fixedPropsGroup[i].position.x = this.camera.position.x
+                    resolve(this.fixedPropsGroup[i]);
+                }, i * 100)
+            });
+
+            promises.push(test)
+
+            test.then((fixed) => {
+                setTimeout(() => {
+                    fixed.position.copy(fixed.originPosition)
+                }, 100);
+            })
+        }
+
+        Promise.all(promises).then(() => {
+            console.log('finish render')
+
+            this.finish = true
+            //Run le game
+            TweenMax.to(this.camera.position, 1, {
+                x: this.momo.position.x + 3,
+                ease: Power0.easeIn
+            })
+            // this.masks.position.set(0, 0, -8)
+
+            TweenMax.to(this.masks.position, 1, {
+                x: 0,
+                x: 0,
+                z: -8,
+                ease: Power0.easeIn
+            })
+        })
     }
 
     render() {
@@ -333,10 +393,10 @@ export default class Level {
             this.romo.position.x = Math.max(1 + (this.camera.position.x + this.restrictedZone.left), Math.min(this.camera.position.x + (this.restrictedZone.right - 1), this.romo.position.x))
             this.romo.position.y = Math.max(this.restrictedZone.bottom + .5, Math.min(this.restrictedZone.top, this.romo.position.y))
         }
-        
+
         this.cannonDebugRenderer.update()
 
-        if (this.characters) {
+        if (this.characters && this.finish) {
             this.characters.update()
             TweenMax.to(this.camera.position, 1, {
                 x: this.momo.position.x,
