@@ -30,9 +30,7 @@
         </div>
         <div v-else id="synchronize"></div>
       </div>
-      <div id="mobile" v-else>
-        <p>Loading QRCODE</p>
-      </div>
+    
     </div>
 
     <!-- <button @click="disconnect">disconnect</button> -->
@@ -61,11 +59,11 @@ export default {
     return {
       mobileReady: false,
       sync_activated: null,
-      background_sync: null
+      background_sync: null,
+      soundArray: []
     };
   },
   mounted() {
-    console.log(this.qrcode, this.url)
     this.background_sync = new Howl({
       src: [background_sync],
       loop: true
@@ -79,9 +77,11 @@ export default {
     this.socket.on("mobile-ready", value => {
       this.mobileReady = value;
     });
+    
+    this.soundArray = [this.sync_activated, this.background_sync];
   },
   methods: {
-    ...mapMutations({}),
+    ...mapMutations({})
   },
   computed: {
     isReady: function(value) {
@@ -101,6 +101,11 @@ export default {
         this.sync_activated.play();
       }
     }
+  },
+  beforeDestroy() {
+    this.soundArray.forEach(sound => {
+      sound.stop();
+    });
   }
 };
 </script>

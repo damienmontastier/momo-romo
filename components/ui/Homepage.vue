@@ -4,7 +4,8 @@
       <div id="title-text">
         <p class="fill-en skew">The legend of</p>
         <Momo></Momo>
-        <Romo v-html="qrcode"></Romo>
+        <And></And>
+        <Romo></Romo>
       </div>
       <div id="container">
         <div ref="backgroundLandscape" id="background-landscape">
