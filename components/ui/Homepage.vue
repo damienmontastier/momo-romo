@@ -1,12 +1,10 @@
 <template>
   <div class="frame" id="homepage">
     <div ref="left" id="left">
-      <div id="test">
-        <div id="title-text">
-          <p class="fill-en skew">The legend of</p>
-          <Momo></Momo>
-          <Romo></Romo>
-        </div>
+      <div id="title-text">
+        <p class="fill-en skew">The legend of</p>
+        <Momo></Momo>
+        <Romo v-html="qrcode"></Romo>
       </div>
       <div id="container">
         <div ref="backgroundLandscape" id="background-landscape">
@@ -40,8 +38,9 @@
 </template>
 
 <script>
-import { mapState, mapMutations } from "vuex";
+import { mapState, mapMutations, mapActions } from "vuex";
 import { TweenMax } from "gsap";
+import QRCode from "qrcode";
 import Momo from "@/components/svg/momo";
 import Romo from "@/components/svg/romo";
 import buttonHomepage from "@/components/svg/button-homepage";
@@ -53,10 +52,25 @@ export default {
     buttonHomepage
   },
   data() {
-    return {};
+    return {
+      qrcode: null
+    };
   },
-  computed: {},
+  computed: {
+    ...mapState({
+      isSynchro: state => state.synchro.isSynchro,
+      roomID: state => state.synchro.roomID,
+      url: state => state.synchro.url,
+      socket: state => state.synchro.socket
+    })
+  },
   mounted() {
+    this.connect({
+      device: this.$device.isMobileOrTablet,
+      // roomID: this.$device.isMobileOrTablet ? this.$route.query.id : null
+      roomID: null
+    });
+
     this.left = this.$refs.left;
     this.backgrounds = [
       this.$refs.backgroundLandscape,
@@ -66,7 +80,28 @@ export default {
 
     window.addEventListener("mousemove", this.handleMouseMove);
   },
+  watch: {
+    roomID() {
+      this.generateQRCode();
+    }
+  },
   methods: {
+    ...mapActions({
+      connect: "synchro/connect",
+      disconnect: "synchro/disconnect"
+    }),
+    ...mapMutations({
+      changeQRCode: "synchro/changeQRCode"
+    }),
+    generateQRCode() {
+      QRCode.toString(this.url, (error, string) => {
+        this.qrcode = string;
+        this.changeQRCode(this.qrcode);
+        // this.$refs.qrcode.innerHTML = string;
+        // if (error) console.error(error);
+        // console.log("success!");
+      });
+    },
     handleMouseMove(event) {
       let x = event.x - window.innerWidth / 2;
       let y = event.y - window.innerWidth / 2;
@@ -92,7 +127,7 @@ export default {
 #home {
   background: $white;
 }
-#test{
+#test {
   // z-index: 1;
   position: relative;
 }
@@ -151,7 +186,7 @@ export default {
         position: absolute;
         width: 50vh;
         height: inherit;
-        z-index:9;
+        z-index: 9;
         background: url("~static/ui/homepage/homepage_fond_fuji.png");
         background-size: contain;
         background-position: center;

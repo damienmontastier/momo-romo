@@ -222,37 +222,36 @@ export default class Level {
         this.renderer.setSize(window.innerWidth, window.innerHeight);
     }
     addMask() {
-        let singleGeometry = new THREE.Geometry();
+        this.singleGeometry = new THREE.Geometry();
 
         let width = visibleWidthAtZDepth(this.romo.position.z, this.camera)
         let height = visibleHeightAtZDepth(this.romo.position.z, this.camera)
 
         let geometryTopBottom = new THREE.PlaneGeometry(width, height, 1)
 
-        let geometryLeftRight = new THREE.PlaneGeometry(width, height, 1)
+        let geometryLeftRight = new THREE.PlaneGeometry(width / 2, height, 1)
 
         let BoxGeometryTop = new THREE.Mesh(geometryTopBottom, material);
         BoxGeometryTop.position.set(0, height / 2 + 1.5, 0)
         BoxGeometryTop.rotation.set(0, THREE.Math.degToRad(4), 0)
         BoxGeometryTop.updateMatrix()
-        singleGeometry.merge(BoxGeometryTop.geometry, BoxGeometryTop.matrix)
+        this.singleGeometry.merge(BoxGeometryTop.geometry, BoxGeometryTop.matrix)
 
         let BoxGeometryBottom = new THREE.Mesh(geometryTopBottom, material);
         BoxGeometryBottom.position.set(0, -(height / 2) - 2.25, 0)
         BoxGeometryBottom.rotation.set(0, THREE.Math.degToRad(2), 0)
         BoxGeometryBottom.updateMatrix()
-        singleGeometry.merge(BoxGeometryBottom.geometry, BoxGeometryBottom.matrix)
+        this.singleGeometry.merge(BoxGeometryBottom.geometry, BoxGeometryBottom.matrix)
 
         let BoxGeometryLeft = new THREE.Mesh(geometryLeftRight, material);
-        BoxGeometryLeft.position.set(-(width / 2) - 4, 0, 0)
+        BoxGeometryLeft.position.set(-10, 0, 0)
         BoxGeometryLeft.updateMatrix()
-        singleGeometry.merge(BoxGeometryLeft.geometry, BoxGeometryLeft.matrix)
+        this.singleGeometry.merge(BoxGeometryLeft.geometry, BoxGeometryLeft.matrix)
 
         let BoxGeometryRight = new THREE.Mesh(geometryLeftRight, material);
-        BoxGeometryRight.position.set((width / 2) + 4, 0, 0)
-
+        BoxGeometryRight.position.set(10, 0, 0)
         BoxGeometryRight.updateMatrix()
-        singleGeometry.merge(BoxGeometryRight.geometry, BoxGeometryRight.matrix)
+        this.singleGeometry.merge(BoxGeometryRight.geometry, BoxGeometryRight.matrix)
 
         let material = new THREE.MeshBasicMaterial({
             // color: 0xf9f6eb,
@@ -260,11 +259,10 @@ export default class Level {
         });
 
 
-        let masks = new THREE.Mesh(singleGeometry, material)
-
+        let masks = new THREE.Mesh(this.singleGeometry, material)
 
         masks.position.set(0, 0, -8)
-      
+
         this.scene.add(masks)
 
         this.camera.add(masks);
@@ -335,7 +333,7 @@ export default class Level {
             this.romo.position.x = Math.max(0, Math.min(this.momo.position.x + 8, this.romo.position.x))
             // this.romo.position.y = Math.max(0, Math.min(height, this.romo.position.y))
         }
-        // this.cannonDebugRenderer.update()
+        this.cannonDebugRenderer.update()
 
         if (this.characters) {
             this.characters.update()
