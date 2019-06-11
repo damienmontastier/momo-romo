@@ -1,9 +1,6 @@
 <template>
   <div class="frame" id="synchro">
     <div id="top">
-      <!-- <buttonCircleRed letter="A" en="Open Map" jpn="ホームマップ"></buttonCircleRed> -->
-      <!-- <buttonCircle letter="A" en="Open Map" jpn="ホームマップ"></buttonCircle> -->
-
       <div id="momo">
         <div class="center">
           <h5 class="skew stroke">Desktop player</h5>
@@ -46,7 +43,6 @@
 import { Howl, Howler } from "howler";
 
 import { mapMutations, mapActions, mapState } from "vuex";
-import QRCode from "qrcode";
 import momoTitle from "@/components/svg/momo";
 import romoTitle from "@/components/svg/romo";
 import buttonCircleRed from "@/components/svg/button-circle-red";
@@ -63,12 +59,13 @@ export default {
   },
   data() {
     return {
-      qrcode: null,
       mobileReady: false,
-      sync_activated: null
+      sync_activated: null,
+      background_sync: null
     };
   },
   mounted() {
+    console.log(this.qrcode, this.url)
     this.background_sync = new Howl({
       src: [background_sync],
       loop: true
@@ -78,46 +75,26 @@ export default {
     this.sync_activated = new Howl({
       src: [sync_activated]
     });
-    
-    this.connect({
-      device: this.$device.isMobileOrTablet,
-      // roomID: this.$device.isMobileOrTablet ? this.$route.query.id : null
-      roomID: null
-    });
+
     this.socket.on("mobile-ready", value => {
       this.mobileReady = value;
     });
   },
   methods: {
-    ...mapActions({
-      connect: "synchro/connect",
-      disconnect: "synchro/disconnect"
-    }),
     ...mapMutations({}),
-    generateQRCode() {
-      QRCode.toString(this.url, (error, string) => {
-        this.qrcode = string;
-        // this.$refs.qrcode.innerHTML = string;
-        // if (error) console.error(error);
-        // console.log("success!");
-      });
-    }
   },
   computed: {
     isReady: function(value) {
       return this.mobileReady && this.isSynchro;
     },
     ...mapState({
+      qrcode: state => state.synchro.qrcode,
       isSynchro: state => state.synchro.isSynchro,
-      roomID: state => state.synchro.roomID,
       url: state => state.synchro.url,
       socket: state => state.synchro.socket
     })
   },
   watch: {
-    roomID() {
-      this.generateQRCode();
-    },
     isReady(value) {
       if (value) {
         this.background_sync.stop();
