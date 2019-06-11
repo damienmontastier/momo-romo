@@ -16,7 +16,7 @@ export default {
   data() {
     return {
       isLevelCompleted: false,
-      minigame: null
+      minigame: true
     };
   },
   computed: {
@@ -34,7 +34,7 @@ export default {
     this.$store.dispatch("game/loadStage", this.$route.params.level);
   },
   mounted() {
-    this.game = new Game();
+    // this.game = new Game();
     window.addEventListener(
       "launchMiniGame",
       e => {
@@ -54,15 +54,15 @@ export default {
   },
   watch: {
     minigame() {},
-    loaded() {
-      this.game.start(
-        {
-          currentLevelParams: this.stage,
-          currentAltlas: this.currentAtlas
-        },
-        this.$store
-      );
-    }
+    // loaded() {
+    //   this.game.start(
+    //     {
+    //       currentLevelParams: this.stage,
+    //       currentAltlas: this.currentAtlas
+    //     },
+    //     this.$store
+    //   );
+    // }
   },
   methods: {
     //FIX IT TOO MUCH CONSOLE LOG
@@ -71,7 +71,7 @@ export default {
     MiniGame
   },
   beforeDestroy() {
-    this.game.reset();
+    // this.game.reset();
   }
 };
 </script>

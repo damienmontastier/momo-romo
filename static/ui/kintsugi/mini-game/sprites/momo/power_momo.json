@@ -1,23 +1,39 @@
 {
     "sprites": [{
-            "id": "wait",
-            "durationTile": "700",
-            "start": 26,
-            "end": 37
-        },
-
-        {
-            "id": "power start",
-            "durationTile": "700",
+            "id": "power_loop",
+            "durationTile": "900",
             "start": 0,
-            "end": 12
+            "end": 19
         },
         {
-            "id": "power loop",
-            "durationTile": "700",
-            "start": 13,
-            "end": 25
+            "id": "power_start",
+            "durationTile": "900",
+            "start": 41,
+            "end": 19
+        },
+        {
+            "id": "win",
+            "durationTile": "900",
+            "start": 20,
+            "end": 27
+        },
+        {
+            "id": "loose",
+            "durationTile": "900",
+            "start": 28,
+            "end": 35
+        },
+        {
+            "id": "power",
+            "durationTile": "900",
+            "start": 36,
+            "end": 48
+        },
+        {
+            "id": "wait",
+            "durationTile": "900",
+            "start": 36,
+            "end": 48
         }
-
     ]
 }

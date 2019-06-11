@@ -499,7 +499,7 @@ export default {
       console.log("fail");
       this.app.currentFracture.children.forEach((piece)=>{
         piece.triggered = false
-        piece.visible = 0
+        piece.visible = false
       })
       if (this.socket) {
         this.socket.emit("custom-event", {
