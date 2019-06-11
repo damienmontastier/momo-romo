@@ -37,6 +37,8 @@ export default class Level {
 
         this.fixedProps = opts.levelParams.props.fixed; // Fixed Props
 
+        this.fixedPropsGroup = []; // Fixed Props
+
         this.animates = opts.levelParams.animates; // Animate Props
         this.animatesArray = []
 
@@ -56,9 +58,13 @@ export default class Level {
             this.momo = this.characters.momo
             this.romo = this.characters.romo
             this.romo.scale.set(2, 2, 2)
-            this.addCharactere()
-            this.loaderTexture()
+            this.romo.position.z = 2.5
+            this.romo.position.y = 1
+            this.addCharacter()
         })
+
+
+        this.loaderTexture()
 
         this.eventAnimate = new Event('launchAnimated');
 
@@ -70,18 +76,17 @@ export default class Level {
 
         this.isAnimatedLaunched = false
 
-        //Setup Camera
         this.camera = new THREE.PerspectiveCamera(
             40,
             window.innerWidth / window.innerHeight,
             0.1,
             1000
         );
-        // this.camera = new THREE.OrthographicCamera(
-        //     window.innerWidth / - 20, window.innerWidth / 20, window.innerHeight / 20, window.innerHeight / - 20, .1, 1000
-        // );
+
         this.camera.position.z = 15;
         this.camera.position.y = 3;
+
+        this.finish = false
 
         this.controls = new OrbitControls(this.camera);
 
@@ -92,8 +97,6 @@ export default class Level {
         this.scene.add(this.camera)
 
         this.scene.background = new THREE.Color(0xfdf9eb);
-
-        // this.scene.add(new THREE.AxesHelper(20));
 
         this.worldPhysic();
 
@@ -110,6 +113,8 @@ export default class Level {
         this.canvas.appendChild(this.renderer.domElement);
 
         window.addEventListener("resize", this.onWindowResize.bind(this));
+
+        this.addMask()
     }
 
     worldPhysic() {
@@ -145,7 +150,6 @@ export default class Level {
                 this.addAnimate(animate)
             });
         }
-        this.addMask()
     }
 
     addFixedProp(props) {
@@ -162,13 +166,15 @@ export default class Level {
             })
         });
         prop.position.set(props.position.x, props.position.y, props.position.z);
+        prop.originPosition = new THREE.Vector3().copy(prop.position)
         prop.scale.set(props.scale.x, props.scale.y, props.scale.z);
         prop.rotation.set(props.rotation.x, props.rotation.y, props.rotation.z);
         prop.checkpointMinigame = props.checkpoint.minigame
         if (props.checkpoint.minigame) {
             this.minigameProps = prop
         }
-        this.fixedProps.push(prop);
+        // this.fixedProps.push(prop);
+        this.fixedPropsGroup.push(prop)
         this.scene.add(prop)
     }
 
@@ -183,7 +189,7 @@ export default class Level {
         })
     }
 
-    addCharactere() {
+    addCharacter() {
         this.scene.add(this.momo, this.romo)
         this.world.add(this.momo.body)
     }
@@ -222,50 +228,75 @@ export default class Level {
         this.renderer.setSize(window.innerWidth, window.innerHeight);
     }
     addMask() {
-        this.singleGeometry = new THREE.Geometry();
+        this.restrictedZone = {}
+        let singleGeometry = new THREE.Geometry();
 
-        let width = visibleWidthAtZDepth(this.romo.position.z, this.camera)
-        let height = visibleHeightAtZDepth(this.romo.position.z, this.camera)
+        this.width = visibleWidthAtZDepth(0, this.camera)
+        this.height = visibleHeightAtZDepth(0, this.camera)
 
-        let geometryTopBottom = new THREE.PlaneGeometry(width, height, 1)
-
-        let geometryLeftRight = new THREE.PlaneGeometry(width / 2, height, 1)
-
-        let BoxGeometryTop = new THREE.Mesh(geometryTopBottom, material);
-        BoxGeometryTop.position.set(0, height / 2 + 1.5, 0)
-        BoxGeometryTop.rotation.set(0, THREE.Math.degToRad(4), 0)
-        BoxGeometryTop.updateMatrix()
-        this.singleGeometry.merge(BoxGeometryTop.geometry, BoxGeometryTop.matrix)
-
-        let BoxGeometryBottom = new THREE.Mesh(geometryTopBottom, material);
-        BoxGeometryBottom.position.set(0, -(height / 2) - 2.25, 0)
-        BoxGeometryBottom.rotation.set(0, THREE.Math.degToRad(2), 0)
-        BoxGeometryBottom.updateMatrix()
-        this.singleGeometry.merge(BoxGeometryBottom.geometry, BoxGeometryBottom.matrix)
-
-        let BoxGeometryLeft = new THREE.Mesh(geometryLeftRight, material);
-        BoxGeometryLeft.position.set(-10, 0, 0)
-        BoxGeometryLeft.updateMatrix()
-        this.singleGeometry.merge(BoxGeometryLeft.geometry, BoxGeometryLeft.matrix)
-
-        let BoxGeometryRight = new THREE.Mesh(geometryLeftRight, material);
-        BoxGeometryRight.position.set(10, 0, 0)
-        BoxGeometryRight.updateMatrix()
-        this.singleGeometry.merge(BoxGeometryRight.geometry, BoxGeometryRight.matrix)
-
+        let geometryLeftRight = new THREE.PlaneGeometry(this.width, this.height, 32);
+        let geometryTopBottom = new THREE.PlaneGeometry(this.width, this.height / 2, 32);
         let material = new THREE.MeshBasicMaterial({
-            // color: 0xf9f6eb,
-            color: 0xff0000,
+            color: 0x2d2d2d,
+            // wireframe: true,
+            side: THREE.DoubleSide
         });
 
+        let plane = new THREE.Mesh(geometryLeftRight, material); // Left
+        plane.position.set(-this.width / 1.25, 0, 0);
+        plane.updateMatrix()
+        let planeSize = new THREE.Box3().setFromObject(plane);
+        this.restrictedZone.left = planeSize.max.x
+        singleGeometry.merge(plane.geometry, plane.matrix);
 
-        let masks = new THREE.Mesh(this.singleGeometry, material)
+        plane = new THREE.Mesh(geometryLeftRight, material); // Right
+        plane.position.set(this.width / 1.25, 0, 0);
+        plane.updateMatrix()
+        planeSize = new THREE.Box3().setFromObject(plane);
+        this.restrictedZone.right = planeSize.min.x
+        singleGeometry.merge(plane.geometry, plane.matrix);
 
-        masks.position.set(0, 0, -8)
+        plane = new THREE.Mesh(geometryTopBottom, material); // Top
+        plane.position.set(0, this.height / 2, 0);
+        plane.rotation.set(0, 0, THREE.Math.degToRad(-.5))
+        plane.updateMatrix()
+        planeSize = new THREE.Box3().setFromObject(plane);
+        this.restrictedZone.top = planeSize.min.y
+        singleGeometry.merge(plane.geometry, plane.matrix);
 
-        this.scene.add(masks)
+        plane = new THREE.Mesh(geometryTopBottom, material); //Bottom
+        plane.position.set(0, -this.height / 2, 0);
+        plane.rotation.set(0, 0, THREE.Math.degToRad(2))
+        plane.updateMatrix()
+        planeSize = new THREE.Box3().setFromObject(plane);
+        this.restrictedZone.bottom = planeSize.max.y
+        singleGeometry.merge(plane.geometry, plane.matrix);
 
-        this.camera.add(masks);
+        this.masks = new THREE.Mesh(singleGeometry, material);
+
+        let materialbis = new THREE.MeshBasicMaterial({
+            color: 0xff0000, // TODO video a mapper sur ce material
+            // wireframe: true,
+            side: THREE.DoubleSide
+        });
+
+        var border = new THREE.Mesh(singleGeometry, materialbis);
+        border.scale.multiplyScalar(1.01);
+        this.masks.add(border);
+        this.masks.scale.set(.6, .6, .6)
+
+        // TODO POUR LA TRANSITION 
+        this.camera.position.set(-this.width, 3, 15)
+
+        this.masks.position.set(this.width / 2, 0, -8)
+
+        // this.masks.position.set(0, 0, -8)
+
+        // Position finale de la caméra au lancement du jeu 
+        // this.camera.position.set(5, 3, 15)
+
+        this.scene.add(this.masks);
+        this.camera.add(this.masks);
     }
 
 
@@ -283,6 +314,45 @@ export default class Level {
 
     reset() {
         this.scene = null
+    }
+
+    preRenderProps() {
+        let promises = []
+        for (let i = 0; i < this.fixedPropsGroup.length; i++) {
+            let test = new Promise((resolve, reject) => {
+                setTimeout(() => {
+                    this.fixedPropsGroup[i].position.x = this.camera.position.x
+                    resolve(this.fixedPropsGroup[i]);
+                }, i * 100)
+            });
+
+            promises.push(test)
+
+            test.then((fixed) => {
+                setTimeout(() => {
+                    fixed.position.copy(fixed.originPosition)
+                }, 100);
+            })
+        }
+
+        Promise.all(promises).then(() => {
+            console.log('finish render')
+            //Move caméra 
+
+            this.finish = true
+
+            TweenMax.to(this.camera.position, 1, {
+                x: this.momo.position.x + 3,
+                ease: Power0.easeIn
+            })
+
+            TweenMax.to(this.masks.position, .5, {
+                x: 0,
+                x: 0,
+                z: -8,
+                ease: Power0.easeIn
+            })
+        })
     }
 
     render() {
@@ -318,24 +388,15 @@ export default class Level {
             });
         }
 
-        // if(this.momo){
-        //     this.plane.position.x = this.momo.position.x
-        // }
-
-        if (this.romo) {
-
-            // let test = this.getScreenPos(this.romo.position.x, this.romo.position.y, this.romo.position.z, this.camera)
-            // let position = this.toScreenPosition(this.romo, this.camera)
-
-            // this.plane.position.x = this.momo.position.x
-            // let width = visibleWidthAtZDepth(this.romo.position.z, this.camera)
-            // let height = visibleHeightAtZDepth(this.romo.position.z, this.camera)
-            this.romo.position.x = Math.max(0, Math.min(this.momo.position.x + 8, this.romo.position.x))
-            // this.romo.position.y = Math.max(0, Math.min(height, this.romo.position.y))
+        //Eviter la sortie de Romo
+        if (this.romo && this.restrictedZone) {
+            this.romo.position.x = Math.max(1 + (this.camera.position.x + this.restrictedZone.left), Math.min(this.camera.position.x + (this.restrictedZone.right - 1), this.romo.position.x))
+            this.romo.position.y = Math.max(this.restrictedZone.bottom + .5, Math.min(this.restrictedZone.top, this.romo.position.y))
         }
+
         this.cannonDebugRenderer.update()
 
-        if (this.characters) {
+        if (this.characters && this.finish) {
             this.characters.update()
             TweenMax.to(this.camera.position, 1, {
                 x: this.momo.position.x,

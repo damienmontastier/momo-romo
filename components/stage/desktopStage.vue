@@ -1,7 +1,9 @@
 <template>
   <div id="desktopStage">
+    <component v-on:increment="increment" v-on:loadStart="loadStart" v-bind:is="components[value]"></component>
+
     <div id="canvas"></div>
-    <mini-game :uid="$route.params.level" v-if="minigame"></mini-game>
+    <!-- <mini-game :uid="$route.params.level" v-if="minigame"></mini-game> -->
     <!-- <mini-game :uid="$route.params.level"></mini-game> -->
   </div>
 </template>
@@ -11,11 +13,20 @@ import { mapGetters, mapMutations, mapState } from "vuex";
 import Game from "@/assets/js/game/game";
 import TextureAtlas from "@/assets/js/utils/TextureAtlas";
 import MiniGame from "@/components/mini-game/MiniGame.vue";
+import readyKintsugi from "@/components/ui/readyKintsugi.vue";
+import Loader from "@/components/ui/loader.vue";
 
 export default {
+  components: {
+    MiniGame,
+    readyKintsugi,
+    Loader
+  },
   data() {
     return {
+      components: ["readyKintsugi", "Loader"],
       isLevelCompleted: false,
+      value: 0,
       minigame: true
     };
   },
@@ -34,7 +45,7 @@ export default {
     this.$store.dispatch("game/loadStage", this.$route.params.level);
   },
   mounted() {
-    // this.game = new Game();
+    this.game = new Game();
     window.addEventListener(
       "launchMiniGame",
       e => {
@@ -42,36 +53,37 @@ export default {
       },
       false
     );
-    // window.addEventListener(
-    //   "launchAnimated",
-    //   e => {
-    //     // console.log(e.props);
-    //     // this.coucou = e.props;
-    //   },
-    //   false
-    // );
-    // }
   },
   watch: {
     minigame() {},
-    // loaded() {
-    //   this.game.start(
-    //     {
-    //       currentLevelParams: this.stage,
-    //       currentAltlas: this.currentAtlas
-    //     },
-    //     this.$store
-    //   );
-    // }
+    loaded(value) {
+      this.game.start(
+        {
+          currentLevelParams: this.stage,
+          currentAltlas: this.currentAtlas
+        },
+        this.$store
+      );
+    }
   },
   methods: {
-    //FIX IT TOO MUCH CONSOLE LOG
+    increment() {
+      if (this.value === this.components.length - 1) {
+        // Move camera
+        console.log("move caméra");
+      } else {
+        this.value++;
+      }
+    },
+    loadStart() {
+      if (this.loaded) {
+        this.game.preRenderProps()
+      }
+    }
   },
-  components: {
-    MiniGame
-  },
+
   destroyed() {
-    // this.game.reset();
+    this.game.reset();
   }
 };
 </script>
