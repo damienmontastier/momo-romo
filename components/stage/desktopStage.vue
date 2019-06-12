@@ -1,6 +1,11 @@
 <template>
   <div id="desktopStage">
-    <component v-on:increment="increment" v-on:loadStart="loadStart" v-bind:is="components[value]"></component>
+    <component v-if="killElement"
+      ref="test"
+      v-on:increment="increment"
+      v-on:loadStart="loadStart"
+      :is="components[value]"
+    ></component>
 
     <div id="canvas"></div>
     <mini-game :uid="$route.params.level" v-if="minigame"></mini-game>
@@ -9,6 +14,7 @@
 </template>
 
 <script>
+import { TweenMax } from "gsap";
 import { mapGetters, mapMutations, mapState } from "vuex";
 import Game from "@/assets/js/game/game";
 import TextureAtlas from "@/assets/js/utils/TextureAtlas";
@@ -27,7 +33,9 @@ export default {
       components: ["readyKintsugi", "Loader"],
       isLevelCompleted: false,
       value: 0,
-      minigame: true
+      minigame: true,
+      runGame: false,
+      killElement : true
     };
   },
   computed: {
@@ -75,9 +83,20 @@ export default {
         this.value++;
       }
     },
+    propsLoad() {
+      TweenMax.to(this.$refs.test.$el, 1, {
+        x: "-110vw",
+        onComplete:()=>{
+          this.killElement = false
+        },
+        ease:Power4.easeOut
+      });
+      
+    },
     loadStart() {
       if (this.loaded) {
-        this.game.preRenderProps()
+        this.runGame = true;
+        this.game.preRenderProps(this.propsLoad.bind(this));
       }
     }
   },

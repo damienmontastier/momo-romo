@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import OrbitControls from 'orbit-controls-es6';
+// import OrbitControls from 'orbit-controls-es6';
 import FixedProp from '../objects/FixedProp'
 import CANNON from 'cannon'
 import physicParams from '../physics/physicParams';
@@ -60,6 +60,7 @@ export default class Level {
             this.romo.scale.set(2, 2, 2)
             this.romo.position.z = 2.5
             this.romo.position.y = 1
+            this.romo.position.x = this.momo.position.x
             this.addCharacter()
         })
 
@@ -83,14 +84,15 @@ export default class Level {
             1000
         );
 
+        this.heightCamera = 1
+
         this.camera.position.z = 15;
-        this.camera.position.y = 3;
 
-        this.finish = false
+        this.preRenderFinish = false
 
-        this.controls = new OrbitControls(this.camera);
+        // this.controls = new OrbitControls(this.camera);
 
-        this.controls.enablePan = false
+        // this.controls.enablePan = false
 
         this.scene = new THREE.Scene();
 
@@ -399,15 +401,9 @@ export default class Level {
         this.masks.add(border);
         this.masks.scale.set(.6, .6, .6)
 
-        // TODO POUR LA TRANSITION 
-        this.camera.position.set(-this.width, 3, 15)
+        this.camera.position.set(-this.width, this.heightCamera, 15)
 
         this.masks.position.set(this.width / 2, 0, -8)
-
-        // this.masks.position.set(0, 0, -8)
-
-        // Position finale de la caméra au lancement du jeu 
-        // this.camera.position.set(5, 3, 15)
 
         this.scene.add(this.masks);
         this.camera.add(this.masks);
@@ -430,19 +426,19 @@ export default class Level {
         this.scene = null
     }
 
-    preRenderProps() {
+    preRenderProps(callback) {
         let promises = []
         for (let i = 0; i < this.fixedPropsGroup.length; i++) {
-            let test = new Promise((resolve, reject) => {
+            let promise = new Promise((resolve, reject) => {
                 setTimeout(() => {
                     this.fixedPropsGroup[i].position.x = this.camera.position.x
                     resolve(this.fixedPropsGroup[i]);
                 }, i * 100)
             });
 
-            promises.push(test)
+            promises.push(promise)
 
-            test.then((fixed) => {
+            promise.then((fixed) => {
                 setTimeout(() => {
                     fixed.position.copy(fixed.originPosition)
                 }, 100);
@@ -450,15 +446,14 @@ export default class Level {
         }
 
         Promise.all(promises).then(() => {
-            console.log('finish render')
-            //Move caméra 
-
-            this.finish = true
-
+            console.log('finish render we can plaaaay')
+            this.preRenderFinish = true
             TweenMax.to(this.camera.position, 1, {
+                y: 1,
                 x: this.momo.position.x + 3,
                 ease: Power0.easeIn
             })
+            callback()
 
             TweenMax.to(this.masks.position, .5, {
                 x: 0,
@@ -512,7 +507,7 @@ export default class Level {
 
         this.cannonDebugRenderer.update()
 
-        if (this.characters && this.finish) {
+        if (this.characters && this.preRenderFinish) {
             this.characters.update()
             TweenMax.to(this.camera.position, 1, {
                 x: this.momo.position.x,
@@ -531,6 +526,7 @@ export default class Level {
         this.physicParams.update()
 
         this.renderer.render(this.scene, this.camera);
+
     }
     launchSprite(character, id) {
         character

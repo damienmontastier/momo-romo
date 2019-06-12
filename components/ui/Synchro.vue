@@ -30,7 +30,6 @@
         </div>
         <div v-else id="synchronize"></div>
       </div>
-    
     </div>
 
     <!-- <button @click="disconnect">disconnect</button> -->
@@ -77,7 +76,7 @@ export default {
     this.socket.on("mobile-ready", value => {
       this.mobileReady = value;
     });
-    
+
     this.soundArray = [this.sync_activated, this.background_sync];
   },
   methods: {
@@ -99,6 +98,9 @@ export default {
       if (value) {
         this.background_sync.stop();
         this.sync_activated.play();
+        this.sync_activated.on("end", () => {
+          this.$router.push("/kintsugi");
+        });
       }
     }
   },
