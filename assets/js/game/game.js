@@ -19,7 +19,7 @@ export default class Game {
     reset() {
         this.sceneLevel.reset()
     }
-    preRenderProps() {
-        this.sceneLevel.preRenderProps()
+    preRenderProps(callback) {     
+        this.sceneLevel.preRenderProps(callback)
     }
 }
