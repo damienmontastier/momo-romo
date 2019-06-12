@@ -565,7 +565,7 @@ export default {
       this.launchFracture(fracture, fragments);
     }
   },
-  beforeDestroy() {
+  destroyed() {
     window.removeEventListener("touchmove", this.onTouchMove.bind(this));
     window.removeEventListener("mousemove", this.onMouseMove.bind(this));
     window.removeEventListener("mousedown", this.onMouseDown.bind(this));

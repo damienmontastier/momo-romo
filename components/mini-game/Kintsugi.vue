@@ -3,7 +3,7 @@
     <div
       class="title"
     >kintsugi, fracture:{{this.currentFracture}}, step:{{this.currentStep}}, {{controls.length}}</div>
-    <intro v-on:startfracture="startFracture" ref="intro"></intro>
+    <intro v-on:updatecountdown="updateCountdown" v-on:startfracture="startFracture" ref="intro"></intro>
     <div ref="canvas" id="canvas"></div>
     <div class="controls">
       <div class="container">
@@ -50,16 +50,16 @@
       <button @click="launchCountdown()">START coutdown</button>
       <button @click="()=>{$refs.intro.setRomoReady()}">set momo ready</button>
       <button @click="launchEndGame()">end game</button>
-      <div>{{keyboard}}</div>
+      <!-- <div>{{countdown}}</div> -->
     </div>
   </div>
 </template>
 
 <script>
 import * as THREE from "three";
-import {Howl, Howler} from 'howler';
 import OrbitControls from "orbit-controls-es6";
 import ObjectLoader from "~/assets/js/utils/ObjectLoader";
+import HowlerManager from "~/assets/js/utils/HowlerManager";
 import { mapState } from "vuex";
 import { TweenMax } from "gsap";
 
@@ -77,9 +77,9 @@ const MomoSpriteJson = require("~/static/ui/kintsugi/mini-game/sprites/momo/powe
 import BrushSprite from "~/static/sprites/brush/brush.png";
 const BrushSpriteJson = require("~/static/sprites/brush/brush.json");
 
-//audio
-// import audio_transition_window from "~/static/sounds/transition_windows.mp3";
-
+import countdown_3 from "~/static/sounds/countdown_3.mp3";
+import countdown_2 from "~/static/sounds/countdown_2.mp3";
+import countdown_1 from "~/static/sounds/countdown_1.mp3";
 
 Number.prototype.map = function(in_min, in_max, out_min, out_max) {
   return ((this - in_min) * (out_max - out_min)) / (in_max - in_min) + out_min;
@@ -388,7 +388,7 @@ class App {
         this.fragments.push(this.model.getObjectByName("bowlpart_1"));
         this.fragments.push(this.model.getObjectByName("bowlpart_2"));
         this.fragments.push(this.model.getObjectByName("bowlpart_3"));
-        console.log(this.fragments);
+        // console.log(this.fragments);
         // console.log(fragments)
 
         // this.fragments.forEach((fragment)=>{
@@ -1012,6 +1012,9 @@ export default {
           // this.runningInterval = this.interval;
         }
       });
+    },
+    updateCountdown(countdown) {
+      console.log(countdown)
     }
   },
   computed: {
@@ -1033,22 +1036,28 @@ export default {
       return {
         transform: `scale(${this.runningInterval.map(0, this.interval, 1, 2)})`
       };
-    },
-    countdown() {
-      if(this.refs) {
-        return this.$refs.intro.countdown
-      } else {
-        return false
-      }
-      
-    }
-  },
-  watch: {
-    countdown(countdown) {
-      console.log(countdown)
     }
   },
   created() {
+    HowlerManager.add(
+      [
+        {
+          id:"countdown_1",
+          src:countdown_1
+        },
+        {
+          id:"countdown_2",
+          src:countdown_2
+        },
+        {
+          id:"countdown_3",
+          src:countdown_3
+        }
+      ]
+    )
+    .then((sounds)=> {
+      sounds.countdown_1.play()
+    })
 
   },
   mounted() {
@@ -1069,7 +1078,7 @@ export default {
           });
         }
       })
-      console.log("loaded")
+      console.log("mini game assets loaded")
       this.isLoaded = true
     })
     

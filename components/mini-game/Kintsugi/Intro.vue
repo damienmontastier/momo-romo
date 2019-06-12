@@ -67,14 +67,6 @@ import GreatSVG from "./Great";
 import buttonCircleRed from "@/components/svg/button-circle-red";
 import Countdown from "./Countdown";
 import { TweenMax } from "gsap";
-import {Howl, Howler} from 'howler';
-
-import audio_cta_ready from "~/static/sounds/cta_ready.mp3";
-import countdown_3 from "~/static/sounds/countdown_3.mp3";
-import countdown_2 from "~/static/sounds/countdown_2.mp3";
-import countdown_1 from "~/static/sounds/countdown_1.mp3";
-
-let SOUNDS;
 
 export default {
   components: {
@@ -127,19 +119,15 @@ export default {
       this.romoIsReady = true;
       this.$refs.launchButton.style.opacity = "1";
       this.$refs.launchButton.style.pointerEvents = "auto";
-
-      SOUNDS = new Howl({
-        src: [audio_cta_ready]
-      });
-      SOUNDS.play();
-
-      console.log("romo is ready");
     }
   },
   props: {
     current: Number
   },
   watch: {
+    countdown() {
+      this.$emit('updatecountdown',this.countdown)
+    }
   }
 };
 </script>
