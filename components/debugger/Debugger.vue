@@ -2,6 +2,7 @@
     <div>
         <synchro></synchro>
         <stages></stages>
+        <button @click="fullscreen">fullscreen</button>
     </div>
 </template>
 
@@ -12,6 +13,21 @@ export default {
   components: {
     Stages,
     Synchro
+  },
+  methods: {
+    fullscreen() {
+      console.log('request fullscreen')
+      const elem = document.documentElement;
+      if (elem.requestFullscreen) {
+        elem.requestFullscreen();
+      } else if (elem.mozRequestFullScreen) { /* Firefox */
+        elem.mozRequestFullScreen();
+      } else if (elem.webkitRequestFullscreen) { /* Chrome, Safari and Opera */
+        elem.webkitRequestFullscreen();
+      } else if (elem.msRequestFullscreen) { /* IE/Edge */
+        elem.msRequestFullscreen();
+      }
+    }
   }
 }
 </script>
