@@ -44,6 +44,8 @@ import momoTitle from "@/components/svg/momo";
 import romoTitle from "@/components/svg/romo";
 import buttonCircleRed from "@/components/svg/button-circle-red";
 import buttonCircle from "@/components/svg/button-circle";
+
+import HowlerManager from "~/assets/js/utils/HowlerManager";
 import sync_activated from "@/static/sounds/sync_activated.mp3";
 import background_sync from "@/static/sounds/background_sync.mp3";
 
@@ -63,21 +65,35 @@ export default {
     };
   },
   mounted() {
-    this.background_sync = new Howl({
-      src: [background_sync],
-      loop: true
-    });
-    this.background_sync.play();
+    // this.background_sync = new Howl({
+    //   src: [background_sync],
+    //   loop: true
+    // });
+    // this.background_sync.play();
 
-    this.sync_activated = new Howl({
-      src: [sync_activated]
-    });
+    // this.sync_activated = new Howl({
+    //   src: [sync_activated]
+    // });
 
     this.socket.on("mobile-ready", value => {
       this.mobileReady = value;
     });
-
-    this.soundArray = [this.sync_activated, this.background_sync];
+  },
+  created() {
+    HowlerManager.add([
+      {
+        id: "sync_activated",
+        src: sync_activated
+      },
+      {
+        id: "background_sync",
+        src: background_sync
+      }
+    ]).then(sounds => {
+      this.sounds = sounds;
+      this.sounds.background_sync.loop = true;
+      this.sounds.background_sync.play();
+    });
   },
   methods: {
     ...mapMutations({})
