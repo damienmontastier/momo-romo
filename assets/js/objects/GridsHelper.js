@@ -9,7 +9,7 @@ export default class GridsHelper extends THREE.Object3D {
     }
 
     render() {
-        this.gridMesh = new THREE.GridHelper( this.size, this.divisions,0xffffff,0xffffff );
+        this.gridMesh = new THREE.GridHelper( this.size, this.divisions,0x00000,0x00000 );
     
         this.gridHelperX = new THREE.Group();
         for(let i = 0; i<20; i++) {

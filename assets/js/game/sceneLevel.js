@@ -56,7 +56,7 @@ export default class Level {
             this.momo = this.characters.momo
             this.romo = this.characters.romo
             this.romo.scale.set(2, 2, 2)
-          
+
             this.addCharacter()
         })
 
@@ -434,19 +434,29 @@ export default class Level {
         Promise.all(promises).then(() => {
             console.log('finish render we can plaaaay')
             this.preRenderFinish = true
-            TweenMax.to(this.camera.position, 1, {
-                y: 1,
-                x: this.momo.position.x + 3,
-                ease: Power0.easeIn
-            })
-            callback()
+                        callback()
 
-            TweenMax.to(this.masks.position, .5, {
+            // TweenMax.to(this.camera.position, 1, {
+            //     y: 1,
+            //     x: this.momo.position.x + 3,
+            //     ease: Power0.easeIn
+            // })
+
+            TweenMax.to(this.masks.position, 2, {
                 x: 0,
                 x: 0,
                 z: -8,
-                ease: Power0.easeIn
+                ease: Power4.easeOut,
+                onComplete: () => {
+                    // Romo add restrictedZone 
+                    if (this.romo && this.restrictedZone) {
+                        this.romo.position.x = Math.max(1 + (this.camera.position.x + this.restrictedZone.left), Math.min(this.camera.position.x + (this.restrictedZone.right - 1), this.romo.position.x))
+                        this.romo.position.y = Math.max(0, Math.min(this.restrictedZone.top, this.romo.position.y))
+                    }
+                }
             })
+
+
         })
     }
 
@@ -483,19 +493,13 @@ export default class Level {
             });
         }
 
-        //Eviter la sortie de Romo
-        if (this.romo && this.restrictedZone) {
-            this.romo.position.x = Math.max(1 + (this.camera.position.x + this.restrictedZone.left), Math.min(this.camera.position.x + (this.restrictedZone.right - 1), this.romo.position.x))
-            this.romo.position.y = Math.max(0, Math.min(this.restrictedZone.top, this.romo.position.y))
-        }
-
         // this.cannonDebugRenderer.update()
 
         if (this.characters && this.preRenderFinish) {
             this.characters.update()
-            TweenMax.to(this.camera.position, 1, {
+            TweenMax.to(this.camera.position, 2.5, {
                 x: this.momo.position.x,
-                ease: Power0.easeIn
+                ease: Power4.easeOut,
             })
         }
 
