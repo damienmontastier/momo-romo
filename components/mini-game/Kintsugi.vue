@@ -3,7 +3,12 @@
     <div
       class="title"
     >kintsugi, fracture:{{this.currentFracture}}, step:{{this.currentStep}}, {{controls.length}}</div>
-    <intro v-on:updatecountdown="updateCountdown" v-on:startfracture="startFracture" v-on:setromoready="setRomoReady" ref="intro"></intro>
+    <intro
+      v-on:updatecountdown="updateCountdown"
+      v-on:startfracture="startFracture"
+      v-on:setromoready="setRomoReady"
+      ref="intro"
+    ></intro>
     <div ref="canvas" id="canvas"></div>
     <div class="controls">
       <div class="container">
@@ -82,6 +87,7 @@ import cta_ready from "~/static/sounds/cta_ready.mp3";
 import countdown_3 from "~/static/sounds/countdown_3.mp3";
 import countdown_2 from "~/static/sounds/countdown_2.mp3";
 import countdown_1 from "~/static/sounds/countdown_1.mp3";
+import cta_activated from "~/static/sounds/cta_activated.mp3";
 
 Number.prototype.map = function(in_min, in_max, out_min, out_max) {
   return ((this - in_min) * (out_max - out_min)) / (in_max - in_min) + out_min;
@@ -543,7 +549,7 @@ export default {
       promises.push(this.app.loadBowl());
       promises.push(this.app.addMomo());
       promises.push(this.app.addBrush());
-      promises.push(this.loadSounds())
+      promises.push(this.loadSounds());
 
       return new Promise((resolve, reject) => {
         Promise.all(promises).then(() => {
@@ -564,9 +570,9 @@ export default {
             this.$refs.window,
             0.5,
             {
-              x: box.width + box.right,
+              x: (window.innerWidth/2 + box.width/2),
               ease: Power4.easeOut,
-              delay:0.25
+              delay: 0.25
             },
             "appear"
           )
@@ -580,7 +586,7 @@ export default {
       let tl = new TimelineMax();
       tl.delay(1)
         .add("titleAppear", 0)
-        .add("titleDisappear", 3)
+        .add("titleDisappear", 2)
         .to(
           this.app.model.scale,
           0.5,
@@ -730,6 +736,7 @@ export default {
       this.$refs.intro.$refs.isPlaying.style.opacity = "0";
       this.$refs.keys.style.opacity = "0";
       this.$refs.steps.style.opacity = "0";
+      this.sounds.cta_activated.play()
       let tl = new TimelineMax();
       tl.add("endGameAppear", 0)
         .to(
@@ -739,6 +746,7 @@ export default {
             x: 1,
             y: 1,
             z: 1,
+            ease:Back.easeOut.config(1.4),
             onStart: () => {
               this.app.model.scale.set(1.2, 1.2, 1.2);
               this.app.model.position.z = 0.7;
@@ -763,10 +771,40 @@ export default {
           0.5,
           {
             opacity: 1,
-            scale: 1
+            scale: 1,
+            ease:Back.easeOut.config(1.4)
           },
           "endGameAppear"
-        );
+        )
+        .eventCallback('onComplete',()=>{
+          setTimeout(()=>{
+            this.windowDisappear()
+          },2000)
+        })
+    },
+    windowDisappear() {
+      console.log('windowDisappear')
+      this.sounds.transition_windows.play();
+      this.sounds.transition_windows.fade(1,0,2000);
+      let box = this.$refs.window.getBoundingClientRect();
+      let tl = new TimelineMax();
+        tl.add("appear", 0)
+          .set(this.$refs.window, {
+            opacity: 1
+          })
+          .to(
+            this.$refs.window,
+            0.5,
+            {
+              x: -(window.innerWidth/2 + box.width/2),
+              ease: Power4.easeOut,
+              delay: 1
+            },
+            "appear"
+          )
+          .eventCallback('onComplete',()=>{
+            
+          })
     },
     launchCountdown() {
       this.app.momoMoods.visible = false;
@@ -942,56 +980,11 @@ export default {
         if (!event.repeat) {
           if (
             event.key.toLowerCase() === this.controls[this.currentStep] &&
-            this.runningInterval > 0.2 && this.canKeyPress
+            this.runningInterval > 0 &&
+            this.canKeyPress
           ) {
-            console.log(this.runningInterval)
-            console.log("next");
-            let tl = new TimelineMax();
-            tl.to(this.$refs.letter, 0.1, {
-              // ease: Power4.easeIn,
-              y: 12,
-              onStart: () => {
-                this.$refs.svgs.style.opacity = "0";
-                this.$refs.circle.style.opacity = "0";
-              },
-              onComplete: () => {
-                this.$refs.letter.classList.add("down");
-              }
-            })
-              .to(
-                this.$refs.step[this.currentStep],
-                0.1,
-                {
-                  y: 4
-                },
-                0
-              )
-              .to(
-                this.$refs.svgstep[this.currentStep],
-                0.1,
-                {
-                  scale: 2.2,
-                  onStart: () => {
-                    this.$refs.svgstep[this.currentStep].style.opacity = 1;
-                  }
-                },
-                0
-              )
-              .to(this.$refs.svgs, 0.1, {
-                scale: 2,
-                onStart: () => {
-                  this.$refs.svgs.style.opacity = "1";
-                },
-                onComplete: () => {
-                  this.nextStep();
-                  this.startKeyPressInterval();
-                  this.$refs.svgs.style.opacity = "1";
-                  this.$refs.circle.style.opacity = "1";
-                  this.$refs.letter.classList.remove("down");
-                  this.$refs.letter.style.transform = "translateY(0)";
-                  this.$refs.svgs.style.opacity = "0";
-                }
-              });
+            console.log(this.runningInterval);
+            this.sucess();
           } else if (this.runningInterval > 0) {
             console.log("wrong key");
             this.fail();
@@ -999,39 +992,90 @@ export default {
         }
       }
     },
+    sucess() {
+      if (this.tweening) {
+        this.tweening.kill();
+      }
+      let tl = new TimelineMax();
+      tl.to(this.$refs.letter, 0.1, {
+        // ease: Power4.easeIn,
+        y: 12,
+        onStart: () => {
+          this.$refs.svgs.style.opacity = "0";
+          this.$refs.circle.style.opacity = "0";
+        },
+        onComplete: () => {
+          this.$refs.letter.classList.add("down");
+        }
+      })
+        .to(
+          this.$refs.step[this.currentStep],
+          0.1,
+          {
+            y: 4
+          },
+          0
+        )
+        .to(
+          this.$refs.svgstep[this.currentStep],
+          0.1,
+          {
+            scale: 2.2,
+            onStart: () => {
+              this.$refs.svgstep[this.currentStep].style.opacity = 1;
+            }
+          },
+          0
+        )
+        .to(this.$refs.svgs, 0.1, {
+          scale: 2,
+          onStart: () => {
+            this.$refs.svgs.style.opacity = "1";
+          },
+          onComplete: () => {
+            this.nextStep();
+            this.startKeyPressInterval();
+            this.$refs.svgs.style.opacity = "1";
+            this.$refs.circle.style.opacity = "1";
+            this.$refs.letter.classList.remove("down");
+            this.$refs.letter.style.transform = "translateY(0)";
+            this.$refs.svgs.style.opacity = "0";
+          }
+        });
+    },
     startKeyPressInterval() {
-      this.canKeyPress = false
+      this.canKeyPress = false;
       this.runningInterval = this.interval;
       if (this.tweening) {
         this.tweening.kill();
       }
-      console.log('startKeyPressInterval')
-      this.tweening = new TimelineMax()
+      console.log("startKeyPressInterval");
+      this.tweening = new TimelineMax();
 
       this.tweening
-      .to(this, this.interval-this.errorMargin, {
-        runningInterval:this.errorMargin,
-        ease: Power0.easeNone,
-        onComplete:()=>{
-          this.canKeyPress = true
-          console.log('PRESS')
-        }
-      })
-      .to(this, this.errorMargin, {
-        runningInterval:0,
-        ease: Power0.easeNone,
-      })
-      .eventCallback('onComplete', () => {
+        .to(this, this.interval - this.errorMargin, {
+          runningInterval: this.errorMargin,
+          ease: Power0.easeNone,
+          onComplete: () => {
+            this.canKeyPress = true;
+            console.log("PRESS");
+          }
+        })
+        .to(this, this.errorMargin, {
+          runningInterval: 0,
+          ease: Power0.easeNone
+        })
+        .eventCallback("onComplete", () => {
           if (!this.fractureEnded) {
             console.log("wrong");
             this.fail();
           }
-      })
-      .eventCallback('onUpdate', () => {
+        })
+        .eventCallback("onUpdate", () => {
           if (!this.fractureEnded) {
             // console.log(this.runningInterval);
           }
-      })
+        });
       // this.tweening = TweenMax.to(this, this.interval, {
       //   runningInterval: 0,
       //   onComplete: () => {
@@ -1059,12 +1103,16 @@ export default {
       return new Promise((resolve, reject) => {
         HowlerManager.add([
           {
-            id: 'transition_windows',
+            id: "transition_windows",
             src: transition_windows
           },
           {
             id: "cta_ready",
             src: cta_ready
+          },
+          {
+            id: "cta_activated",
+            src: cta_activated
           },
           {
             id: "countdown_1",
@@ -1080,7 +1128,7 @@ export default {
           }
         ]).then(sounds => {
           this.sounds = sounds;
-          resolve()
+          resolve();
         });
       });
     }
@@ -1113,10 +1161,8 @@ export default {
   mounted() {
     this.init();
     window.addEventListener("keydown", this.onKeyPress.bind(this));
-    this.load()
-    .then(() => {
-      this.windowAppear()
-      .then(() => {
+    this.load().then(() => {
+      this.windowAppear().then(() => {
         this.appearToTitle();
         if (this.socket) {
           this.socket.emit("custom-event", {
