@@ -7,6 +7,11 @@ import MomoSprite from '~/static/sprites/momo/momo.png';
 const MomoJson = require("~/static/sprites/momo/momo.json");
 
 import RomoSprite from '~/static/sprites/romo/romo.png';
+import {
+    TweenMax,
+    Ease,
+    Power4
+} from "gsap";
 const RomoJson = require("~/static/sprites/romo/romo.json");
 
 export default class Characters {
@@ -60,15 +65,7 @@ export default class Characters {
             this.addAnimate().then((sprites) => {
                 this.momo = sprites[0]
 
-                let body = sprites[1][0]
-                body.name = "romo_body"
-                let mood = sprites[1][1]
-                mood.name = "romo_mood"
-
-                this.romo = new THREE.Group();
-
-                this.romo.add(body);
-                this.romo.add(mood);
+                this.romo = sprites[1]
 
                 this.animeRomo()
 
@@ -78,13 +75,10 @@ export default class Characters {
     }
 
     animeRomo() {
-        this.launchSprite(this.romo.children[0], "normal")
-        this.launchSprite(this.romo.children[1], "win")
+        this.launchSprite(this.romo, "romo")
     }
 
     addAnimate() {
-
-        let loader = new THREE.TextureLoader();
 
         let p1 = (new Promise((resolve, reject) => {
             new Sprite(MomoSprite, MomoJson.sprites, {
@@ -97,21 +91,12 @@ export default class Characters {
             })
         }))
         let p2 = new Promise((resolve, reject) => {
-            loader.load(RomoSprite, (texture) => {
-                let spriteTextureRomo = []
-                spriteTextureRomo.push(
-                    new Sprite(texture, RomoJson.sprites, {
-                        wTiles: 4,
-                        hTiles: 3
-                    })
-                )
-                spriteTextureRomo.push(
-                    new Sprite(texture, RomoJson.sprites, {
-                        wTiles: 4,
-                        hTiles: 3
-                    })
-                )
-                resolve(spriteTextureRomo)
+            new Sprite(RomoSprite, RomoJson.sprites, {
+                wTiles: 2,
+                hTiles: 2
+            }).then(romo => {
+                romo.name = "romo"
+                resolve(romo)
             })
         })
 
@@ -181,9 +166,6 @@ export default class Characters {
             this.canJump = false
             this.launchSprite(this.momo, "jump")
 
-            this.launchSprite(this.romo.children[0], "romo")
-            this.launchSprite(this.romo.children[1], "power")
-
             this.canMove = false;
         }
     }
@@ -205,7 +187,11 @@ export default class Characters {
                         if (!this.movementState.walking) {
                             if (this.momo.scale.x == 1) {
                                 this.turnToWalk()
-                                this.momo.scale.set(-1, 1, 1)
+                                // this.momo.scale.set(-1, 1, 1)
+                                TweenMax.to(this.momo.scale, 1, {
+                                    x: -1,
+                                    ease: Power4.easeOut
+                                })
                             } else {
                                 this.launchSprite(this.momo, "walk")
                             }
@@ -223,7 +209,11 @@ export default class Characters {
                         if (!this.movementState.walking) {
                             if (this.momo.scale.x == -1) {
                                 this.turnToWalk()
-                                this.momo.scale.set(1, 1, 1)
+                                TweenMax.to(this.momo.scale, 1, {
+                                    x: 1,
+                                    ease: Power4.easeOut
+                                })
+                                // this.momo.scale.set(1, 1, 1)
                             } else {
                                 this.launchSprite(this.momo, "walk")
                             }
@@ -312,6 +302,21 @@ export default class Characters {
                 if (this.speed) {
                     let x = this.romo.position.x
                     let y = this.romo.position.y
+
+                    if (this.coordinate.x > 0 && this.romo.scale.x != -2) {
+                        // this.romo.scale.x = -2
+                        TweenMax.to(this.romo.scale, 1, {
+                            x: -2,
+                            ease: Power4.easeOut
+                        })
+                    } else if (this.coordinate.x < 0 && this.romo.scale.x != 2) {
+                        // this.romo.scale.x = 2
+                        TweenMax.to(this.romo.scale, 1, {
+                            x: 2,
+                            ease: Power4.easeOut
+                        })
+                    }
+
                     TweenMax.to(this.romo.position, .3, {
                         x: x + (this.coordinate.x * this.speed) / 50,
                         y: y + (this.coordinate.y * this.speed) / 50,
@@ -327,8 +332,7 @@ export default class Characters {
         this.time += delta;
         this.momo.update(delta)
 
-        this.romo.children[0].update(delta)
-        this.romo.children[1].update(delta)
+        this.romo.update(delta)
 
         this.updateMomoPosition()
 

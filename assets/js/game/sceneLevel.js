@@ -1,12 +1,11 @@
 import * as THREE from 'three';
-// import OrbitControls from 'orbit-controls-es6';
+import OrbitControls from 'orbit-controls-es6';
 import FixedProp from '../objects/FixedProp'
 import CANNON from 'cannon'
 import physicParams from '../physics/physicParams';
 import Characters from '../objects/Characters';
 import cannonDebugRenderer from '../physics/CannonDebugRenderer'
 import AnimatedProp from "@/assets/js/objects/AnimatedProp";
-import Sprite from "@/assets/js/objects/Sprite";
 
 import {
     TweenMax,
@@ -52,15 +51,12 @@ export default class Level {
 
         this.clock = new THREE.Clock()
 
-
         new Characters(store).then((characters) => {
             this.characters = characters
             this.momo = this.characters.momo
             this.romo = this.characters.romo
             this.romo.scale.set(2, 2, 2)
-            this.romo.position.z = 2.5
-            this.romo.position.y = 1
-            this.romo.position.x = this.momo.position.x
+          
             this.addCharacter()
         })
 
@@ -276,13 +272,7 @@ export default class Level {
 
         this.masks = new THREE.Mesh(singleGeometry, material);
 
-        // let materialbis = new THREE.MeshBasicMaterial({
-        //     color: 0xff0000, // TODO video a mapper sur ce material
-        //     // wireframe: true,
-        //     side: THREE.DoubleSide
-        // });
-
-        this.materialbis = new THREE.ShaderMaterial({
+        let materialbis = new THREE.ShaderMaterial({
             uniforms: {
                 iTime: {
                     value: 0
@@ -374,15 +364,12 @@ export default class Level {
                 float map(float value, float min1, float max1, float min2, float max2) {
                     return min2 + (value - min1) * (max2 - min2) / (max1 - min1);
                 }
-
                 varying vec3 v_position;
                 uniform float iTime;
-
                 void main() {
                     vec3 color1 = vec3(253., 249., 235.)/255.;
                     vec3 color2 = vec3(234., 227., 205.)/255.;
                     color2 = vec3(214., 197., 185.)/255.;
-
                     vec3 gradient = mix(vec3(1.0),color1,v_position.y);
                     float noise = snoise(vec3(vec2(v_position.x * 0.1,v_position.y* 0.1* 0.5 - iTime*0.1),iTime*0.1));
                     float grain = snoise(vec3(v_position.xy*100000.,iTime*0.1));
@@ -390,13 +377,12 @@ export default class Level {
                     vec3 noise_color = mix(color1,color2,clamp(noise,0.0,1.0));
                     
                     vec3 color = ((gradient*0.5) + grain + (noise_color * 10.5)) / 11.;
-
                     gl_FragColor = vec4(color,.1);
                 }
             `
         })
 
-        var border = new THREE.Mesh(singleGeometry, this.materialbis);
+        var border = new THREE.Mesh(singleGeometry, materialbis);
         border.scale.multiplyScalar(1.01);
         this.masks.add(border);
         this.masks.scale.set(.6, .6, .6)
@@ -433,7 +419,7 @@ export default class Level {
                 setTimeout(() => {
                     this.fixedPropsGroup[i].position.x = this.camera.position.x
                     resolve(this.fixedPropsGroup[i]);
-                }, i * 100)
+                }, i * 50)
             });
 
             promises.push(promise)
@@ -441,7 +427,7 @@ export default class Level {
             promise.then((fixed) => {
                 setTimeout(() => {
                     fixed.position.copy(fixed.originPosition)
-                }, 100);
+                }, 50);
             })
         }
 
@@ -466,12 +452,10 @@ export default class Level {
 
     render() {
         // this.camera.lookAt(this.camera.position)
-        let delta = this.clock.getDelta() * 5000;
-        this.materialbis.uniforms.iTime.value+= (delta*0.0005);
 
         if (this.animatesArray.length) {
             this.animatesArray.forEach(animate => {
-                
+                const delta = this.clock.getDelta() * 5000;
                 this.time += delta;
                 animate.animate.update(delta)
                 if (this.romo.position.x >= animate.position.x - 1.5 && this.romo.position.x <= animate.position.x + 1.5) {
@@ -502,10 +486,10 @@ export default class Level {
         //Eviter la sortie de Romo
         if (this.romo && this.restrictedZone) {
             this.romo.position.x = Math.max(1 + (this.camera.position.x + this.restrictedZone.left), Math.min(this.camera.position.x + (this.restrictedZone.right - 1), this.romo.position.x))
-            this.romo.position.y = Math.max(this.restrictedZone.bottom + .5, Math.min(this.restrictedZone.top, this.romo.position.y))
+            this.romo.position.y = Math.max(0, Math.min(this.restrictedZone.top, this.romo.position.y))
         }
 
-        this.cannonDebugRenderer.update()
+        // this.cannonDebugRenderer.update()
 
         if (this.characters && this.preRenderFinish) {
             this.characters.update()
