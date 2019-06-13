@@ -3,7 +3,7 @@
     <div
       class="title"
     >kintsugi, fracture:{{this.currentFracture}}, step:{{this.currentStep}}, {{controls.length}}</div>
-    <intro v-on:updatecountdown="updateCountdown" v-on:startfracture="startFracture" ref="intro"></intro>
+    <intro v-on:updatecountdown="updateCountdown" v-on:startfracture="startFracture" v-on:setromoready="setRomoReady" ref="intro"></intro>
     <div ref="canvas" id="canvas"></div>
     <div class="controls">
       <div class="container">
@@ -77,6 +77,8 @@ const MomoSpriteJson = require("~/static/ui/kintsugi/mini-game/sprites/momo/powe
 import BrushSprite from "~/static/sprites/brush/brush.png";
 const BrushSpriteJson = require("~/static/sprites/brush/brush.json");
 
+import transition_windows from "~/static/sounds/transition_windows.mp3";
+import cta_ready from "~/static/sounds/cta_ready.mp3";
 import countdown_3 from "~/static/sounds/countdown_3.mp3";
 import countdown_2 from "~/static/sounds/countdown_2.mp3";
 import countdown_1 from "~/static/sounds/countdown_1.mp3";
@@ -158,7 +160,8 @@ class App {
         this.brush.position.y = -5;
         this.brush.rotation.z = THREE.Math.degToRad(30);
 
-        this.brush.texture.magFilter = this.brush.texture.minFilter = THREE.NearestFilter;
+        this.brush.texture.magFilter = this.brush.texture.minFilter =
+          THREE.NearestFilter;
 
         this.scene.add(this.brush);
         this.brush
@@ -171,41 +174,40 @@ class App {
   }
 
   addMomo() {
-    let loader = new THREE.TextureLoader()
+    let loader = new THREE.TextureLoader();
 
     this.momoGroup = new THREE.Group();
     this.scene.add(this.momoGroup);
 
-    return new Promise((resolve,reject)=>{
-        loader.load(MomoSprite,(texture)=>{
-          this.momo = new Sprite(texture, MomoSpriteJson.sprites, {
-            wTiles: 8,
-            hTiles: 8
-          })
-          this.momoMoods = new Sprite(texture, MomoSpriteJson.sprites, {
-            wTiles: 8,
-            hTiles: 8
-          })
+    return new Promise((resolve, reject) => {
+      loader.load(MomoSprite, texture => {
+        this.momo = new Sprite(texture, MomoSpriteJson.sprites, {
+          wTiles: 8,
+          hTiles: 8
+        });
+        this.momoMoods = new Sprite(texture, MomoSpriteJson.sprites, {
+          wTiles: 8,
+          hTiles: 8
+        });
 
-          this.momo
-            .newSprites()
-            .addState("wait")
-            .start();
+        this.momo
+          .newSprites()
+          .addState("wait")
+          .start();
 
-          this.momoMoods.visible = false
+        this.momoMoods.visible = false;
 
-          this.momoGroup.add(this.momo);
-          this.momoGroup.add(this.momoMoods);
+        this.momoGroup.add(this.momo);
+        this.momoGroup.add(this.momoMoods);
 
-          this.momoGroup.scale.set(55, 55, 55);
-          this.momoGroup.position.z = 2;
-          this.momoGroup.position.x = -65;
-          this.momoGroup.position.y = -5;
+        this.momoGroup.scale.set(55, 55, 55);
+        this.momoGroup.position.z = 2;
+        this.momoGroup.position.x = -65;
+        this.momoGroup.position.y = -5;
 
-          resolve()
-        })
-    })
-
+        resolve();
+      });
+    });
 
     // return new Promise((resolve, reject) => {
     //   new Sprite(MomoSprite, MomoSpriteJson.sprites, {
@@ -418,7 +420,7 @@ class App {
         this.model.position.z = 0.2;
         this.model.position.y = -5;
         this.loaded = true;
-        this.model.scale.set(0.0001,0.0001,0.0001)
+        this.model.scale.set(0.0001, 0.0001, 0.0001);
         resolve();
       });
     });
@@ -487,8 +489,7 @@ export default {
   components: { Intro },
   data() {
     return {
-      //   app: new App(),
-      // controls: ["q", "m", "d", "l", "g", "h"],
+      errorMargin: 1,
       interval: 2,
       runningInterval: 0,
       gameModel: [
@@ -514,9 +515,7 @@ export default {
   },
   methods: {
     init() {
-      this.app = new App();
       this.app.init(this.$refs.canvas);
-      this.createSocketEvents();
     },
     createSocketEvents() {
       if (this.socket) {
@@ -531,7 +530,7 @@ export default {
           } else if (params.id === "romo is ready") {
             this.$refs.intro.setRomoReady();
           } else if (params.id === "cancel fracture") {
-            this.cancelFracture(params.fragments)
+            this.cancelFracture(params.fragments);
           }
         });
       }
@@ -544,163 +543,169 @@ export default {
       promises.push(this.app.loadBowl());
       promises.push(this.app.addMomo());
       promises.push(this.app.addBrush());
+      promises.push(this.loadSounds())
 
-      return new Promise((resolve,reject)=>{
+      return new Promise((resolve, reject) => {
         Promise.all(promises).then(() => {
-          resolve()
-        })
-      })
+          resolve();
+        });
+      });
     },
     windowAppear() {
-      let box = this.$refs.window.getBoundingClientRect()
+      this.sounds.transition_windows.play();
+      let box = this.$refs.window.getBoundingClientRect();
       let tl = new TimelineMax();
-      return new Promise((resolve,reject)=> {
-        tl
-        .add("appear", 0)
-        .set(this.$refs.window, {
-          opacity:1
-        })
-        .from(this.$refs.window,1, {
-          x: box.width + box.right,
-          ease: Power4.easeOut
-        },"appear")
-        .eventCallback('onComplete',()=>{
-          resolve()
-        })
-      })
-
+      return new Promise((resolve, reject) => {
+        tl.add("appear", 0)
+          .set(this.$refs.window, {
+            opacity: 1
+          })
+          .from(
+            this.$refs.window,
+            0.5,
+            {
+              x: box.width + box.right,
+              ease: Power4.easeOut,
+              delay:0.25
+            },
+            "appear"
+          )
+          .eventCallback("onComplete", () => {
+            resolve();
+          });
+      });
     },
     appearToTitle() {
-        this.tweeningScalar = 1;
-        let tl = new TimelineMax();
-        tl.delay(1)
-          .add("titleAppear", 0)
-          .add("titleDisappear", 3)
-          .to(
-            this.app.model.scale,
-            0.5,
-            {
-              ease: Back.easeOut.config(1.4),
-              x: 1.2,
-              y: 1.2,
-              z: 1.2
-            },
-            "titleAppear"
-          )
-          .to(
-            this.$refs.intro.$refs.titleSVG,
-            0.5,
-            {
-              ease: Back.easeOut.config(1.4),
-              // delay: -0.5,
-              opacity: 1,
-              scale: 1
-            },
-            "titleAppear"
-          )
-          .to(
-            this,
-            3,
-            {
-              ease: Power4.easeOut,
-              // delay: 0.6,
-              tweeningScalar: 1.2,
-              onStart: () => {
-                // this.app.fragments.forEach((fragment)=>{
-                //   let o = new THREE.Vector3().copy(fragment._originPosition)
-                //   console.log(o)
-                // })
-              },
-              onUpdate: () => {
-                this.app.fragments.forEach(fragment => {
-                  let o = new THREE.Vector3().copy(fragment._maxPosition);
-                  let rotationZ = fragment._maxRotation.z;
-                  fragment.position.copy(o.multiplyScalar(this.tweeningScalar));
-                  fragment.rotation.z = rotationZ * this.tweeningScalar;
-                });
-              }
-            },
-            "titleAppear"
-          )
-          .to(
-            [this.app.planeRosace.scale, this.app.planeGradient.scale],
-            0.5,
-            {
-              ease: Back.easeOut.config(1.4),
-              // delay: 0.2,
-              x: 1,
-              y: 1,
-              z: 1
-            },
-            "titleAppear"
-          )
-          .to(
-            [this.app.planeRosace.material, this.app.planeGradient.material],
-            0.5,
-            {
-              ease: Back.easeOut.config(1.4),
-              delay: 0.2,
-              opacity: 1
-            },
-            "titleAppear"
-          )
-          .to(
-            this.$refs.intro.$refs.titleSVG,
-            0.5,
-            {
-              ease: Back.easeIn.config(1.4),
-              scale: 0
-            },
-            "titleDisappear"
-          )
-          .to(
-            [
-              this.app.planeRosace.scale,
-              this.app.planeGradient.scale,
-              this.app.model.scale
-            ],
-            0.5,
-            {
-              ease: Back.easeIn.config(1.4),
-              x: 0.01,
-              y: 0.01,
-              z: 0.01
-            },
-            "titleDisappear"
-          )
-          .to(
-            [
-              this.app.planeRosace.material,
-              this.app.planeGradient.material,
-              this.$refs.intro.$refs.titleSVG
-            ],
-            0.5,
-            {
-              ease: Back.easeIn.config(1.4),
-              opacity: 0
-            },
-            "titleDisappear"
-          )
-          .to(this.$refs.intro.$refs.tuto, 1, {
-            ease: Power4.easeOut,
+      this.tweeningScalar = 1;
+      let tl = new TimelineMax();
+      tl.delay(1)
+        .add("titleAppear", 0)
+        .add("titleDisappear", 3)
+        .to(
+          this.app.model.scale,
+          0.5,
+          {
+            ease: Back.easeOut.config(1.4),
+            x: 1.2,
+            y: 1.2,
+            z: 1.2
+          },
+          "titleAppear"
+        )
+        .to(
+          this.$refs.intro.$refs.titleSVG,
+          0.5,
+          {
+            ease: Back.easeOut.config(1.4),
+            // delay: -0.5,
             opacity: 1,
+            scale: 1
+          },
+          "titleAppear"
+        )
+        .to(
+          this,
+          3,
+          {
+            ease: Power4.easeOut,
+            // delay: 0.6,
+            tweeningScalar: 1.2,
             onStart: () => {
-              this.$refs.intro.showSynchro();
+              // this.app.fragments.forEach((fragment)=>{
+              //   let o = new THREE.Vector3().copy(fragment._originPosition)
+              //   console.log(o)
+              // })
+            },
+            onUpdate: () => {
+              this.app.fragments.forEach(fragment => {
+                let o = new THREE.Vector3().copy(fragment._maxPosition);
+                let rotationZ = fragment._maxRotation.z;
+                fragment.position.copy(o.multiplyScalar(this.tweeningScalar));
+                fragment.rotation.z = rotationZ * this.tweeningScalar;
+              });
             }
-          })
-          .eventCallback("onComplete", () => {
-            this.app.planeGradient.position.z = 0.15;
-            this.app.fragments.forEach(fragment => {
-              let o = new THREE.Vector3().copy(fragment._maxPosition);
-              let rotationZ = fragment._maxRotation.z;
-              fragment.position.copy(o);
-              fragment.rotation.z = rotationZ;
-            });
+          },
+          "titleAppear"
+        )
+        .to(
+          [this.app.planeRosace.scale, this.app.planeGradient.scale],
+          0.5,
+          {
+            ease: Back.easeOut.config(1.4),
+            // delay: 0.2,
+            x: 1,
+            y: 1,
+            z: 1
+          },
+          "titleAppear"
+        )
+        .to(
+          [this.app.planeRosace.material, this.app.planeGradient.material],
+          0.5,
+          {
+            ease: Back.easeOut.config(1.4),
+            delay: 0.2,
+            opacity: 1
+          },
+          "titleAppear"
+        )
+        .to(
+          this.$refs.intro.$refs.titleSVG,
+          0.5,
+          {
+            ease: Back.easeIn.config(1.4),
+            scale: 0
+          },
+          "titleDisappear"
+        )
+        .to(
+          [
+            this.app.planeRosace.scale,
+            this.app.planeGradient.scale,
+            this.app.model.scale
+          ],
+          0.5,
+          {
+            ease: Back.easeIn.config(1.4),
+            x: 0.01,
+            y: 0.01,
+            z: 0.01
+          },
+          "titleDisappear"
+        )
+        .to(
+          [
+            this.app.planeRosace.material,
+            this.app.planeGradient.material,
+            this.$refs.intro.$refs.titleSVG
+          ],
+          0.5,
+          {
+            ease: Back.easeIn.config(1.4),
+            opacity: 0
+          },
+          "titleDisappear"
+        )
+        .to(this.$refs.intro.$refs.tuto, 1, {
+          ease: Power4.easeOut,
+          opacity: 1,
+          onStart: () => {
+            this.$refs.intro.showSynchro();
+          }
+        })
+        .eventCallback("onComplete", () => {
+          this.app.planeGradient.position.z = 0.15;
+          this.app.fragments.forEach(fragment => {
+            let o = new THREE.Vector3().copy(fragment._maxPosition);
+            let rotationZ = fragment._maxRotation.z;
+            fragment.position.copy(o);
+            fragment.rotation.z = rotationZ;
           });
+        });
     },
     nextFracture() {
-              // this.app.momoMoods.visible = true
-        this.app.momoMoods
+      // this.app.momoMoods.visible = true
+      this.app.momoMoods
         .newSprites()
         .addState("win")
         .start();
@@ -708,7 +713,7 @@ export default {
       if (this.tweening) {
         this.tweening.kill();
       }
-      setTimeout(()=> {
+      setTimeout(() => {
         this.currentStep = 0;
         this.currentFracture++;
         this.fractureEnded = false;
@@ -718,7 +723,7 @@ export default {
           this.resetUI();
           this.launchCountdown();
         }
-      },1500)
+      }, 1500);
     },
     launchEndGame() {
       console.log("end game");
@@ -764,20 +769,20 @@ export default {
         );
     },
     launchCountdown() {
-      this.app.momoMoods.visible = false
+      this.app.momoMoods.visible = false;
       this.app.momo
         .newSprites()
         .addState("power_start")
         .addState("power_loop")
         .start();
-      
-      setTimeout(()=>{
-        this.app.momoMoods.visible = true
+
+      setTimeout(() => {
+        this.app.momoMoods.visible = true;
         this.app.momoMoods
-        .newSprites()
-        .addState("power")
-        .start();
-      },2000)
+          .newSprites()
+          .addState("power")
+          .start();
+      }, 2000);
       this.$refs.keys.style.opacity = "0";
       this.$refs.steps.style.opacity = "1";
       this.app.model.scale.set(1.2, 1.2, 1.2);
@@ -857,7 +862,6 @@ export default {
     },
     launchStep() {
       if (this.gameModel[this.currentFracture]) {
-        // this.startKeyPressInterval();
         let fragments = this.gameModel[this.currentFracture].fragments;
         this.app.bringCloser(fragments, this.currentStep);
         if (this.socket) {
@@ -889,18 +893,18 @@ export default {
     },
     fail() {
       this.$refs.intro.$refs.isPlaying.style.opacity = "0";
-      let fragments = this.gameModel[this.currentFracture].fragments
-      this.cancelFracture(fragments)
-        if (this.socket) {
-          this.socket.emit("custom-event", {
-            name: "kintsugi mini-game",
-            in: this.roomID,
-            args: {
-              id: "cancel fracture",
-              fragments: fragments
-            }
-          });
-        }
+      let fragments = this.gameModel[this.currentFracture].fragments;
+      this.cancelFracture(fragments);
+      if (this.socket) {
+        this.socket.emit("custom-event", {
+          name: "kintsugi mini-game",
+          in: this.roomID,
+          args: {
+            id: "cancel fracture",
+            fragments: fragments
+          }
+        });
+      }
     },
     cancelFracture(fragments) {
       this.app.momoMoods
@@ -909,10 +913,10 @@ export default {
         .start();
       this.$refs.intro.$refs.isPlaying.style.opacity = "0";
       this.app.spread(fragments);
-      let fracture = this.app.fractures[this.currentFracture]
-      fracture.children.forEach((piece)=>{
-        piece.visible = false
-      })
+      let fracture = this.app.fractures[this.currentFracture];
+      fracture.children.forEach(piece => {
+        piece.visible = false;
+      });
       this.runningInterval = 0;
       if (this.tweening) {
         this.tweening.kill();
@@ -938,8 +942,9 @@ export default {
         if (!event.repeat) {
           if (
             event.key.toLowerCase() === this.controls[this.currentStep] &&
-            this.runningInterval > 0
+            this.runningInterval > 0.2 && this.canKeyPress
           ) {
+            console.log(this.runningInterval)
             console.log("next");
             let tl = new TimelineMax();
             tl.to(this.$refs.letter, 0.1, {
@@ -989,32 +994,95 @@ export default {
               });
           } else if (this.runningInterval > 0) {
             console.log("wrong key");
-            this.fail()
+            this.fail();
           }
         }
       }
     },
     startKeyPressInterval() {
+      this.canKeyPress = false
       this.runningInterval = this.interval;
       if (this.tweening) {
         this.tweening.kill();
       }
-      this.tweening = TweenMax.to(this, this.interval, {
-        runningInterval: 0,
-        onUpdate: () => {
-          // console.log(this.runningInterval);
-        },
-        onComplete: () => {
+      console.log('startKeyPressInterval')
+      this.tweening = new TimelineMax()
+
+      this.tweening
+      .to(this, this.interval-this.errorMargin, {
+        runningInterval:this.errorMargin,
+        ease: Power0.easeNone,
+        onComplete:()=>{
+          this.canKeyPress = true
+          console.log('PRESS')
+        }
+      })
+      .to(this, this.errorMargin, {
+        runningInterval:0,
+        ease: Power0.easeNone,
+      })
+      .eventCallback('onComplete', () => {
           if (!this.fractureEnded) {
             console.log("wrong");
-            this.fail()
+            this.fail();
           }
-          // this.runningInterval = this.interval;
-        }
-      });
+      })
+      .eventCallback('onUpdate', () => {
+          if (!this.fractureEnded) {
+            // console.log(this.runningInterval);
+          }
+      })
+      // this.tweening = TweenMax.to(this, this.interval, {
+      //   runningInterval: 0,
+      //   onComplete: () => {
+      //     if (!this.fractureEnded) {
+      //       console.log("wrong");
+      //       this.fail();
+      //     }
+      //     // this.runningInterval = this.interval;
+      //   }
+      // });
+    },
+    setRomoReady() {
+      this.sounds.cta_ready.play();
     },
     updateCountdown(countdown) {
-      console.log(countdown)
+      if (countdown === 3) {
+        this.sounds.countdown_3.play();
+      } else if (countdown === 2) {
+        this.sounds.countdown_2.play();
+      } else if (countdown === 1) {
+        this.sounds.countdown_1.play();
+      }
+    },
+    loadSounds() {
+      return new Promise((resolve, reject) => {
+        HowlerManager.add([
+          {
+            id: 'transition_windows',
+            src: transition_windows
+          },
+          {
+            id: "cta_ready",
+            src: cta_ready
+          },
+          {
+            id: "countdown_1",
+            src: countdown_1
+          },
+          {
+            id: "countdown_2",
+            src: countdown_2
+          },
+          {
+            id: "countdown_3",
+            src: countdown_3
+          }
+        ]).then(sounds => {
+          this.sounds = sounds;
+          resolve()
+        });
+      });
     }
   },
   computed: {
@@ -1024,14 +1092,14 @@ export default {
       keyboard: state => state.keyboard
     }),
     controls() {
-      if(this.keyboard === 'azerty') {
-        return ["q", "m", "d", "l", "g", "h"]
-      } else if(this.keyboard === 'qwerty') {
-        return ["a", "l", "d", "j", "g", "h"]
+      if (this.keyboard === "azerty") {
+        return ["q", "m", "d", "k", "g", "h"];
+      } else if (this.keyboard === "qwerty") {
+        return ["a", "l", "d", "j", "g", "h"];
       } else {
-        return ["q", "m", "d", "l", "g", "h"]
+        return ["q", "m", "d", "k", "g", "h"];
       }
-    } ,
+    },
     circleScale() {
       return {
         transform: `scale(${this.runningInterval.map(0, this.interval, 1, 2)})`
@@ -1039,34 +1107,16 @@ export default {
     }
   },
   created() {
-    HowlerManager.add(
-      [
-        {
-          id:"countdown_1",
-          src:countdown_1
-        },
-        {
-          id:"countdown_2",
-          src:countdown_2
-        },
-        {
-          id:"countdown_3",
-          src:countdown_3
-        }
-      ]
-    )
-    .then((sounds)=> {
-      sounds.countdown_1.play()
-    })
-
+    this.app = new App();
+    this.createSocketEvents();
   },
   mounted() {
     this.init();
     window.addEventListener("keydown", this.onKeyPress.bind(this));
     this.load()
-    .then(()=>{
+    .then(() => {
       this.windowAppear()
-      .then(()=>{
+      .then(() => {
         this.appearToTitle();
         if (this.socket) {
           this.socket.emit("custom-event", {
@@ -1077,11 +1127,10 @@ export default {
             }
           });
         }
-      })
-      console.log("mini game assets loaded")
-      this.isLoaded = true
-    })
-    
+      });
+      console.log("mini game assets loaded");
+      this.isLoaded = true;
+    });
   },
   destroyed() {
     window.removeEventListener("keydown", this.onKeyPress.bind(this));
@@ -1102,7 +1151,6 @@ $border: 3px;
   -webkit-clip-path: polygon(0 3%, 100% 0%, 100% 97%, 0% 100%);
   clip-path: polygon(0 3%, 100% 0%, 100% 97%, 0% 100%);
   opacity: 0;
-
 
   &::after {
     content: "";

@@ -116,6 +116,7 @@ export default {
       }, 1000);
     },
     setRomoReady() {
+      this.$emit('setromoready',true)
       this.romoIsReady = true;
       this.$refs.launchButton.style.opacity = "1";
       this.$refs.launchButton.style.pointerEvents = "auto";
