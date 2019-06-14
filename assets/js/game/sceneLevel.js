@@ -55,6 +55,7 @@ export default class Level {
             this.characters = characters
             this.momo = this.characters.momo
             this.romo = this.characters.romo
+            this.romo.position.z = 3
             this.romo.scale.set(2, 2, 2)
 
             this.addCharacter()
@@ -72,6 +73,8 @@ export default class Level {
         this.isMiniGameLaunched = false
 
         this.isAnimatedLaunched = false
+
+        this.startRestrictedZone = false
 
         this.camera = new THREE.PerspectiveCamera(
             40,
@@ -418,8 +421,9 @@ export default class Level {
             let promise = new Promise((resolve, reject) => {
                 setTimeout(() => {
                     this.fixedPropsGroup[i].position.x = this.camera.position.x
+                    // this.fixedPropsGroup[i].position.z = 10
                     resolve(this.fixedPropsGroup[i]);
-                }, i * 50)
+                }, i * 300)
             });
 
             promises.push(promise)
@@ -427,32 +431,21 @@ export default class Level {
             promise.then((fixed) => {
                 setTimeout(() => {
                     fixed.position.copy(fixed.originPosition)
-                }, 50);
+                }, 300);
             })
         }
-
+ 
         Promise.all(promises).then(() => {
-            console.log('finish render we can plaaaay')
             this.preRenderFinish = true
-                        callback()
+            callback()
 
-            // TweenMax.to(this.camera.position, 1, {
-            //     y: 1,
-            //     x: this.momo.position.x + 3,
-            //     ease: Power0.easeIn
-            // })
-
-            TweenMax.to(this.masks.position, 2, {
+            TweenMax.to(this.masks.position, 1.8, {
                 x: 0,
                 x: 0,
                 z: -8,
                 ease: Power4.easeOut,
                 onComplete: () => {
-                    // Romo add restrictedZone 
-                    if (this.romo && this.restrictedZone) {
-                        this.romo.position.x = Math.max(1 + (this.camera.position.x + this.restrictedZone.left), Math.min(this.camera.position.x + (this.restrictedZone.right - 1), this.romo.position.x))
-                        this.romo.position.y = Math.max(0, Math.min(this.restrictedZone.top, this.romo.position.y))
-                    }
+                    this.startRestrictedZone = true
                 }
             })
 
@@ -467,12 +460,13 @@ export default class Level {
             this.animatesArray.forEach(animate => {
                 const delta = this.clock.getDelta() * 5000;
                 this.time += delta;
+                // console.log(this.animatesArray)
                 animate.animate.update(delta)
                 if (this.romo.position.x >= animate.position.x - 1.5 && this.romo.position.x <= animate.position.x + 1.5) {
                     if (animate.animate.name = "cat") {
                         if (!this.animateRunning) {
-                            console.log('passage sur le animated')
-                            this.launchSprite(animate.animate, "cat")
+                            // console.log('passage sur le animated')
+                            // this.launchSprite(animate.animate, "jump")
                             this.animateWait = false
                             this.animateRunning = true;
                             let x = animate.position.x
@@ -484,7 +478,7 @@ export default class Level {
                     }
                 } else {
                     if (!this.animateWait) {
-                        this.launchSprite(animate.animate, "wait")
+                        // this.launchSprite(animate.animate, "wait")
 
                         this.animateWait = true
                         // this.animateRunning = false;
@@ -493,7 +487,13 @@ export default class Level {
             });
         }
 
-        // this.cannonDebugRenderer.update()
+        // Romo add restrictedZone 
+        if (this.romo && this.restrictedZone && this.startRestrictedZone) {
+            this.romo.position.x = Math.max(1+(this.camera.position.x + this.restrictedZone.left), Math.min((this.camera.position.x + this.restrictedZone.right) - 1, this.romo.position.x))
+            this.romo.position.y = Math.max(0, Math.min(this.restrictedZone.top + 1, this.romo.position.y))
+        }
+
+        this.cannonDebugRenderer.update()
 
         if (this.characters && this.preRenderFinish) {
             this.characters.update()

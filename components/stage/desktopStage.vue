@@ -77,10 +77,7 @@ export default {
   },
   methods: {
     increment() {
-      if (this.value === this.components.length - 1) {
-        // Move camera
-        console.log("move caméra");
-      } else {
+      if (this.value !== this.components.length - 1) {
         this.value++;
       }
     },
