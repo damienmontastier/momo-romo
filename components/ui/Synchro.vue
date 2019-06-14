@@ -83,7 +83,7 @@ export default {
       this.sounds = sounds;
       this.sounds.background_sync.loop(true);
       this.sounds.background_sync.play();
-              console.log(this.sounds.background_sync)
+      console.log(this.sounds.background_sync);
 
       this.sounds.background_sync.fade(0, 1.0, 5000);
     });

@@ -61,7 +61,6 @@ export default class Level {
             this.addCharacter()
         })
 
-
         this.loaderTexture()
 
         this.eventAnimate = new Event('launchAnimated');
