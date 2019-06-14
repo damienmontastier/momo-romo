@@ -82,6 +82,7 @@ const MomoSpriteJson = require("~/static/ui/kintsugi/mini-game/sprites/momo/powe
 import BrushSprite from "~/static/sprites/brush/brush.png";
 const BrushSpriteJson = require("~/static/sprites/brush/brush.json");
 
+import background_level from "~/static/sounds/background_level.mp3";
 import transition_windows from "~/static/sounds/transition_windows.mp3";
 import cta_ready from "~/static/sounds/cta_ready.mp3";
 import countdown_3 from "~/static/sounds/countdown_3.mp3";
@@ -737,6 +738,9 @@ export default {
       this.$refs.keys.style.opacity = "0";
       this.$refs.steps.style.opacity = "0";
       this.sounds.cta_activated.play()
+      this.sounds.background_level.volume(0.5)
+      this.sounds.background_level.loop(true)
+      this.sounds.background_level.play()
       let tl = new TimelineMax();
       tl.add("endGameAppear", 0)
         .to(
@@ -785,7 +789,7 @@ export default {
     windowDisappear() {
       console.log('windowDisappear')
       this.sounds.transition_windows.play();
-      this.sounds.transition_windows.fade(1,0,2000);
+      this.sounds.transition_windows.fade(1,0,3000);
       let box = this.$refs.window.getBoundingClientRect();
       let tl = new TimelineMax();
         tl.add("appear", 0)
@@ -1109,6 +1113,10 @@ export default {
           {
             id: "cta_ready",
             src: cta_ready
+          },
+          {
+            id: "background_level",
+            src: background_level
           },
           {
             id: "cta_activated",
