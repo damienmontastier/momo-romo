@@ -14,7 +14,6 @@ export default class Game {
             levelParams: this.currentLevelParams,
             textureAtlas: new TextureAtlas(this.currentAltlas)
         }, store)
-
     }
     reset() {
         this.sceneLevel.reset()

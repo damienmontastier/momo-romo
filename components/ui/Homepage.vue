@@ -4,8 +4,10 @@
       <div id="title-text">
         <p class="fill-en skew">The legend of</p>
         <Momo></Momo>
-        <!-- <And></And> -->
-        <Romo></Romo>
+        <div id="second-row">
+          <p class="skew book">&</p>
+          <Romo></Romo>
+        </div>
       </div>
       <div id="container">
         <div ref="backgroundLandscape" id="background-landscape">
@@ -202,6 +204,15 @@ export default {
       display: flex;
       z-index: 2;
       transform: translateX(-50%);
+      #second-row {
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-end;
+        p {
+          font-size: 40px;
+          align-self: center;
+        }
+      }
       p {
         align-self: flex-start;
       }
