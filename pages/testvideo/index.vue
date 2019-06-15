@@ -20,10 +20,10 @@
 </template>
 
 <script>
-import video1 from "@/static/videos/intro/intro_1.mp4";
-import video2 from "@/static/videos/intro/intro_2.mp4";
-import video3 from "@/static/videos/intro/intro_3.mp4";
-import intro_sound from "@/static/sounds/intro_sound.mp3";
+import video1 from "~/static/videos/intro/intro_1.mp4";
+import video2 from "~/static/videos/intro/intro_2.mp4";
+import video3 from "~/static/videos/intro/intro_3.mp4";
+import intro_sound from "~/static/sounds/intro_sound.mp3";
 
 import { TweenMax } from "gsap";
 import HowlerManager from "~/assets/js/utils/HowlerManager";
