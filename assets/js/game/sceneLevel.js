@@ -87,10 +87,6 @@ export default class Level {
 
         this.heightCamera = 1
 
-        // this.cameraDepth = 15
-
-        // this.maskDepth = -3
-
         this.camera.position.z = 12;
 
         this.preRenderFinish = false
@@ -245,7 +241,6 @@ export default class Level {
         let geometryTopBottom = new THREE.PlaneGeometry(this.width, this.height / 2, 32);
         let material = new THREE.MeshBasicMaterial({
             color: 0x2d2d2d,
-            // wireframe: true,
             side: THREE.DoubleSide
         });
 
@@ -287,7 +282,6 @@ export default class Level {
                     value: 0
                 }
             },
-            wireframe: true,
             vertexShader: `
                 varying vec3 v_position;
                 void main() {
@@ -393,7 +387,7 @@ export default class Level {
         })
 
         var border = new THREE.Mesh(singleGeometry, materialbis);
-        border.scale.multiplyScalar(1.01);
+        border.scale.multiplyScalar(1.015);
         this.masks.add(border);
 
         this.camera.position.x = -this.width
@@ -495,7 +489,7 @@ export default class Level {
             this.romo.position.y = Math.max(0, Math.min(this.restrictedZone.top + 1, this.romo.position.y))
         }
 
-        // this.cannonDebugRenderer.update()
+        this.cannonDebugRenderer.update()
 
         if (this.characters && this.preRenderFinish) {
             this.characters.update()
