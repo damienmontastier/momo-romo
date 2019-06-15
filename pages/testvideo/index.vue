@@ -2,20 +2,20 @@
   <div id="page">
     <div class="container" ref="container">
       <div class="video_container" ref="video-container1">
-        <video :src="video1" muted preload="none" ref="video1" controls></video>
+        <video :src="video1" muted preload="none" ref="video1"></video>
       </div>
       <div class="video_container" ref="video-container2">
-        <video :src="video2" muted preload="none" ref="video2" controls></video>
+        <video :src="video2" muted preload="none" ref="video2"></video>
       </div>
       <div class="video_container third" ref="video-container3">
         <div class="third_container">
-          <video :src="video3" muted preload="none" ref="video3" controls></video>
+          <video :src="video3" muted preload="none" ref="video3"></video>
         </div>
       </div>
     </div>
-	<div class="subtitles">
-		<div class="subtitles_container subtitle-semi">{{currentSubtitle}}</div>
-	</div>
+    <div class="subtitles">
+      <div class="subtitles_container subtitle-semi">{{currentSubtitle}}</div>
+    </div>
   </div>
 </template>
 
@@ -29,99 +29,100 @@ import { TweenMax } from "gsap";
 import HowlerManager from "~/assets/js/utils/HowlerManager";
 
 let subtitles = [
-	{
-		timecode:0,
-		text: ""
-	},
-	{
-		timecode:1012,
-		text: "The World was evolving in perfect Harmony"
-	},
-	{
-		timecode:4013,
-		text: "thanks to the peaceful existence between Nature and All Living Things."
-	},
-	{
-		timecode:10005,
-		text: "Then Humans"
-	},
-	{
-		timecode:12003,
-		text: "corrupted by over-consumption"
-	},
-	{
-		timecode:14014,
-		text: "started polluting the Environment"
-	},
-	{
-		timecode:16021,
-		text: "shattering this Harmony, little by little."
-	},
-	{
-		timecode:20000,
-		text: "",
-	},
-	{
-		timecode:22008,
-		text: "Humans then shed their obsolete objects"
-	},
-	{
-		timecode:25017,
-		text: "to get new ephemeral gadgets."
-	},
-	{
-		timecode:29014,
-		text: "Thus laid aside"
-	},
-	{
-		timecode:31010,
-		text: "those abandoned objects saw their spirit leave them,"
-	},
-	{
-		timecode:35017,
-		text: "and were reduced to simple rubbish."
-	},
-	{
-		timecode:38021,
-		text: ""
-	},
-	{
-		timecode:40002,
-		text: "Momo was a little House Being"
-	},
-	{
-		timecode:43006,
-		text: "whose task was to keep Harmony within his Humans home."
-	},
-	{
-		timecode:47011,
-		text: "As he couldn't maintain this Harmony by himself anymore,"
-	},
-	{
-		timecode:51070,
-		text: "he prayed and asked the World's Spirit for help."
-	},
-	{
-		timecode:55000,
-		text: ""
-	},
-	{
-		timecode:57007,
-		text: "The World's Spirit as willing to help Momo,"
-	},
-	{
-		timecode:61001,
-		text: "and She gave a part of Herself"
-	},
-	{
-		timecode:63009,
-		text: "Romo, to assist him in his quest."
-	},
-	{
-		timecode:67002,
-		text: ""
-	}
-]
+  {
+    timecode: 0,
+    text: ""
+  },
+  {
+    timecode: 1012,
+    text: "The World was evolving in perfect Harmony"
+  },
+  {
+    timecode: 4013,
+    text:
+      "thanks to the peaceful existence between Nature and All Living Things."
+  },
+  {
+    timecode: 10005,
+    text: "Then Humans"
+  },
+  {
+    timecode: 12003,
+    text: "corrupted by over-consumption"
+  },
+  {
+    timecode: 14014,
+    text: "started polluting the Environment"
+  },
+  {
+    timecode: 16021,
+    text: "shattering this Harmony, little by little."
+  },
+  {
+    timecode: 20000,
+    text: ""
+  },
+  {
+    timecode: 22008,
+    text: "Humans then shed their obsolete objects"
+  },
+  {
+    timecode: 25017,
+    text: "to get new ephemeral gadgets."
+  },
+  {
+    timecode: 29014,
+    text: "Thus laid aside"
+  },
+  {
+    timecode: 31010,
+    text: "those abandoned objects saw their spirit leave them,"
+  },
+  {
+    timecode: 35017,
+    text: "and were reduced to simple rubbish."
+  },
+  {
+    timecode: 38021,
+    text: ""
+  },
+  {
+    timecode: 40002,
+    text: "Momo was a little House Being"
+  },
+  {
+    timecode: 43006,
+    text: "whose task was to keep Harmony within his Humans home."
+  },
+  {
+    timecode: 47011,
+    text: "As he couldn't maintain this Harmony by himself anymore,"
+  },
+  {
+    timecode: 51070,
+    text: "he prayed and asked the World's Spirit for help."
+  },
+  {
+    timecode: 55000,
+    text: ""
+  },
+  {
+    timecode: 57007,
+    text: "The World's Spirit as willing to help Momo,"
+  },
+  {
+    timecode: 61001,
+    text: "and She gave a part of Herself"
+  },
+  {
+    timecode: 63009,
+    text: "Romo, to assist him in his quest."
+  },
+  {
+    timecode: 67002,
+    text: ""
+  }
+];
 
 export default {
   data() {
@@ -129,18 +130,18 @@ export default {
       video1: video1,
       video2: video2,
       video3: video3,
-	  extended: false,
-	  subtitles: subtitles,
-	  currentSubtitleIndex:0
+      extended: false,
+      subtitles: subtitles,
+      currentSubtitleIndex: 0
     };
   },
   computed: {
-	  currentSubtitle() {
-		  return this.subtitles[this.currentSubtitleIndex].text
-	  },
-	  nextSubtitleTimecode() {
-		  return this.subtitles[this.currentSubtitleIndex+1].timecode
-	  }
+    currentSubtitle() {
+      return this.subtitles[this.currentSubtitleIndex].text;
+    },
+    nextSubtitleTimecode() {
+      return this.subtitles[this.currentSubtitleIndex + 1].timecode;
+    }
   },
   mounted() {
     this.load().then(() => {
@@ -183,7 +184,9 @@ export default {
         });
       });
     },
-    onTimeUpdate(currentTime) {
+    onTimeUpdate() {
+		let seek = this.sounds.intro_sound.seek()
+		let currentTime = seek*1000
       if (currentTime > 1120 && !this.timecodes[0]) {
         this.timecodes[0] = true;
         this.$refs.video1.play();
@@ -198,11 +201,11 @@ export default {
       } else if (currentTime > 43140 && !this.timecodes[3]) {
         this.timecodes[3] = true;
         this.extends();
-	  }
-	  
-	  if(currentTime > this.nextSubtitleTimecode) {
-		  this.currentSubtitleIndex++
-	  }
+      }
+
+      if (currentTime > this.nextSubtitleTimecode) {
+        this.currentSubtitleIndex++;
+      }
 
       this.$refs.video1.addEventListener("play", () => {
         this.$refs.video1.status = "playing";
@@ -241,7 +244,6 @@ export default {
     },
     extends() {
       let box = this.$refs["video3"].getBoundingClientRect();
-      let video1 = this.$refs["video1"].getBoundingClientRect();
 
       //create shadow div
       let shadow = document.createElement("div");
@@ -252,17 +254,9 @@ export default {
       //positionning video3
       this.$refs["video-container3"].classList.add("extended");
 
-      let right = window.innerWidth - box.right;
-
-      this.$refs["video-container3"].style.width = box.width + "px";
-      this.$refs["video-container3"].style.right = right + "px";
-      this.$refs["video-container3"].style.top = box.top + "px";
-
-      let width = box.right - video1.left;
-
       let tl = new TimelineMax();
       tl.to(this.$refs["video-container3"], 2.5, {
-        width: width,
+        width: "100%",
         ease: Power4.easeOut
       }).to(
         this.$refs["video-container1"],
@@ -291,26 +285,36 @@ export default {
     // max-width: 1214px;
     // max-height: 686px;
     display: flex;
-    justify-content: space-evenly;
-    // position: relative;
+    justify-content: space-between;
+    position: relative;
     .video_container {
-      // max-width: 33.33333333%;
-      display: flex;
+      &:nth-child(2) {
+        margin: 0 16px;
+      }
+      max-width: 400px;
+      width: 400px;
+      //   max-height: 100%;
+      //   display: flex;
       opacity: 0;
+      //   width: 400px;
       video {
         margin: auto;
         max-width: unset;
         overflow: hidden;
         border: 3px solid #000;
-        // object-fit: cover;
+        height: 100%;
+
+        // object-fit: contain;
+        width: 100%;
+        background: #fefaf0;
       }
       &.third {
         z-index: 2;
         .third_container {
-          width: 400px;
           overflow: hidden;
           display: flex;
           margin: auto;
+          height: 100%;
         }
         video {
           object-fit: cover;
@@ -319,21 +323,28 @@ export default {
         &.extended {
           display: block;
           position: absolute;
+          max-width: unset;
+          height: 100%;
+          top: 0px;
+          right: 0px;
           .third_container {
             width: 100%;
+            video {
+              object-fit: contain;
+            }
           }
         }
       }
     }
   }
   .subtitles {
-	  position: absolute;
-	  bottom: 32px;
-	  width: 100%;
-	  display: flex;
-	  .subtitles_container{
-		  margin: auto;
-	  }
+    position: absolute;
+    bottom: calc(5vh - (45px / 2));
+    width: 100%;
+    display: flex;
+    .subtitles_container {
+      margin: auto;
+    }
   }
 }
 </style>
