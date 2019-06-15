@@ -195,7 +195,7 @@ export default {
         this.timecodes[1] = true;
         this.$refs.video2.play();
         this.$refs.video3.load();
-      } else if (currentTime > 40002 && !this.timecodes[2]) {
+      } else if (currentTime > 39502 && !this.timecodes[2]) {
         this.timecodes[2] = true;
         this.$refs.video3.play();
       } else if (currentTime > 43014 && !this.timecodes[3]) {
