@@ -49,9 +49,6 @@ export default class Level {
         };
         this.platforms = this.levelParams.platforms
 
-        this.animateRunning = false
-        this.animateWait = false
-
         this.clock = new THREE.Clock()
 
         new Characters(store).then((characters) => {
@@ -77,6 +74,8 @@ export default class Level {
         this.isAnimatedLaunched = false
 
         this.startRestrictedZone = false
+
+        this.animateRunning = false
 
         this.camera = new THREE.PerspectiveCamera(
             40,
@@ -423,7 +422,7 @@ export default class Level {
             let promise = new Promise((resolve, reject) => {
                 setTimeout(() => {
                     this.fixedPropsGroup[i].position.x = this.camera.position.x
-                    // this.fixedPropsGroup[i].position.z = 10
+                    this.fixedPropsGroup[i].position.z = 7
                     resolve(this.fixedPropsGroup[i]);
                 }, i * 50)
             });
@@ -456,29 +455,41 @@ export default class Level {
 
     render() {
         if (this.animatesArray.length) {
+            const delta = this.clock.getDelta() * 5000;
+            this.time += delta;
             this.animatesArray.forEach(animate => {
-                const delta = this.clock.getDelta() * 5000;
-                this.time += delta;
                 animate.animate.update(delta)
-                if (this.romo.position.x >= animate.position.x - 1.5 && this.romo.position.x <= animate.position.x + 1.5) {
-                    if (animate.animate.name = "cat") {
-                        if (!this.animateRunning) {
-                            console.log('passage sur le animated')
-                            this.launchSprite(animate.animate, "jump")
-                            this.animateWait = false
-                            this.animateRunning = true;
-                            let x = animate.position.x
-                            TweenMax.to(animate.position, 2, {
-                                x: x + 2,
-                            })
-                        }
-                    }
-                } else {
-                    if (!this.animateWait) {
-                        this.launchSprite(animate.animate, "wait")
+                if (this.momo.position.x >= animate.position.x - .5 && this.momo.position.x <= animate.position.x + .5) {
 
-                        this.animateWait = true
+                    if (!this.animateRunning) {
+                        if (animate.name == "cat") {
+                            console.log('jump cat')
+                            // this.launchSprite(animate.animate, "jump")
+                        } else if (animate.name == "petals") {
+                            console.log('petals move')
+                            // this.launchSprite(animate.animate, "petals")
+                        }
+                        this.animateRunning = true;
                     }
+
+                } else {
+                    if (this.animateRunning) {
+                        console.log(animate.name, "stop")
+                        this.animateRunning = false
+                    }
+                    // this.launchSprite(animate.animate, "wait")
+
+                    // this.animateRunning = false
+
+                    // if (this.animateRunning) {
+                    //     if (animate.name == "cat") {
+                    //         console.log('stop jump cat')
+                    //         // this.launchSprite(animate.animate, "wait")
+                    //     } else if (animate.name == "petals") {
+                    //         console.log('stop petals')
+                    //         // this.launchSprite(animate.animate, "petals")
+                    //     }
+                    // }
                 }
             });
         }
