@@ -191,14 +191,14 @@ export default {
         this.timecodes[0] = true;
         this.$refs.video1.play();
         this.$refs.video2.load();
-      } else if (currentTime > 21110 && !this.timecodes[1]) {
+      } else if (currentTime > 21011 && !this.timecodes[1]) {
         this.timecodes[1] = true;
         this.$refs.video2.play();
         this.$refs.video3.load();
-      } else if (currentTime > 40020 && !this.timecodes[2]) {
+      } else if (currentTime > 40002 && !this.timecodes[2]) {
         this.timecodes[2] = true;
         this.$refs.video3.play();
-      } else if (currentTime > 43140 && !this.timecodes[3]) {
+      } else if (currentTime > 43014 && !this.timecodes[3]) {
         this.timecodes[3] = true;
         this.extends();
       }
@@ -243,7 +243,7 @@ export default {
       this.sounds.intro_sound.play();
     },
     extends() {
-      let box = this.$refs["video3"].getBoundingClientRect();
+      let box = this.$refs["video-container3"].getBoundingClientRect();
 
       //create shadow div
       let shadow = document.createElement("div");
@@ -255,18 +255,19 @@ export default {
       this.$refs["video-container3"].classList.add("extended");
 
       let tl = new TimelineMax();
-      tl.to(this.$refs["video-container3"], 2.5, {
+      tl.to(this.$refs["video-container3"], 3, {
         width: "100%",
-        ease: Power4.easeOut
-      }).to(
-        this.$refs["video-container1"],
-        2.5,
-        {
-          opacity: 0,
-          ease: Power4.easeOut
-        },
-        0
-      );
+        ease: Power4.easeInOut
+	  })
+	//   .to(
+    //     this.$refs["video-container1"],
+    //     2.5,
+    //     {
+    //       opacity: 0,
+    //       ease: Power4.easeOut
+    //     },
+    //     0
+    //   );
     }
   }
 };
@@ -294,14 +295,15 @@ export default {
       max-width: 400px;
       width: 400px;
       //   max-height: 100%;
-      //   display: flex;
+        // display: flex;
       opacity: 0;
-      //   width: 400px;
+	  //   width: 400px;
+	  border: 3px solid #000;
       video {
-        margin: auto;
+        // margin: auto;
         max-width: unset;
         overflow: hidden;
-        border: 3px solid #000;
+        
         height: 100%;
 
         // object-fit: contain;
@@ -314,10 +316,17 @@ export default {
           overflow: hidden;
           display: flex;
           margin: auto;
-          height: 100%;
+		  height: 100%;
+		  position: relative;
         }
         video {
-          object-fit: cover;
+		//   object-fit: cover;
+		  width: unset;
+		  position: absolute;
+		  left: 0px;
+		  top: 0px;
+		  max-width: 90vw;
+		  min-width: 100%;
         }
 
         &.extended {
@@ -330,7 +339,8 @@ export default {
           .third_container {
             width: 100%;
             video {
-              object-fit: contain;
+				// max-width: 100%;
+            //   object-fit: contain;
             }
           }
         }
