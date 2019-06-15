@@ -8,7 +8,6 @@ if (process.client) {
         update(target) {
             this.remove();
             this.target = target;
-            console.log(this.target)
             this.init();
         }
 

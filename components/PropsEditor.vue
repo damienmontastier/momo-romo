@@ -41,8 +41,8 @@ export default {
           id: "cat",
           png: pngCat,
           json: jsonCat,
-          w: 4,
-          h: 4
+          w: 8,
+          h: 5
         },
         {
           id: "petals",

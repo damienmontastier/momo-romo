@@ -65,16 +65,6 @@ export default {
     };
   },
   mounted() {
-    // this.background_sync = new Howl({
-    //   src: [background_sync],
-    //   loop: true
-    // });
-    // this.background_sync.play();
-
-    // this.sync_activated = new Howl({
-    //   src: [sync_activated]
-    // });
-
     this.socket.on("mobile-ready", value => {
       this.mobileReady = value;
     });
@@ -91,8 +81,11 @@ export default {
       }
     ]).then(sounds => {
       this.sounds = sounds;
-      this.sounds.background_sync.loop = true;
+      this.sounds.background_sync.loop(true);
       this.sounds.background_sync.play();
+      console.log(this.sounds.background_sync);
+
+      this.sounds.background_sync.fade(0, 1.0, 5000);
     });
   },
   methods: {
@@ -112,18 +105,16 @@ export default {
   watch: {
     isReady(value) {
       if (value) {
-        this.background_sync.stop();
-        this.sync_activated.play();
-        this.sync_activated.on("end", () => {
+        this.sounds.background_sync.stop();
+        this.sounds.sync_activated.play();
+        this.sounds.sync_activated.on("end", () => {
           this.$router.push("/kintsugi");
         });
       }
     }
   },
   beforeDestroy() {
-    this.soundArray.forEach(sound => {
-      sound.stop();
-    });
+    HowlerManager.stop(this.sounds);
   }
 };
 </script>
