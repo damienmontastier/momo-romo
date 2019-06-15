@@ -473,9 +473,9 @@ export default class Level {
                     }
 
                 } else {
-                    if (this.animateRunning) {
+                    if(this.animateRunning){
                         console.log(animate.name, "stop")
-                        this.animateRunning = false
+
                     }
                     // this.launchSprite(animate.animate, "wait")
 
@@ -521,7 +521,6 @@ export default class Level {
         this.physicParams.update()
 
         this.renderer.render(this.scene, this.camera);
-
     }
     launchSprite(character, id) {
         character
