@@ -42,7 +42,7 @@
                             with traumatic events in a positive way</strong>,<br>
                             learn from negative experience, take<br>
                             the best from them and convice ourselves<br>
-                            that exactly <strong>these experience<br>
+                            that exactly <strong>these experiences<br>
                             make each person unique, precious</strong>.
                         </p>
                     </div>
@@ -56,7 +56,12 @@
 <script>
 import Kintsugi from '@/components/svg/kintsugi'
 
+import voice_kintsugi_1 from "~/static/sounds/voice_kintsugi_1.mp3";
+import voice_kintsugi_2 from "~/static/sounds/voice_kintsugi_2.mp3";
+import voice_kintsugi_3 from "~/static/sounds/voice_kintsugi_3.mp3";
+
 import { TweenMax } from 'gsap'
+import HowlerManager from "~/assets/js/utils/HowlerManager";
 
 Number.prototype.map = function(in_min, in_max, out_min, out_max) {
 	return (this - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
@@ -70,10 +75,14 @@ export default {
         }
     },
     mounted() {
-        this.appear()
+        this.load()
         .then(()=>{
             this.init()
         })
+        this.appear()
+        // .then(()=>{
+        //     this.init()
+        // })
     },
     watch: {
         current(val, oldVal) {
@@ -96,14 +105,54 @@ export default {
         }
     },
     methods: {
+        load() {
+            return new Promise((resolve,reject)=>{
+                HowlerManager.add([
+                    {
+                        id: "voice_kintsugi_1",
+                        src: voice_kintsugi_1
+                    },
+                    {
+                        id: "voice_kintsugi_2",
+                        src: voice_kintsugi_2
+                    },
+                    {
+                        id: "voice_kintsugi_3",
+                        src: voice_kintsugi_3
+                    },
+                ]).then(sounds => {
+                    this.sounds = sounds;
+                    resolve();
+                });
+            });
+        },
         init() {
-            this.current = 0
-            this.interval = setInterval(() => {
-                this.current++
-                if(this.current === 2) {
-                    clearInterval(this.interval)
-                }
-            }, this.intervalAmount);
+            this.sounds.voice_kintsugi_1.play()
+            this.sounds.voice_kintsugi_1.on('play',()=>{
+                this.current = 0
+            })
+            this.sounds.voice_kintsugi_1.on('end',()=>{
+                this.sounds.voice_kintsugi_2.play()
+            })
+            this.sounds.voice_kintsugi_2.on('play',()=>{
+                this.current = 1
+            })
+            this.sounds.voice_kintsugi_2.on('end',()=>{
+                this.sounds.voice_kintsugi_3.play()
+            })
+            this.sounds.voice_kintsugi_3.on('play',()=>{
+                this.current = 2
+            })
+            this.sounds.voice_kintsugi_3.on('end',()=>{
+                console.log("end")
+            })
+            // this.current = 0
+            // this.interval = setInterval(() => {
+            //     this.current++
+            //     if(this.current === 2) {
+            //         clearInterval(this.interval)
+            //     }
+            // }, this.intervalAmount);
         },
         appear() {
             return new Promise((resolve,reject)=>{
