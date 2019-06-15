@@ -187,11 +187,7 @@ export default class Characters {
                         if (!this.movementState.walking) {
                             if (this.momo.scale.x == 1) {
                                 this.turnToWalk()
-                                // this.momo.scale.set(-1, 1, 1)
-                                TweenMax.to(this.momo.scale, 1, {
-                                    x: -1,
-                                    ease: Power4.easeOut
-                                })
+                                this.momo.scale.set(-1, 1, 1)
                             } else {
                                 this.launchSprite(this.momo, "walk")
                             }
@@ -209,11 +205,7 @@ export default class Characters {
                         if (!this.movementState.walking) {
                             if (this.momo.scale.x == -1) {
                                 this.turnToWalk()
-                                TweenMax.to(this.momo.scale, 1, {
-                                    x: 1,
-                                    ease: Power4.easeOut
-                                })
-                                // this.momo.scale.set(1, 1, 1)
+                                this.momo.scale.set(1, 1, 1)
                             } else {
                                 this.launchSprite(this.momo, "walk")
                             }
@@ -304,17 +296,17 @@ export default class Characters {
                     let y = this.romo.position.y
 
                     if (this.coordinate.x > 0 && this.romo.scale.x != -2) {
-                        // this.romo.scale.x = -2
-                        TweenMax.to(this.romo.scale, 1, {
-                            x: -2,
-                            ease: Power4.easeOut
-                        })
+                        this.romo.scale.x = -2
+                        // TweenMax.to(this.romo.scale, 1, {
+                        //     x: -2,
+                        //     ease: Power4.easeOut
+                        // })
                     } else if (this.coordinate.x < 0 && this.romo.scale.x != 2) {
-                        // this.romo.scale.x = 2
-                        TweenMax.to(this.romo.scale, 1, {
-                            x: 2,
-                            ease: Power4.easeOut
-                        })
+                        this.romo.scale.x = 2
+                        // TweenMax.to(this.romo.scale, 1, {
+                        //     x: 2,
+                        //     ease: Power4.easeOut
+                        // })
                     }
 
                     TweenMax.to(this.romo.position, .3, {

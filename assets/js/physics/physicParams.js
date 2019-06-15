@@ -4,7 +4,7 @@ export default class physicParams {
     constructor() {
         // this.addWorld()
         this.world = new CANNON.World();
-        this.world.gravity.set(0, -9.8, 0)
+        this.world.gravity.set(0, -15, 0)
 
         // Restitution: rebond contactMaterial between two material (coef)
         // angularVelocity : vitesse angulaire (position X, Y, Z) / angularDamping : Freinage angulaire (coef)
