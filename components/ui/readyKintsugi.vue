@@ -24,8 +24,19 @@ export default {
     return {};
   },
   computed: {},
-  mounted() {},
-  methods: {}
+  mounted() {
+    window.addEventListener("keypress", this.handleKeyPress.bind(this));
+  },
+  methods: {
+    handleKeyPress(event) {
+      if (event.key == "e") {
+        this.$emit("increment");
+      }
+    }
+  },
+  beforeDestroy() {
+    window.removeEventListener("keypress", this.handleKeyPress.bind(this));
+  }
 };
 </script>
 
@@ -34,16 +45,23 @@ export default {
 
 #ready-kintsugi {
   position: absolute;
-  background: yellow;
   height: 500px;
   width: 500px;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
 
-  svg {
-    width: 40%;
-    height: 40%;
+  #container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    svg {
+      width: 40%;
+      height: 40%;
+    }
   }
 }
 </style>

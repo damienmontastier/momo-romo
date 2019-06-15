@@ -1,7 +1,8 @@
 <template>
   <div id="desktopStage">
-    <component v-if="killElement"
-      ref="test"
+    <component
+      v-if="killElement"
+      ref="component"
       v-on:increment="increment"
       v-on:loadStart="loadStart"
       :is="components[value]"
@@ -35,7 +36,7 @@ export default {
       value: 0,
       minigame: true,
       runGame: false,
-      killElement : true
+      killElement: true
     };
   },
   computed: {
@@ -76,22 +77,18 @@ export default {
   },
   methods: {
     increment() {
-      if (this.value === this.components.length - 1) {
-        // Move camera
-        console.log("move caméra");
-      } else {
+      if (this.value !== this.components.length - 1) {
         this.value++;
       }
     },
     propsLoad() {
-      TweenMax.to(this.$refs.test.$el, 1, {
+      TweenMax.to(this.$refs.component.$el, 2, {
         x: "-110vw",
-        onComplete:()=>{
-          this.killElement = false
+        onComplete: () => {
+          this.killElement = false;
         },
-        ease:Power4.easeOut
+        ease: Power4.easeOut
       });
-      
     },
     loadStart() {
       if (this.loaded) {

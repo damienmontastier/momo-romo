@@ -68,7 +68,6 @@ export default {
   mounted() {
     this.connect({
       device: this.$device.isMobileOrTablet,
-      // roomID: this.$device.isMobileOrTablet ? this.$route.query.id : null
       roomID: null
     });
 
@@ -98,9 +97,6 @@ export default {
       QRCode.toString(this.url, (error, string) => {
         this.qrcode = string;
         this.changeQRCode(this.qrcode);
-        // this.$refs.qrcode.innerHTML = string;
-        // if (error) console.error(error);
-        // console.log("success!");
       });
     },
     handleMouseMove(event) {

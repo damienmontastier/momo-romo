@@ -1,4 +1,7 @@
-import {Howl, Howler} from 'howler';
+import {
+    Howl,
+    Howler
+} from 'howler';
 
 class HowlerManager {
     constructor() {
@@ -7,9 +10,9 @@ class HowlerManager {
 
     add(sounds) {
         let promises = []
-        sounds.forEach((sound)=>{
-            if(!Object.keys(this.sounds).includes(sound.id)) {
-                let promise = new Promise((resolve,reject)=> {
+        sounds.forEach((sound) => {
+            if (!Object.keys(this.sounds).includes(sound.id)) {
+                let promise = new Promise((resolve, reject) => {
                     let howl = new Howl({
                         src: [sound.src],
                         onload: () => {
@@ -23,14 +26,20 @@ class HowlerManager {
                 console.warn(sound.id + ' already exist, not added to Manager')
             }
         })
-        
-        return new Promise((resolve,reject)=> {
+
+        return new Promise((resolve, reject) => {
             Promise.all(promises)
-            .then(()=>{
-                resolve(this.sounds)
-            })
+                .then(() => {
+                    resolve(this.sounds)
+                })
         })
 
+    }
+
+    stop(sounds) {
+        Object.values(sounds).forEach(sound => {
+            sound.stop()
+        });
     }
 
     // play(id) {

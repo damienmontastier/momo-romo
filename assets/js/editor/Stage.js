@@ -240,7 +240,7 @@ export default class Stage extends THREE.Object3D {
     }
 
     addAnimate(params) {
-
+        console.log('params', params)
         new AnimatedProp(params).then((animate) => {
 
             let position = typeof params.position == "undefined" || undefined ? new THREE.Vector3(0, 0, 0) : params.position
