@@ -7,6 +7,8 @@ export default class AnimatedProp extends THREE.Object3D {
         return new Promise((resolve, reject) => {
             if (params.params) {
                 this.params = params.params
+            } else {
+                this.params = params
             }
 
             this._type = "animatedProp";
