@@ -62,7 +62,6 @@ export default {
   },
   watch: {
     loaded() {
-      console.log("LOADED");
       this.init();
     }
   },

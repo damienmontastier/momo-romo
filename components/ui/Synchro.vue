@@ -19,7 +19,7 @@
     <div id="bottom">
       <div id="desktop" class="center">
         <div id="momo-chara"></div>
-        <!-- <div id="keyboard-animation" v-if="!isReady"></div> -->
+        <div id="keyboard-animation" v-if="!isReady"></div>
       </div>
       <div id="mobile" class="center" v-if="qrcode">
         <div id="mobile-container" v-if="!isReady">
@@ -83,7 +83,6 @@ export default {
       this.sounds = sounds;
       this.sounds.background_sync.loop(true);
       this.sounds.background_sync.play();
-      console.log(this.sounds.background_sync);
 
       this.sounds.background_sync.fade(0, 1.0, 5000);
     });
@@ -177,15 +176,98 @@ export default {
     width: 100%;
     display: inline-flex;
     position: absolute;
-    bottom: 25px;
+    bottom: 35px;
 
     #desktop {
+      display: inline-flex;
+      flex-direction: row;
       #momo-chara {
         width: 269px;
         height: 269px;
         background-image: url("~static/ui/synchro/momo.png");
         animation: play 1.2s steps(12) infinite;
         animation-direction: reverse;
+      }
+      #keyboard-animation {
+        width: 160px;
+        height: 120px;
+        border-radius: 45px;
+        background: white;
+        border: 4px solid $a;
+        position: relative;
+        left: -5%;
+        background-image: url("~static/ui/synchro/tuto_keyboard.gif");
+        background-size: cover;
+        background-position: bottom;
+
+        &::after {
+          content: "";
+          width: 30px;
+          height: 30px;
+          background: white;
+          border-bottom: 4px solid $a;
+          border-left: 4px solid $a;
+          display: block;
+          top: 50%;
+          position: absolute;
+          left: -2px;
+          transform: translate(-50%, -50%) rotate(45deg);
+        }
+      }
+    }
+    #mobile {
+      &-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        a {
+          background: white;
+          border: 4px solid $a;
+          border-radius: 30px;
+          padding: 10px;
+          text-decoration: none;
+          position: relative;
+          &::after {
+            content: "";
+            width: 100%;
+            position: absolute;
+            bottom: -10px;
+            border-radius: 30px;
+            z-index: -1;
+            left: 0;
+            height: 100%;
+            background: $a;
+          }
+        }
+        #qrcode {
+          width: 150px;
+          height: 150px;
+          background: white;
+          border: 4px solid $a;
+          border-radius: 30px;
+          padding: 10px;
+          margin-top: 15%;
+          position: relative;
+          &::after {
+            content: "";
+            width: 30px;
+            height: 30px;
+            background: white;
+            border-top: 4px solid $a;
+            border-left: 4px solid $a;
+            display: block;
+            top: -2px;
+            position: absolute;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(45deg);
+          }
+        }
+      }
+      #synchronize {
+        background-image: url("~static/ui/synchro/romo.png");
+        animation: playRomo 0.8s steps(3) infinite alternate;
+        height: 314px;
+        width: 307px;
       }
     }
   }
