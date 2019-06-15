@@ -130,13 +130,10 @@ export default class Stage extends THREE.Object3D {
                     y: animate.scale.y,
                     z: animate.scale.z,
                 },
-                params: {
-                    id: animate.animate.name,
-                    w: animate.animate.wTiles,
-                    h: animate.animate.hTiles,
-                    png: animate.animate.textureURL,
-                    json: animate.animate.json
-                }
+                json: animate.params.json,
+                png: animate.params.png,
+                w: animate.params.w,
+                h: animate.params.h,
             })
         });
 
@@ -240,7 +237,6 @@ export default class Stage extends THREE.Object3D {
     }
 
     addAnimate(params) {
-        console.log('params', params)
         new AnimatedProp(params).then((animate) => {
 
             let position = typeof params.position == "undefined" || undefined ? new THREE.Vector3(0, 0, 0) : params.position
@@ -250,7 +246,6 @@ export default class Stage extends THREE.Object3D {
             animate.scale.set(scale.x, scale.y, scale.z)
             animate.position.set(position.x, position.y, position.z)
             animate.rotation.set(rotation.x, rotation.y, rotation.z)
-
             this.animates.push(animate)
             this.animatesGroup.add(animate)
 

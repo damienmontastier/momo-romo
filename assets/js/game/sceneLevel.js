@@ -11,6 +11,9 @@ import {
     TweenMax,
     Power4
 } from 'gsap';
+import {
+    truncate
+} from 'fs';
 
 
 const visibleHeightAtZDepth = (depth, camera) => {
@@ -84,7 +87,11 @@ export default class Level {
 
         this.heightCamera = 1
 
-        this.camera.position.z = 15;
+        // this.cameraDepth = 15
+
+        // this.maskDepth = -3
+
+        this.camera.position.z = 12;
 
         this.preRenderFinish = false
 
@@ -183,7 +190,7 @@ export default class Level {
             animate.scale.set(params.scale.x, params.scale.y, params.scale.z)
             animate.position.set(params.position.x, params.position.y, params.position.z)
             animate.rotation.set(params.rotation.x, params.rotation.y, params.rotation.z)
-            animate.name = params.params.json.id
+            animate.name = params.json.id
             this.animatesArray.push(animate)
             this.scene.add(animate)
         })
@@ -280,6 +287,7 @@ export default class Level {
                     value: 0
                 }
             },
+            wireframe: true,
             vertexShader: `
                 varying vec3 v_position;
                 void main() {
@@ -387,11 +395,12 @@ export default class Level {
         var border = new THREE.Mesh(singleGeometry, materialbis);
         border.scale.multiplyScalar(1.01);
         this.masks.add(border);
-        this.masks.scale.set(.6, .6, .6)
 
-        this.camera.position.set(-this.width, this.heightCamera, 15)
+        this.camera.position.x = -this.width
+        this.camera.position.y = this.heightCamera
 
-        this.masks.position.set(this.width / 2, 0, -8)
+        this.masks.position.set(this.width / 2.5, 0, -5)
+        this.masks.scale.set(.5, .5, .5)
 
         this.scene.add(this.masks);
         this.camera.add(this.masks);
@@ -422,7 +431,7 @@ export default class Level {
                     this.fixedPropsGroup[i].position.x = this.camera.position.x
                     // this.fixedPropsGroup[i].position.z = 10
                     resolve(this.fixedPropsGroup[i]);
-                }, i * 300)
+                }, i * 50)
             });
 
             promises.push(promise)
@@ -430,18 +439,17 @@ export default class Level {
             promise.then((fixed) => {
                 setTimeout(() => {
                     fixed.position.copy(fixed.originPosition)
-                }, 300);
+                }, 50);
             })
         }
- 
+
         Promise.all(promises).then(() => {
             this.preRenderFinish = true
             callback()
 
-            TweenMax.to(this.masks.position, 1.8, {
+            TweenMax.to(this.masks.position, 2.5, {
                 x: 0,
                 x: 0,
-                z: -8,
                 ease: Power4.easeOut,
                 onComplete: () => {
                     this.startRestrictedZone = true
@@ -453,8 +461,6 @@ export default class Level {
     }
 
     render() {
-        // this.camera.lookAt(this.camera.position)
-
         if (this.animatesArray.length) {
             this.animatesArray.forEach(animate => {
                 const delta = this.clock.getDelta() * 5000;
@@ -463,14 +469,13 @@ export default class Level {
                 if (this.romo.position.x >= animate.position.x - 1.5 && this.romo.position.x <= animate.position.x + 1.5) {
                     if (animate.animate.name = "cat") {
                         if (!this.animateRunning) {
-                            // console.log('passage sur le animated')
+                            console.log('passage sur le animated')
                             this.launchSprite(animate.animate, "jump")
                             this.animateWait = false
                             this.animateRunning = true;
                             let x = animate.position.x
                             TweenMax.to(animate.position, 2, {
                                 x: x + 2,
-                                // ease: Power4.ease,
                             })
                         }
                     }
@@ -479,7 +484,6 @@ export default class Level {
                         this.launchSprite(animate.animate, "wait")
 
                         this.animateWait = true
-                        // this.animateRunning = false;
                     }
                 }
             });
@@ -487,15 +491,15 @@ export default class Level {
 
         // Romo add restrictedZone 
         if (this.romo && this.restrictedZone && this.startRestrictedZone) {
-            this.romo.position.x = Math.max(1+(this.camera.position.x + this.restrictedZone.left), Math.min((this.camera.position.x + this.restrictedZone.right) - 1, this.romo.position.x))
+            this.romo.position.x = Math.max(1 + (this.camera.position.x + this.restrictedZone.left), Math.min((this.camera.position.x + this.restrictedZone.right) - 1, this.romo.position.x))
             this.romo.position.y = Math.max(0, Math.min(this.restrictedZone.top + 1, this.romo.position.y))
         }
 
-        this.cannonDebugRenderer.update()
+        // this.cannonDebugRenderer.update()
 
         if (this.characters && this.preRenderFinish) {
             this.characters.update()
-            TweenMax.to(this.camera.position, 2.5, {
+            TweenMax.to(this.camera.position, 3, {
                 x: this.momo.position.x,
                 ease: Power4.easeOut,
             })

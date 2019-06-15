@@ -13,10 +13,10 @@
     <div id="sprites">
       <p
         :key="index"
-        v-for="(sprite, index) in sprites"
+        v-for="(sprite, index) in spriteParams"
         class="sprite"
-        @click="addAnimate(sprite)"
-      >{{sprite.id}} animated</p>
+        @click="addAnimate(spriteParams[index])"
+      >{{spriteParams[index].json.id}} animated</p>
     </div>
   </div>
 </template>
@@ -36,21 +36,9 @@ Number.prototype.map = function(in_min, in_max, out_min, out_max) {
 export default {
   data() {
     return {
-      sprites: [
-        {
-          id: "cat",
-          png: pngCat,
-          json: jsonCat,
-          w: 8,
-          h: 8
-        },
-        {
-          id: "petals",
-          png: pngPetals,
-          json: jsonPetals,
-          w: 16,
-          h: 4
-        }
+      spriteParams: [
+        { json: jsonCat, png: pngCat, w: 8, h: 8 },
+        { json: jsonPetals, png: pngPetals, w: 16, h: 4 }
       ]
     };
   },

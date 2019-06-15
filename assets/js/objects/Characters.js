@@ -185,13 +185,10 @@ export default class Characters {
                     if (this.moveLeft) {
                         this.forceValue.x = -3;
                         if (!this.movementState.walking) {
+                            console.log(this.momo.scale.x)
                             if (this.momo.scale.x == 1) {
                                 this.turnToWalk()
-                                // this.momo.scale.set(-1, 1, 1)
-                                TweenMax.to(this.momo.scale, 1, {
-                                    x: -1,
-                                    ease: Power4.easeOut
-                                })
+                                this.momo.scale.set(-1, 1, 1)
                             } else {
                                 this.launchSprite(this.momo, "walk")
                             }
@@ -209,11 +206,7 @@ export default class Characters {
                         if (!this.movementState.walking) {
                             if (this.momo.scale.x == -1) {
                                 this.turnToWalk()
-                                TweenMax.to(this.momo.scale, 1, {
-                                    x: 1,
-                                    ease: Power4.easeOut
-                                })
-                                // this.momo.scale.set(1, 1, 1)
+                                this.momo.scale.set(1, 1, 1)
                             } else {
                                 this.launchSprite(this.momo, "walk")
                             }
