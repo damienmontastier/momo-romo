@@ -7,8 +7,6 @@ export default class AnimatedProp extends THREE.Object3D {
         return new Promise((resolve, reject) => {
             if (params.params) {
                 this.params = params.params
-            } else {
-                this.params = params
             }
 
             this._type = "animatedProp";
@@ -22,7 +20,7 @@ export default class AnimatedProp extends THREE.Object3D {
 
     render() {
         return new Promise((resolve, reject) => {
-            new Sprite(this.params.png, this.params.json, {
+            new Sprite(this.params.png, this.params.json.sprites, {
                 wTiles: this.params.w,
                 hTiles: this.params.h
             }).then(animate => {

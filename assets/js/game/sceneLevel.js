@@ -459,25 +459,24 @@ export default class Level {
             this.animatesArray.forEach(animate => {
                 const delta = this.clock.getDelta() * 5000;
                 this.time += delta;
-                // console.log(this.animatesArray)
                 animate.animate.update(delta)
                 if (this.romo.position.x >= animate.position.x - 1.5 && this.romo.position.x <= animate.position.x + 1.5) {
                     if (animate.animate.name = "cat") {
                         if (!this.animateRunning) {
                             // console.log('passage sur le animated')
-                            // this.launchSprite(animate.animate, "jump")
+                            this.launchSprite(animate.animate, "jump")
                             this.animateWait = false
                             this.animateRunning = true;
                             let x = animate.position.x
                             TweenMax.to(animate.position, 2, {
                                 x: x + 2,
-                                ease: Power4.easeIn,
+                                // ease: Power4.ease,
                             })
                         }
                     }
                 } else {
                     if (!this.animateWait) {
-                        // this.launchSprite(animate.animate, "wait")
+                        this.launchSprite(animate.animate, "wait")
 
                         this.animateWait = true
                         // this.animateRunning = false;

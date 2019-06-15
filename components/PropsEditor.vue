@@ -42,7 +42,7 @@ export default {
           png: pngCat,
           json: jsonCat,
           w: 8,
-          h: 5
+          h: 8
         },
         {
           id: "petals",
