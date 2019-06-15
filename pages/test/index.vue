@@ -1,38 +1,22 @@
  <template>
   <div ref="page">
-    <div id="debugger-sprite">
-      <div>sprites : {{ currentSpriteID }}</div>
-      <div></div>
-      <ul>
-        <li
-          v-for="sprite in sprites"
-          @click="launchSprite(sprite.id)"
-          :class="{'current' : currentSpriteID === sprite.id}"
-        >{{sprite.id}}</li>
-        <li @click="turnToWalk()">turn + walk</li>
-        <li @click="jumpToWalk()">jump + walk</li>
-      </ul>
-    </div>
     <canvas ref="canvas"></canvas>
+    <video ref="video" muted playinsline></video>
   </div>
 </template>
 
 <script>
 import * as THREE from "three";
 import OrbitControls from "orbit-controls-es6";
-import Sprite from "@/assets/js/objects/Sprite";
-import MomoSprite from "~/static/sprites/momo/momo.png";
-const MomoJson = require("~/static/sprites/momo/momo.json");
+
+import kintsugi_video from '~/static/videos/about/kintsugi.mp4'
 export default {
   computed: {
-    sprites() {
-      return MomoJson.sprites;
-    }
   },
   data() {
     return {
-      currentSpriteID: "default"
-    };
+
+    }
   },
   mounted() {
     this.init();
@@ -49,7 +33,7 @@ export default {
 
       // scene
       this.scene = new THREE.Scene();
-      // this.scene.background = new THREE.Color(0xff0000)
+      this.scene.background = new THREE.Color(0xffffff)
 
       // camera
       this.camera = new THREE.PerspectiveCamera(
@@ -68,47 +52,75 @@ export default {
       // axes
       this.scene.add(new THREE.AxesHelper(20));
 
-      // this.momo = new Sprite({texture:MomoSprite, sprites: MomoJson.sprites,w:8,h:8})
-      this.momo = new Sprite(null, MomoSprite, MomoJson.sprites, {
-        wTiles: 8,
-        hTiles: 8
-      });
-      this.scene.add(this.momo);
-
       this.time = 0;
       this.clock = new THREE.Clock();
+
+      this.createVideo()
+      .then(()=>{
+        this.addVideo()
+      })
 
       //animation loop
       this.renderer.setAnimationLoop(this.render.bind(this));
     },
+    createVideo() {
+      this.$refs.video.src = kintsugi_video
+
+      return new Promise((resolve,reject)=>{
+        this.$refs.video.addEventListener('loadeddata',()=>{
+          resolve()
+        })
+      })
+
+    },
+    addVideo() {
+      this.$refs.video.play();
+
+      this.videoTexture = new THREE.VideoTexture(this.$refs.video);
+      this.videoTexture.minFilter = THREE.LinearFilter;
+      this.videoTexture.magFilter = THREE.LinearFilter;
+      this.videoTexture.format = THREE.RGBFormat;
+
+      this.uniforms = {
+        video_texture: { value: this.videoTexture }
+      };
+      this.geometry = new THREE.PlaneBufferGeometry(1, 1, 1, 1);
+      this.material = new THREE.ShaderMaterial({
+        uniforms: this.uniforms,
+        transparent:true,
+        vertexShader: `
+          varying vec2 vUv;
+
+          void main() {
+            vUv = uv;
+            gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+          }
+        `,
+        fragmentShader: `
+          uniform sampler2D video_texture;
+          varying vec2 vUv;
+            
+          void main() {
+            vec4 texture = texture2D(video_texture,vUv);
+            if(texture.g > 0.55) {
+              texture.a = 0.0;
+            }
+            gl_FragColor = vec4(texture);
+          }
+        `
+      });
+
+      // this.material = new THREE.MeshBasicMaterial({
+      //   map: this.videoTexture
+      // })
+
+      this.video = new THREE.Mesh(this.geometry, this.material);
+      this.scene.add(this.video);
+    },
     render() {
       const delta = this.clock.getDelta() * 5000;
       this.time += delta;
-      this.momo.update(delta);
       this.renderer.render(this.scene, this.camera);
-    },
-    launchSprite(id) {
-      this.momo
-        .newSprites()
-        .addState(id)
-        .start();
-      this.currentSpriteID = id;
-    },
-    turnToWalk() {
-      this.momo
-        .newSprites()
-        .addState("turn")
-        .addState("jump to walk")
-        .addState("walk")
-        .start();
-    },
-    jumpToWalk() {
-      this.momo
-        .newSprites()
-        .addState("jump")
-        .addState("jump to walk")
-        .addState("walk")
-        .start();
     }
   }
 };
@@ -129,5 +141,9 @@ export default {
       }
     }
   }
+}
+
+video {
+  display: none;
 }
 </style>

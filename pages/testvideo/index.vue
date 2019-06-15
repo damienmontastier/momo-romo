@@ -1,176 +1,339 @@
 <template>
-    <div id="page">
-        <div class="container" ref="container">
-            <div class="video_container" ref="video-container1">
-                <video :src="video1" muted preload="none" ref="video1" controls></video>
-            </div>
-            <div class="video_container" ref="video-container2">
-                <video :src="video2" muted preload="none" ref="video2" controls></video>
-            </div>
-            <div class="video_container third" ref="video-container3">
-                <div class="third_container">
-                    <video :src="video3" muted preload="none" ref="video3" controls></video>
-                </div>
-            </div>
+  <div id="page">
+    <div class="container" ref="container">
+      <div class="video_container" ref="video-container1">
+        <video :src="video1" muted preload="none" ref="video1" controls></video>
+      </div>
+      <div class="video_container" ref="video-container2">
+        <video :src="video2" muted preload="none" ref="video2" controls></video>
+      </div>
+      <div class="video_container third" ref="video-container3">
+        <div class="third_container">
+          <video :src="video3" muted preload="none" ref="video3" controls></video>
         </div>
+      </div>
     </div>
+	<div class="subtitles">
+		<div class="subtitles_container subtitle-semi">{{currentSubtitle}}</div>
+	</div>
+  </div>
 </template>
 
 <script>
-import video1 from '@/static/videos/intro/intro_1.mp4'
-import video2 from '@/static/videos/intro/intro_2.mp4'
-import video3 from '@/static/videos/intro/intro_3.mp4'
+import video1 from "@/static/videos/intro/intro_1.mp4";
+import video2 from "@/static/videos/intro/intro_2.mp4";
+import video3 from "@/static/videos/intro/intro_3.mp4";
+import intro_sound from "@/static/sounds/intro_sound.mp3";
 
-import {TweenMax} from 'gsap'
+import { TweenMax } from "gsap";
+import HowlerManager from "~/assets/js/utils/HowlerManager";
+
+let subtitles = [
+	{
+		timecode:0,
+		text: ""
+	},
+	{
+		timecode:1012,
+		text: "The World was evolving in perfect Harmony"
+	},
+	{
+		timecode:4013,
+		text: "thanks to the peaceful existence between Nature and All Living Things."
+	},
+	{
+		timecode:10005,
+		text: "Then Humans"
+	},
+	{
+		timecode:12003,
+		text: "corrupted by over-consumption"
+	},
+	{
+		timecode:14014,
+		text: "started polluting the Environment"
+	},
+	{
+		timecode:16021,
+		text: "shattering this Harmony, little by little."
+	},
+	{
+		timecode:20000,
+		text: "",
+	},
+	{
+		timecode:22008,
+		text: "Humans then shed their obsolete objects"
+	},
+	{
+		timecode:25017,
+		text: "to get new ephemeral gadgets."
+	},
+	{
+		timecode:29014,
+		text: "Thus laid aside"
+	},
+	{
+		timecode:31010,
+		text: "those abandoned objects saw their spirit leave them,"
+	},
+	{
+		timecode:35017,
+		text: "and were reduced to simple rubbish."
+	},
+	{
+		timecode:38021,
+		text: ""
+	},
+	{
+		timecode:40002,
+		text: "Momo was a little House Being"
+	},
+	{
+		timecode:43006,
+		text: "whose task was to keep Harmony within his Humans home."
+	},
+	{
+		timecode:47011,
+		text: "As he couldn't maintain this Harmony by himself anymore,"
+	},
+	{
+		timecode:51070,
+		text: "he prayed and asked the World's Spirit for help."
+	},
+	{
+		timecode:55000,
+		text: ""
+	},
+	{
+		timecode:57007,
+		text: "The World's Spirit as willing to help Momo,"
+	},
+	{
+		timecode:61001,
+		text: "and She gave a part of Herself"
+	},
+	{
+		timecode:63009,
+		text: "Romo, to assist him in his quest."
+	},
+	{
+		timecode:67002,
+		text: ""
+	}
+]
+
 export default {
-    data() {
-        return {
-            video1: video1,
-            video2: video2,
-            video3: video3,
-            extended: false
-        }
+  data() {
+    return {
+      video1: video1,
+      video2: video2,
+      video3: video3,
+	  extended: false,
+	  subtitles: subtitles,
+	  currentSubtitleIndex:0
+    };
+  },
+  computed: {
+	  currentSubtitle() {
+		  return this.subtitles[this.currentSubtitleIndex].text
+	  },
+	  nextSubtitleTimecode() {
+		  return this.subtitles[this.currentSubtitleIndex+1].timecode
+	  }
+  },
+  mounted() {
+    this.load().then(() => {
+      console.log("can start");
+      this.timecodeEvents();
+      this.start();
+    });
+  },
+  methods: {
+    load() {
+      let promises = [];
+
+      this.$refs.video1.load();
+      let videoLoading = new Promise((resolve, reject) => {
+        this.$refs.video1.addEventListener(
+          "loadeddata",
+          () => {
+            resolve();
+          },
+          false
+        );
+      });
+      promises.push(videoLoading);
+      let soundsLoading = new Promise((resolve, reject) => {
+        HowlerManager.add([
+          {
+            id: "intro_sound",
+            src: intro_sound
+          }
+        ]).then(sounds => {
+          this.sounds = sounds;
+          resolve();
+        });
+      });
+      promises.push(soundsLoading);
+
+      return new Promise((resolve, reject) => {
+        Promise.all(promises).then(() => {
+          resolve();
+        });
+      });
     },
-    mounted() {
-        this.start()
+    onTimeUpdate(currentTime) {
+      if (currentTime > 1120 && !this.timecodes[0]) {
+        this.timecodes[0] = true;
+        this.$refs.video1.play();
+        this.$refs.video2.load();
+      } else if (currentTime > 21110 && !this.timecodes[1]) {
+        this.timecodes[1] = true;
+        this.$refs.video2.play();
+        this.$refs.video3.load();
+      } else if (currentTime > 40020 && !this.timecodes[2]) {
+        this.timecodes[2] = true;
+        this.$refs.video3.play();
+      } else if (currentTime > 43140 && !this.timecodes[3]) {
+        this.timecodes[3] = true;
+        this.extends();
+	  }
+	  
+	  if(currentTime > this.nextSubtitleTimecode) {
+		  this.currentSubtitleIndex++
+	  }
+
+      this.$refs.video1.addEventListener("play", () => {
+        this.$refs.video1.status = "playing";
+        TweenMax.to(this.$refs["video-container1"], 0.5, {
+          ease: Power4.easeOut,
+          opacity: 1
+        });
+      });
+
+      this.$refs.video2.addEventListener("play", () => {
+        this.$refs.video2.status = "playing";
+        TweenMax.to(this.$refs["video-container2"], 0.5, {
+          ease: Power4.easeOut,
+          opacity: 1
+        });
+      });
+
+      this.$refs.video3.addEventListener("play", () => {
+        this.$refs.video3.status = "playing";
+        TweenMax.to(this.$refs["video-container3"], 0.5, {
+          ease: Power4.easeOut,
+          opacity: 1
+        });
+      });
+
+      requestAnimationFrame(this.onTimeUpdate.bind(this));
     },
-    methods: {
-        start() {
-            this.$refs.video1.load()
-            this.$refs.video1.addEventListener('loadeddata',()=>{
-                this.$refs.video1.play()
-                this.$refs.video2.load()
-            },false)
+    timecodeEvents() {
+      this.timecodes = [false, false, false, false];
+      this.sounds.intro_sound.once("play", () => {
+        requestAnimationFrame(this.onTimeUpdate.bind(this));
+      });
+    },
+    start() {
+      this.sounds.intro_sound.play();
+    },
+    extends() {
+      let box = this.$refs["video3"].getBoundingClientRect();
+      let video1 = this.$refs["video1"].getBoundingClientRect();
 
-            this.$refs.video1.addEventListener('timeupdate',()=>{
-                if(this.$refs.video1.currentTime > 14 && this.$refs.video2.status !== 'playing') {
-                    console.log('2 play')
-                    this.$refs.video2.play()
-                    this.$refs.video3.load()
-                }
+      //create shadow div
+      let shadow = document.createElement("div");
+      shadow.style.width = box.width + "px";
+      shadow.style.height = box.height + "px";
+      this.$refs.container.appendChild(shadow);
 
-            },false)
+      //positionning video3
+      this.$refs["video-container3"].classList.add("extended");
 
-            this.$refs.video2.addEventListener('timeupdate',()=>{
-                if(this.$refs.video2.currentTime > 11 && this.$refs.video3.status !== 'playing') {
-                    console.log('3 play')
-                    this.$refs.video3.play()
-                }
-            },false)
+      let right = window.innerWidth - box.right;
 
-            this.$refs.video3.addEventListener('timeupdate',()=>{
-                if(this.$refs.video3.currentTime > 5 && !this.extended) {
-                    this.extended = true
-                    console.log('start extends')
-                    this.extends()
-                }
-            },false)
+      this.$refs["video-container3"].style.width = box.width + "px";
+      this.$refs["video-container3"].style.right = right + "px";
+      this.$refs["video-container3"].style.top = box.top + "px";
 
-            this.$refs.video1.addEventListener('play',()=>{
-                this.$refs.video1.status = 'playing'
-                TweenMax.to(this.$refs['video-container1'],0.5, {
-                    ease:Power4.easeOut,
-                    opacity: 1
-                })
-            })
+      let width = box.right - video1.left;
 
-            this.$refs.video2.addEventListener('play',()=>{
-                this.$refs.video2.status = 'playing'
-                TweenMax.to(this.$refs['video-container2'],0.5, {
-                    ease:Power4.easeOut,
-                    opacity: 1
-                })
-            })
-
-            this.$refs.video3.addEventListener('play',()=>{
-                this.$refs.video3.status = 'playing'
-                TweenMax.to(this.$refs['video-container3'],0.5, {
-                    ease:Power4.easeOut,
-                    opacity: 1
-                })
-            })
+      let tl = new TimelineMax();
+      tl.to(this.$refs["video-container3"], 2.5, {
+        width: width,
+        ease: Power4.easeOut
+      }).to(
+        this.$refs["video-container1"],
+        2.5,
+        {
+          opacity: 0,
+          ease: Power4.easeOut
         },
-        extends() {
-            let box = this.$refs['video3'].getBoundingClientRect();
-            let video1 = this.$refs['video1'].getBoundingClientRect()
-
-            //create shadow div
-            let shadow = document.createElement("div");
-            shadow.style.width = box.width + 'px';
-            shadow.style.height = box.height + 'px';
-            this.$refs.container.appendChild(shadow);
-
-            //positionning video3
-            this.$refs['video-container3'].classList.add('extended')
-
-            let right = window.innerWidth - box.right
-
-            this.$refs['video-container3'].style.width = box.width + 'px'
-            this.$refs['video-container3'].style.right = right + 'px';
-            this.$refs['video-container3'].style.top = box.top + 'px';
-
-            let width = box.right - video1.left
-            
-            let tl = new TimelineMax()
-            tl.to(this.$refs['video-container3'],2.5, {
-                width: width,
-                ease: Power4.easeOut
-            })
-            .to(this.$refs['video-container1'],2.5, {
-                opacity: 0,
-                ease: Power4.easeOut
-            },0)
-        }
-    },
-}
+        0
+      );
+    }
+  }
+};
 </script>
 
 <style lang="scss" scoped>
-    #page {
-        width: 100%;
-        height: 100%;
-        display: flex;
-        .container {
-            margin: auto;
-            width: 90vw;
-            height: 80vh;
-            // max-width: 1214px;
-            // max-height: 686px;
-            display: flex;
-            justify-content: space-evenly;
-            // position: relative;
-            .video_container {
-                // max-width: 33.33333333%;
-                display: flex;
-                opacity: 0;
-                video {
-                    margin:auto;
-                    max-width: unset;
-                    overflow: hidden;
-                    border: 3px solid #000;
-                    // object-fit: cover;
-                }
-                &.third {
-                    z-index: 2;
-                    .third_container {
-                        width: 400px;
-                        overflow: hidden;
-                        display: flex;
-                        margin: auto;
-                    }
-                    video {
-                        object-fit: cover;
-                    }
-                    
-                    &.extended {
-                        display: block;
-                        position: absolute;
-                        .third_container {
-                            width: 100%;
-                        }
-                    }
-                }
-            }
+@import "~assets/scss/main.scss";
+#page {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  .container {
+    margin: auto;
+    width: 90vw;
+    height: 80vh;
+    // max-width: 1214px;
+    // max-height: 686px;
+    display: flex;
+    justify-content: space-evenly;
+    // position: relative;
+    .video_container {
+      // max-width: 33.33333333%;
+      display: flex;
+      opacity: 0;
+      video {
+        margin: auto;
+        max-width: unset;
+        overflow: hidden;
+        border: 3px solid #000;
+        // object-fit: cover;
+      }
+      &.third {
+        z-index: 2;
+        .third_container {
+          width: 400px;
+          overflow: hidden;
+          display: flex;
+          margin: auto;
         }
+        video {
+          object-fit: cover;
+        }
+
+        &.extended {
+          display: block;
+          position: absolute;
+          .third_container {
+            width: 100%;
+          }
+        }
+      }
     }
+  }
+  .subtitles {
+	  position: absolute;
+	  bottom: 32px;
+	  width: 100%;
+	  display: flex;
+	  .subtitles_container{
+		  margin: auto;
+	  }
+  }
+}
 </style>
