@@ -11,9 +11,6 @@ import {
     TweenMax,
     Power4
 } from 'gsap';
-import {
-    truncate
-} from 'fs';
 
 const visibleHeightAtZDepth = (depth, camera) => {
     const cameraOffset = camera.position.z;
@@ -459,19 +456,26 @@ export default class Level {
             this.time += delta;
             this.animatesArray.forEach(animate => {
                 animate.animate.update(delta)
-                if ((this.momo.position.x >= animate.position.x - .5 && this.momo.position.x <= animate.position.x + .5) && !animate.isAnimating) {
-                    if (animate.name == "cat") {
-                            console.log('jump cat')
-                            // console.log('if')
-                            // this.launchSprite(animate.animate, "jump")
-                    } else if (animate.name == "petals") {
-                            console.log('petals move')
-                            // this.launchSprite(animate.animate, "petals")
+                if (this.momo.position.x >= animate.position.x - .5 && this.momo.position.x <= animate.position.x + .5) {
+
+                    if((animate.out && !animate.in) || (!animate.in && !animate.out)) {
+                        animate.in = true
+                        console.log(animate.name, 'in')
+                        if (animate.name == "cat") {
+                                // this.launchSprite(animate.animate, "jump")
+                        } else if (animate.name == "petals") {
+                                // this.launchSprite(animate.animate, "petals")
+                        }
                     }
-                    console.log('ok')
-                        animate.isAnimating= true;
-                } else if((this.momo.position.x <= animate.position.x - .5 && this.momo.position.x >= animate.position.x + .5) && !animate.isAnimating) {
-                    animate.isAnimating= false;
+                        
+                } else if(animate.in) {
+                    
+                    if(animate.in || (!animate.in && !animate.out)) {
+                        animate.out = true
+                        console.log(animate.name, 'out')
+                    }
+                    animate.in = false
+                    
                 }
             });
         }

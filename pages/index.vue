@@ -1,6 +1,10 @@
 <template>
-  <div v-if="components[value] != null" id="home">
+  <!-- <div v-if="components[value] != null" id="home">
     <component v-on:increment="increment" v-bind:is="components[value]"></component>
+  </div> -->
+  <div id="home">
+    <component v-on:increment="increment" v-bind:is="components[value]" v-if="value !== 3"></component>
+    <motion ref="motion" v-show="value === 3"/>
   </div>
 </template>
 
@@ -15,7 +19,7 @@ import Synchro from "@/components/ui/Synchro";
 export default {
   data() {
     return {
-      components: ["Homepage", "chooseQuality", "chooseKeyboard", "Motion", "Synchro"],
+      components: ["Homepage", "chooseQuality", "chooseKeyboard","", "Synchro"],
       value: 0
     };
   },
@@ -26,7 +30,14 @@ export default {
     Homepage,
     Synchro
   },
-  watch: {},
+  watch: {
+    value() {
+      console.log(this.value)
+      if(this.value === 2) {
+
+      }
+    }
+  },
   computed: {
     ...mapState({
       stages: state => state.stages,
@@ -34,10 +45,6 @@ export default {
       quality: state => state.quality,
       keyboard: state => state.keyboard
     })
-  },
-  watch: {
-    quality() {},
-    keyboard() {}
   },
   created() {},
   mounted() {},
