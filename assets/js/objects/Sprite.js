@@ -153,7 +153,6 @@ export default class Sprite extends THREE.Object3D {
     }
 
     update(delta) {
-
         this.currentTime += delta;
         if (this.currentTime >= this.durationPerTile) {
             this.setOffset()

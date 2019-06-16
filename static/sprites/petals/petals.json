@@ -4,6 +4,12 @@
         "durationTile": "700",
         "start": 0,
         "end": 72
-    }],
+    }, {
+        "id": "wait",
+        "durationTile": "700",
+        "start": 80,
+        "end": 81  
+    }
+    ],
     "id": "petals"
 }
