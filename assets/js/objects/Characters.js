@@ -44,10 +44,12 @@ export default class Characters {
 
         this.canJump = false
 
+        this.isTurnaround = false;
+
         this.bothWays = false
 
-        this.moveLeftBlock = false
-        this.moveRightBlock = false
+        this.stopWalkingRight = false
+        this.stopWalkingLeft = false
 
         this.sprites = MomoJson.sprites
 
@@ -59,7 +61,7 @@ export default class Characters {
             wait: false
         }
 
-        this.KeyboardManager = new KeyboardManager(this.onInput.bind(this));
+        this.KeyboardManager = new KeyboardManager(this.onInput.bind(this), store.state.keyboard);
 
         return new Promise((resolve, reject) => {
             this.addAnimate().then((sprites) => {
@@ -181,41 +183,60 @@ export default class Characters {
                     this.forceValue.x = 0
                 } else {
                     this.bothWays = false
-
                     if (this.moveLeft) {
                         this.forceValue.x = -3;
                         if (!this.movementState.walking) {
-                            if (this.momo.scale.x == 1) {
-                                this.turnToWalk()
-                                this.momo.scale.set(-1, 1, 1)
-                            } else {
-                                this.launchSprite(this.momo, "walk")
+                            if (!this.isTurnaround) {
+                                if (this.momo.scale.x == 1) {
+                                    this.launchSprite(this.momo, "walk")
+                                    this.movementState.walking = true
+                                    this.isTurnaround = true
+                                    this.turnToWalk()
+                                    TweenMax.to(this.momo.scale, .5, {
+                                        x: -1,
+                                        ease: Power4.easeOut,
+                                        onComplete: () => {
+                                            this.isTurnaround = false
+                                        }
+                                    })
+                                } else if (!this.stopWalkingLeft && this.momo.scale.x == -1) {
+                                    this.launchSprite(this.momo, "walk")
+
+                                    this.stopWalkingLeft = true
+                                }
                             }
-                            this.movementState.walking = true
                         }
                     } else {
-                        if (!this.moveLeftBlock) {
-                            this.moveLeftBlock = true
-                            this.forceValue.x = 0
-                        }
+                        this.stopWalkingLeft = false;
+                        this.movementState.walking = false
                     }
 
                     if (this.moveRight) {
                         this.forceValue.x = 3;
                         if (!this.movementState.walking) {
-                            if (this.momo.scale.x == -1) {
-                                this.turnToWalk()
-                                this.momo.scale.set(1, 1, 1)
-                            } else {
-                                this.launchSprite(this.momo, "walk")
+                            if (!this.isTurnaround) {
+                                if (this.momo.scale.x == -1) {
+                                    this.launchSprite(this.momo, "walk")
+                                    this.movementState.walking = true
+                                    this.isTurnaround = true
+                                    this.turnToWalk()
+                                    TweenMax.to(this.momo.scale, .5, {
+                                        x: 1,
+                                        ease: Power4.easeOut,
+                                        onComplete: () => {
+                                            this.isTurnaround = false
+                                        }
+                                    })
+                                } else if (!this.stopWalkingRight && this.momo.scale.x == 1) {
+                                    this.launchSprite(this.momo, "walk")
+
+                                    this.stopWalkingRight = true
+                                }
                             }
-                            this.movementState.walking = true
                         }
                     } else {
-                        if (!this.moveRightBlock) {
-                            this.moveRightBlock = true
-                            this.forceValue.x = 0
-                        }
+                        this.stopWalkingRight = false
+                        this.movementState.walking = false
                     }
                 }
             }

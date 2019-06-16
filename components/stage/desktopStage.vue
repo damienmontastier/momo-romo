@@ -90,6 +90,10 @@ export default {
         ease: Power4.easeOut
       });
     },
+    loadingBar(value) {
+      this.duration = value;
+      console.log(this.duration);
+    },
     loadStart() {
       if (this.loaded) {
         this.runGame = true;
