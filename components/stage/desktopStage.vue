@@ -88,7 +88,7 @@ export default {
         x: "-110vw",
         onComplete: () => {
           this.killElement = false;
-            if(this.socket){
+          if (this.socket) {
             this.socket.emit("custom-event", {
               name: "readyPlayMobile",
               in: this.roomID,

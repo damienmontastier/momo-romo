@@ -6,6 +6,12 @@ import physicParams from '../physics/physicParams';
 import Characters from '../objects/Characters';
 import cannonDebugRenderer from '../physics/CannonDebugRenderer'
 import AnimatedProp from "@/assets/js/objects/AnimatedProp";
+import HowlerManager from "~/assets/js/utils/HowlerManager";
+import background_level from "@/static/sounds/background_level.mp3";
+import breaking_bowl from "@/static/sounds/breaking_bowl.mp3";
+import cta_ready from "@/static/sounds/cta_ready.mp3";
+
+
 
 import {
     TweenMax,
@@ -31,6 +37,25 @@ export default class Level {
     constructor(opts, store) {
 
         this.time = 0;
+
+        console.log(background_level)
+
+        HowlerManager.add([{
+                id: "background_level",
+                src: background_level
+            },
+            {
+                id: "breaking_bowl",
+                src: breaking_bowl
+            },
+            {
+                id: "cta_ready",
+                src: cta_ready
+            }
+
+        ]).then(sounds => {
+            this.sounds = sounds;
+        });
 
         this.canvas = document.getElementById("canvas")
         this.textureAtlas = opts.textureAtlas; // textureAtlas
@@ -197,7 +222,7 @@ export default class Level {
             // animate.in = false
             this.animatesArray.push(animate)
             this.scene.add(animate)
-            this.launchSprite(animate.animate,'wait')
+            this.launchSprite(animate.animate, 'wait')
         })
     }
 
@@ -411,9 +436,11 @@ export default class Level {
 
 
     nextToMinigame(value) {
+
         if (value && !this.isMiniGameLaunched) {
             this.isMiniGameLaunched = true
             this.eventMinigame.minigame = value
+            // this.sounds.cta_ready.play();
         } else {
             this.isMiniGameLaunched = false
             this.eventMinigame.minigame = value
@@ -500,6 +527,9 @@ export default class Level {
             this.preRenderFinish = true
             callback()
             console.log(duration)
+            this.sounds.background_level.loop(true);
+            this.sounds.background_level.play();
+            this.sounds.background_level.fade(0, 1.0, 5000);
             TweenMax.to(this.masks.position, 2.5, {
                 x: 0,
                 x: 0,
@@ -507,6 +537,7 @@ export default class Level {
                 onComplete: () => {
                     this.startRestrictedZone = true
                     this.animationFinish = true
+                    this.sounds.breaking_bowl.play();
                 }
             })
         })
@@ -520,26 +551,36 @@ export default class Level {
 
         if (this.animatesArray.length && this.animationFinish) {
             this.animatesArray.forEach(animate => {
-                animate.animate.update(delta*5000)
+                animate.animate.update(delta * 5000)
                 if (this.momo.position.x >= animate.position.x - .5 && this.momo.position.x <= animate.position.x + .5 && !animate.animated) {
                     if ((animate.out && !animate.in) || (!animate.in && !animate.out)) {
                         animate.in = true
                         console.log(animate.name, 'in')
                         if (animate.name == "cat") {
                             // this.launchSprite(animate.animate, "jump")
+                            let postX = animate.position.x
+                            let postY = animate.position.y
+                            TweenMax.to(animate.position, 2.5, {
+                                x: postX + 1,
+                                ease: Circ.easeIn
+                            })
+                            TweenMax.to(animate.position, 4, {
+                                y: postY - 2,
+                                ease: Power4.easeIn
+                            })
                             animate.animate
-                            .newSprites()
-                            .addState('jump')
-                            .addState('wait')
-                            .start()
-                            
+                                .newSprites()
+                                .addState('jump')
+                                .addState('wait')
+                                .start()
+
                         } else if (animate.name == "petals") {
                             // this.launchSprite(animate.animate, "petals")
                             animate.animate
-                            .newSprites()
-                            .addState('petals')
-                            .addState('wait')
-                            .start()
+                                .newSprites()
+                                .addState('petals')
+                                .addState('wait')
+                                .start()
                         }
                         animate.animated = true
                     }

@@ -183,30 +183,18 @@ export default class Characters {
                     this.forceValue.x = 0
                 } else {
                     this.bothWays = false
-                    console.log(this.moveLeft, this.moveRight)
                     if (this.moveLeft) {
                         this.forceValue.x = -3;
                         if (!this.movementState.walking) {
-                            console.log('here')
+                            if (this.momo.scale.x == 1.5) {
+                                this.momo.scale.x = -1.5
+                                this.turnToWalk()
+                                this.stopWalkingLeft = true
 
-                            if (!this.isTurnaround) {
-                                if (this.momo.scale.x == 1.5) {
-                                    this.launchSprite(this.momo, "walk")
-                                    this.movementState.walking = true
-                                    this.isTurnaround = true
-                                    this.turnToWalk()
-                                    TweenMax.to(this.momo.scale, .5, {
-                                        x: -1.5,
-                                        ease: Power4.easeOut,
-                                        onComplete: () => {
-                                            this.isTurnaround = false
-                                        }
-                                    })
-                                } else if (!this.stopWalkingLeft && this.momo.scale.x == -1.5) {
-                                    this.launchSprite(this.momo, "walk")
+                            } else if (!this.stopWalkingLeft && this.momo.scale.x == -1.5) {
+                                this.launchSprite(this.momo, "walk")
 
-                                    this.stopWalkingLeft = true
-                                }
+                                this.stopWalkingLeft = true
                             }
                         }
                     } else {
@@ -217,24 +205,15 @@ export default class Characters {
                     if (this.moveRight) {
                         this.forceValue.x = 3;
                         if (!this.movementState.walking) {
-                            if (!this.isTurnaround) {
-                                if (this.momo.scale.x == -1.5) {
-                                    this.launchSprite(this.momo, "walk")
-                                    this.movementState.walking = true
-                                    this.isTurnaround = true
-                                    this.turnToWalk()
-                                    TweenMax.to(this.momo.scale, .5, {
-                                        x: 1.5,
-                                        ease: Power4.easeOut,
-                                        onComplete: () => {
-                                            this.isTurnaround = false
-                                        }
-                                    })
-                                } else if (!this.stopWalkingRight && this.momo.scale.x == 1.5) {
-                                    this.launchSprite(this.momo, "walk")
+                            if (this.momo.scale.x == -1.5) {
+                                this.turnToWalk()
+                                this.stopWalkingRight = true
 
-                                    this.stopWalkingRight = true
-                                }
+                                this.momo.scale.x = 1.5
+                            } else if (!this.stopWalkingRight && this.momo.scale.x == 1.5) {
+                                this.launchSprite(this.momo, "walk")
+
+                                this.stopWalkingRight = true
                             }
                         }
                     } else {
@@ -321,16 +300,9 @@ export default class Characters {
 
                     if (this.coordinate.x > 0 && this.romo.scale.x != -2) {
                         this.romo.scale.x = -2
-                        // TweenMax.to(this.romo.scale, 1, {
-                        //     x: -2,
-                        //     ease: Power4.easeOut
-                        // })
+
                     } else if (this.coordinate.x < 0 && this.romo.scale.x != 2) {
                         this.romo.scale.x = 2
-                        // TweenMax.to(this.romo.scale, 1, {
-                        //     x: 2,
-                        //     ease: Power4.easeOut
-                        // })
                     }
 
                     TweenMax.to(this.romo.position, .3, {
