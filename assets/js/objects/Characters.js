@@ -156,11 +156,11 @@ export default class Characters {
 
     jump(value) {
         if (value) {
-            if (this.movementState.walking) {
+            if (this.moveLeft || this.moveRight) {
                 if (this.moveLeft) {
-                    this.body.velocity.x = -3
+                    this.body.velocity.x = -4
                 } else {
-                    this.body.velocity.x = 3
+                    this.body.velocity.x = 4
                 }
             }
             this.body.velocity.y = 8

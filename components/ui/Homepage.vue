@@ -209,8 +209,22 @@ export default {
         flex-direction: row;
         justify-content: flex-end;
         p {
-          font-size: 40px;
+          font-size: 60px;
           align-self: center;
+          margin-right: 10px;
+          background: transparent;
+          color: black;
+          text-shadow: 0 0 5px white, 0 0 5px white, 0 0 5px white,
+            0 0 5px white, 0 0 5px white, 0 0 5px white, 0 0 5px white,
+            0 0 5px white, 0 0 5px white, 0 0 5px white, 0 0 5px white,
+            0 0 5px white, 0 0 5px white, 0 0 5px white, 0 0 5px white,
+            0 0 5px white, 0 0 5px white, 0 0 5px white, 0 0 5px white,
+            0 0 5px white, 0 0 5px white, 0 0 5px white, 0 0 5px white,
+            0 0 5px white, 0 0 5px white, 0 0 5px white, 0 0 5px white,
+            0 0 5px white, 0 0 5px white, 0 0 5px white, 0 0 5px white,
+            0 0 5px white, 0 0 5px white, 0 0 5px white, 0 0 5px white,
+            0 0 5px white, 0 0 5px white, 0 0 5px white, 0 0 5px white,
+            0 0 5px white, 0 0 5px white;
         }
       }
       p {
