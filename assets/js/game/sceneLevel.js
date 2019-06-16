@@ -420,6 +420,9 @@ export default class Level {
 
     preRenderProps(callback) {
         let promises = []
+        let duration = 0
+        let delay = 350
+        // time(this.fixedPropsGroup.length * 350)
 
         //FixedProps preRender
         for (let i = 0; i < this.fixedPropsGroup.length; i++) {
@@ -428,13 +431,13 @@ export default class Level {
                     this.fixedPropsGroup[i].position.x = this.camera.position.x
                     // this.fixedPropsGroup[i].position.z = 7
                     resolve(this.fixedPropsGroup[i]);
-                }, i * 350)
+                }, i * delay)
             });
             promises.push(p1)
             p1.then((fixed) => {
                 setTimeout(() => {
                     fixed.position.copy(fixed.originPosition)
-                }, 350);
+                }, delay);
             })
         }
 
@@ -445,13 +448,13 @@ export default class Level {
                     this.animatesArray[i].position.x = this.camera.position.x
                     // this.animatesArray[i].position.z = 7
                     resolve(this.animatesArray[i]);
-                }, i * 350)
+                }, i * 2000)
             });
             promises.push(p2)
             p2.then((animate) => {
                 setTimeout(() => {
                     animate.position.copy(animate.originPosition)
-                }, 350);
+                }, 2000);
             })
         }
 
@@ -488,7 +491,7 @@ export default class Level {
         Promise.all(promises).then(() => {
             this.preRenderFinish = true
             callback()
-
+            console.log(duration)
             TweenMax.to(this.masks.position, 2.5, {
                 x: 0,
                 x: 0,
@@ -501,27 +504,27 @@ export default class Level {
     }
 
     render() {
-        if (this.animatesArray.length) {
-            const delta = this.clock.getDelta() * 5000;
-            this.time += delta;
-            this.animatesArray.forEach(animate => {
-                animate.animate.update(delta)
-                if ((this.momo.position.x >= animate.position.x - .5 && this.momo.position.x <= animate.position.x + .5) && !animate.isAnimating) {
-                    if (animate.name == "cat") {
-                        console.log('jump cat')
-                        // console.log('if')
-                        // this.launchSprite(animate.animate, "jump")
-                    } else if (animate.name == "petals") {
-                        console.log('petals move')
-                        // this.launchSprite(animate.animate, "petals")
-                    }
-                    console.log('ok')
-                    animate.isAnimating = true;
-                } else if ((this.momo.position.x <= animate.position.x - .5 && this.momo.position.x >= animate.position.x + .5) && !animate.isAnimating) {
-                    animate.isAnimating = false;
-                }
-            });
-        }
+        // if (this.animatesArray.length) {
+        //     const delta = this.clock.getDelta() * 5000;
+        //     this.time += delta;
+        //     this.animatesArray.forEach(animate => {
+        //         animate.animate.update(delta)
+        //         if ((this.momo.position.x >= animate.position.x - .5 && this.momo.position.x <= animate.position.x + .5) && !animate.isAnimating) {
+        //             if (animate.name == "cat") {
+        //                 console.log('jump cat')
+        //                 // console.log('if')
+        //                 // this.launchSprite(animate.animate, "jump")
+        //             } else if (animate.name == "petals") {
+        //                 console.log('petals move')
+        //                 // this.launchSprite(animate.animate, "petals")
+        //             }
+        //             console.log('ok')
+        //             animate.isAnimating = true;
+        //         } else if ((this.momo.position.x <= animate.position.x - .5 && this.momo.position.x >= animate.position.x + .5) && !animate.isAnimating) {
+        //             animate.isAnimating = false;
+        //         }
+        //     });
+        // }
 
         // Romo add restrictedZone 
         if (this.romo && this.restrictedZone && this.startRestrictedZone) {
