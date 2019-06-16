@@ -1,6 +1,10 @@
 <template>
   <div id="level">
-    <component v-if="isRoom" v-on:changeComponent="changeComponent" v-bind:is="components[numberComponent]"></component>
+    <component
+      v-if="isRoom"
+      v-on:changeComponent="changeComponent"
+      v-bind:is="components[numberComponent]"
+    ></component>
     <Level v-else></Level>
   </div>
 </template>
@@ -9,7 +13,7 @@
 import { mapState, mapGetters, mapMutations } from "vuex";
 import Level from "@/components/level";
 import Room from "@/components/room";
-import Wait from "@/components/wait";
+import Wait from "@/components/mobile/wait";
 import Navigate from "@/components/navigate";
 
 export default {

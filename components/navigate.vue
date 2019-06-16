@@ -1,7 +1,19 @@
 <template>
   <div class="mobile-layout" id="navigate">
-    <h1>Navigate</h1>
-    <Joystick></Joystick>
+    <div id="navigate-container">
+      <div id="left">
+        <Joystick></Joystick>
+      </div>
+      <div id="right">
+        <div id="right-container">
+          <p class="fill-en skew">move around</p>
+          <p class="semi skew">
+            Discover your
+            surroundings
+          </p>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -23,7 +35,6 @@ export default {
   },
   mounted() {
     if (this.$device.isMobileOrTablet) {
-      
     } else {
       alert("t'es pas sur mobile");
     }
@@ -33,5 +44,27 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-// @import "~assets/scss/main.scss";
+@import "~assets/scss/main.scss";
+#navigate {
+  &-container {
+    display: flex;
+    flex-direction: row;
+    #left {
+      #border {
+        width: 300px;
+        height: 300px;
+      }
+    }
+    #right {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      
+      &-container {
+        max-width: 300px;
+      }
+    }
+  }
+}
 </style>

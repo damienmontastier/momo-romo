@@ -180,6 +180,11 @@ export default {
     transform: translate(-50%, -50%);
     z-index: 0;
     pointer-events: none;
+
+    stroke: $a;
+  }
+  .st0 {
+    fill: $a !important;
   }
 }
 </style>
