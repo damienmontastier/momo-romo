@@ -55,7 +55,6 @@ export default {
     this.$store.dispatch("game/loadStage", this.$route.params.level);
   },
   mounted() {
-    console.log(this.$store);
     this.game = new Game();
     window.addEventListener(
       "launchMiniGame",
@@ -101,10 +100,10 @@ export default {
         ease: Power4.easeOut
       });
     },
-    loadingBar(value) {
-      this.duration = value;
-      console.log(this.duration);
-    },
+    // loadingBar(value) {
+    //   this.duration = value;
+    //   console.log(this.duration);
+    // },
     loadStart() {
       if (this.loaded) {
         this.runGame = true;

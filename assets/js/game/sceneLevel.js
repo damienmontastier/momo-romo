@@ -38,8 +38,6 @@ export default class Level {
 
         this.time = 0;
 
-        console.log(background_level)
-
         HowlerManager.add([{
                 id: "background_level",
                 src: background_level
@@ -120,9 +118,9 @@ export default class Level {
 
         this.preRenderFinish = false
 
-        this.controls = new OrbitControls(this.camera);
+        // this.controls = new OrbitControls(this.camera);
 
-        this.controls.enablePan = false
+        // this.controls.enablePan = false
 
         this.scene = new THREE.Scene();
 
@@ -212,10 +210,6 @@ export default class Level {
 
     addAnimate(params) {
 
-        // if (params.json.id == "petals") {
-        //     params.position.z = 7
-        //     console.log(params)
-        // }
         new AnimatedProp(params).then((animate) => {
             animate.scale.set(params.scale.x, params.scale.y, params.scale.z)
             animate.position.set(params.position.x, params.position.y, params.position.z)
@@ -458,10 +452,10 @@ export default class Level {
     }
 
     preRenderProps(callback) {
+        this.callback = callback
         let promises = []
-        let duration = 0
         let delay = 150
-        let time = this.fixedPropsGroup.length * 350
+        let duration = this.fixedPropsGroup.length * 350
 
         //FixedProps preRender
         for (let i = 0; i < this.fixedPropsGroup.length; i++) {
@@ -529,8 +523,7 @@ export default class Level {
 
         Promise.all(promises).then(() => {
             this.preRenderFinish = true
-            callback()
-            console.log(duration)
+            this.callback()
             this.sounds.background_level.loop(true);
             this.sounds.background_level.play();
             this.sounds.background_level.fade(0, 1.0, 5000);
@@ -559,7 +552,6 @@ export default class Level {
                 if (this.momo.position.x >= animate.position.x - .5 && this.momo.position.x <= animate.position.x + .5 && !animate.animated) {
                     if ((animate.out && !animate.in) || (!animate.in && !animate.out)) {
                         animate.in = true
-                        console.log(animate.name, 'in')
                         if (animate.name == "cat") {
                             let postX = animate.position.x
                             let postY = animate.position.y
@@ -590,7 +582,6 @@ export default class Level {
                 } else if (animate.in) {
                     if (animate.in || (!animate.in && !animate.out)) {
                         animate.out = true
-                        console.log(animate.name, 'out')
                     }
                     animate.in = false
                 }
