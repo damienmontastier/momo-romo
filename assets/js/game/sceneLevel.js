@@ -15,7 +15,6 @@ import {
     truncate
 } from 'fs';
 
-
 const visibleHeightAtZDepth = (depth, camera) => {
     const cameraOffset = camera.position.z;
     if (depth < cameraOffset) depth -= cameraOffset;
@@ -417,6 +416,7 @@ export default class Level {
     }
 
     preRenderProps(callback) {
+        //todo faire passer les sprites momo,romo + animated props
         let promises = []
         for (let i = 0; i < this.fixedPropsGroup.length; i++) {
             let promise = new Promise((resolve, reject) => {
@@ -459,37 +459,19 @@ export default class Level {
             this.time += delta;
             this.animatesArray.forEach(animate => {
                 animate.animate.update(delta)
-                if (this.momo.position.x >= animate.position.x - .5 && this.momo.position.x <= animate.position.x + .5) {
-
-                    if (!this.animateRunning) {
-                        if (animate.name == "cat") {
+                if ((this.momo.position.x >= animate.position.x - .5 && this.momo.position.x <= animate.position.x + .5) && !animate.isAnimating) {
+                    if (animate.name == "cat") {
                             console.log('jump cat')
+                            // console.log('if')
                             // this.launchSprite(animate.animate, "jump")
-                        } else if (animate.name == "petals") {
+                    } else if (animate.name == "petals") {
                             console.log('petals move')
                             // this.launchSprite(animate.animate, "petals")
-                        }
-                        this.animateRunning = true;
                     }
-
-                } else {
-                    if(this.animateRunning){
-                        console.log(animate.name, "stop")
-
-                    }
-                    // this.launchSprite(animate.animate, "wait")
-
-                    // this.animateRunning = false
-
-                    // if (this.animateRunning) {
-                    //     if (animate.name == "cat") {
-                    //         console.log('stop jump cat')
-                    //         // this.launchSprite(animate.animate, "wait")
-                    //     } else if (animate.name == "petals") {
-                    //         console.log('stop petals')
-                    //         // this.launchSprite(animate.animate, "petals")
-                    //     }
-                    // }
+                    console.log('ok')
+                        animate.isAnimating= true;
+                } else if((this.momo.position.x <= animate.position.x - .5 && this.momo.position.x >= animate.position.x + .5) && !animate.isAnimating) {
+                    animate.isAnimating= false;
                 }
             });
         }
