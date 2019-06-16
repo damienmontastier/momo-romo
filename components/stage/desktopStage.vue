@@ -88,13 +88,15 @@ export default {
         x: "-110vw",
         onComplete: () => {
           this.killElement = false;
-          this.socket.emit("custom-event", {
-            name: "readyPlayMobile",
-            in: this.roomID,
-            args: {
-              ready: true
-            }
-          });
+            if(this.socket){
+            this.socket.emit("custom-event", {
+              name: "readyPlayMobile",
+              in: this.roomID,
+              args: {
+                ready: true
+              }
+            });
+          }
         },
         ease: Power4.easeOut
       });
