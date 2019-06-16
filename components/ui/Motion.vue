@@ -240,6 +240,7 @@ export default {
       });
     },
     start() {
+      this.timecodeEvents();
       this.sounds.intro_sound.play();
     },
     extends() {

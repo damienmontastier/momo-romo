@@ -4,7 +4,7 @@
   </div> -->
   <div id="home">
     <component v-on:increment="increment" v-bind:is="components[value]" v-if="value !== 3"></component>
-    <motion ref="motion" v-show="value === 3"/>
+    <motion ref="motion" v-show="value === 3 && isMotionReady === true"/>
   </div>
 </template>
 
@@ -20,7 +20,8 @@ export default {
   data() {
     return {
       components: ["Homepage", "chooseQuality", "chooseKeyboard","", "Synchro"],
-      value: 0
+      value: 0,
+      isMotionReady: false
     };
   },
   components: {
@@ -34,7 +35,11 @@ export default {
     value() {
       console.log(this.value)
       if(this.value === 2) {
-
+        this.$refs.motion.load().then(()=>{
+          this.isMotionReady = true
+        })
+      } else if (this.value === 3) {
+        this.$refs.motion.start()
       }
     }
   },
