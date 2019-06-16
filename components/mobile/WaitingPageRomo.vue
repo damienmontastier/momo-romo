@@ -1,7 +1,12 @@
 <template>
   <div class="mobile-layout" id="wait">
-    <h1>Wait screen</h1>
-    <button @click="$emit('changeComponent')">Change</button>
+    <div id="content">
+      <p class="skew book">
+        <span class="semi">Nothing to see here!</span>
+        <br>Look at the main screen.
+      </p>
+    </div>
+    <!-- <button @click="$emit('changeComponent')">Change</button> -->
   </div>
 </template>
 
@@ -15,8 +20,20 @@ export default {
     return {};
   },
   components: {},
-  computed: {},
+  computed: {
+    ...mapState({
+      socket: state => state.synchro.socket
+    })
+  },
   mounted() {
+    if (this.socket) {
+      this.socket.on("readyPlayMobile", value => {
+        console.log(value.ready);
+        if(value.ready){
+          this.$emit('changeComponent')
+        }
+      });
+    }
     if (this.$device.isMobileOrTablet) {
       // this.connect({
       //   device: this.$device.isMobileOrTablet,
@@ -26,10 +43,20 @@ export default {
       alert("t'es pas sur mobile");
     }
   },
-  methods: {}
+  methods: {},
+  watch: {}
 };
 </script>
 
 <style lang="scss" scoped>
 @import "~assets/scss/main.scss";
+
+#wait {
+  #content {
+    display: flex;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+  }
+}
 </style>

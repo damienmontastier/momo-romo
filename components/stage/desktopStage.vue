@@ -44,7 +44,8 @@ export default {
       stage: state => state.game.stage,
       currentStageId: state => state.game.currentStageId,
       loaded: state => state.game.loaded,
-      socket: state => state.synchro.socket
+      socket: state => state.synchro.socket,
+      roomID: state => state.synchro.roomID
     }),
     ...mapGetters({
       currentAtlas: "game/currentAtlas"
@@ -54,6 +55,7 @@ export default {
     this.$store.dispatch("game/loadStage", this.$route.params.level);
   },
   mounted() {
+    console.log(this.$store);
     this.game = new Game();
     window.addEventListener(
       "launchMiniGame",
@@ -86,6 +88,13 @@ export default {
         x: "-110vw",
         onComplete: () => {
           this.killElement = false;
+          this.socket.emit("custom-event", {
+            name: "readyPlayMobile",
+            in: this.roomID,
+            args: {
+              ready: true
+            }
+          });
         },
         ease: Power4.easeOut
       });

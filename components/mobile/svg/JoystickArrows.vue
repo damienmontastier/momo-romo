@@ -2,7 +2,7 @@
   <svg id="Layer_1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 324.5 324.5">
     <style>
   .st0 {
-    fill: #202020;
+    fill: #f3765a;
   }
     </style>
     <path
