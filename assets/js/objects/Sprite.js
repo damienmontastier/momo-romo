@@ -98,8 +98,8 @@ export default class Sprite extends THREE.Object3D {
                 }
             `,
             transparent: true,
-            depthWrite: false,
-            depthTest: false,
+            // depthWrite: false,
+            // depthTest: false,
             // depthWrite: false,
             // alphaTest:0
         });
