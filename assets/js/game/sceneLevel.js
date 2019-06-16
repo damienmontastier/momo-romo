@@ -30,6 +30,8 @@ const visibleWidthAtZDepth = (depth, camera) => {
 export default class Level {
     constructor(opts, store) {
 
+        this.time = 0;
+
         this.canvas = document.getElementById("canvas")
         this.textureAtlas = opts.textureAtlas; // textureAtlas
 
@@ -195,6 +197,7 @@ export default class Level {
             // animate.in = false
             this.animatesArray.push(animate)
             this.scene.add(animate)
+            this.launchSprite(animate.animate,'wait')
         })
     }
 
@@ -282,7 +285,7 @@ export default class Level {
 
         this.masks = new THREE.Mesh(singleGeometry, material);
 
-        let materialbis = new THREE.ShaderMaterial({
+        this.materialbis = new THREE.ShaderMaterial({
             uniforms: {
                 iTime: {
                     value: 0
@@ -392,7 +395,7 @@ export default class Level {
             `
         })
 
-        var border = new THREE.Mesh(singleGeometry, materialbis);
+        var border = new THREE.Mesh(singleGeometry, this.materialbis);
         border.scale.multiplyScalar(1.015);
         this.masks.add(border);
 
@@ -510,32 +513,41 @@ export default class Level {
     }
 
     render() {
+        const delta = this.clock.getDelta();
+        this.time += delta;
+
+        this.materialbis.uniforms.iTime.value = this.time
 
         if (this.animatesArray.length && this.animationFinish) {
-            const delta = this.clock.getDelta() * 5000;
-            this.time += delta;
             this.animatesArray.forEach(animate => {
-                animate.animate.update(delta)
-                if (this.momo.position.x >= animate.position.x - .5 && this.momo.position.x <= animate.position.x + .5) {
+                animate.animate.update(delta*5000)
+                if (this.momo.position.x >= animate.position.x - .5 && this.momo.position.x <= animate.position.x + .5 && !animate.animated) {
                     if ((animate.out && !animate.in) || (!animate.in && !animate.out)) {
                         animate.in = true
                         console.log(animate.name, 'in')
                         if (animate.name == "cat") {
-                            this.launchSprite(animate.animate, "jump")
+                            // this.launchSprite(animate.animate, "jump")
+                            animate.animate
+                            .newSprites()
+                            .addState('jump')
+                            .addState('wait')
+                            .start()
+                            
                         } else if (animate.name == "petals") {
-                            this.launchSprite(animate.animate, "petals")
+                            // this.launchSprite(animate.animate, "petals")
+                            animate.animate
+                            .newSprites()
+                            .addState('petals')
+                            .addState('wait')
+                            .start()
                         }
+                        animate.animated = true
                     }
 
                 } else if (animate.in) {
                     if (animate.in || (!animate.in && !animate.out)) {
                         animate.out = true
                         console.log(animate.name, 'out')
-                        if (animate.name == "cat") {
-                            this.launchSprite(animate.animate, "wait")
-                        } else if (animate.name == "petals") {
-                            // this.launchSprite(animate.animate, "petals")
-                        }
                     }
                     animate.in = false
                 }
