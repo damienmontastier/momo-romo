@@ -11,6 +11,9 @@ import {
     TweenMax,
     Power4
 } from 'gsap';
+import {
+    truncate
+} from 'fs';
 
 const visibleHeightAtZDepth = (depth, camera) => {
     const cameraOffset = camera.position.z;
@@ -500,7 +503,6 @@ export default class Level {
         this.physicParams.update()
 
         this.renderer.render(this.scene, this.camera);
-
     }
     launchSprite(character, id) {
         character
