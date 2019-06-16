@@ -114,7 +114,7 @@ export default class Characters {
 
         var body = new CANNON.Body({
             mass: 1,
-            position: new CANNON.Vec3(2, .5, 3 - radius),
+            position: new CANNON.Vec3(2, .5, 3 - .5),
             shape: new CANNON.Sphere(radius),
             material: character_material,
             sleepSpeedLimit: .1,

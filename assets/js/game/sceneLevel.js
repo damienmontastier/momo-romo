@@ -80,10 +80,10 @@ export default class Level {
             this.momo.originPosition = new THREE.Vector3().copy(this.momo.position)
             this.momo.scale.set(1.5, 1.5, 1.5)
             this.romo = this.characters.romo
+            this.romo.position.z = 2.5
+            this.romo.position.y = 1
             this.romo.originPosition = new THREE.Vector3().copy(this.romo.position)
-            this.romo.position.z = 3
-            this.romo.scale.set(2, 2, 2)
-
+            this.romo.scale.set(-2, 2, 2)
             this.addCharacter()
         })
 
@@ -457,14 +457,13 @@ export default class Level {
         let promises = []
         let duration = 0
         let delay = 150
-        // time(this.fixedPropsGroup.length * 350)
+        let time = this.fixedPropsGroup.length * 350
 
         //FixedProps preRender
         for (let i = 0; i < this.fixedPropsGroup.length; i++) {
             let p1 = new Promise((resolve, reject) => {
                 setTimeout(() => {
                     this.fixedPropsGroup[i].position.x = this.camera.position.x
-                    // this.fixedPropsGroup[i].position.z = 7
                     resolve(this.fixedPropsGroup[i]);
                 }, i * delay)
             });
@@ -481,7 +480,6 @@ export default class Level {
             let p2 = new Promise((resolve, reject) => {
                 setTimeout(() => {
                     this.animatesArray[i].position.x = this.camera.position.x
-                    // this.animatesArray[i].position.z = 7
                     resolve(this.animatesArray[i]);
                 }, i * 2000)
             });
@@ -497,7 +495,6 @@ export default class Level {
         let p3 = new Promise((resolve, reject) => {
             setTimeout(() => {
                 this.momo.position.x = this.camera.position.x
-                // this.momo.position.z = 7
                 resolve(this.momo);
             }, 2000)
         });
@@ -512,7 +509,6 @@ export default class Level {
         let p4 = new Promise((resolve, reject) => {
             setTimeout(() => {
                 this.romo.position.x = this.camera.position.x
-                // this.romo.position.z = 7
                 resolve(this.romo);
             }, 2000)
         });
