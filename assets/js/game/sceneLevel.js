@@ -51,6 +51,7 @@ export default class Level {
             this.characters = characters
             this.momo = this.characters.momo
             this.momo.originPosition = new THREE.Vector3().copy(this.momo.position)
+            this.momo.scale.set(1.5, 1.5, 1.5)
             this.romo = this.characters.romo
             this.romo.originPosition = new THREE.Vector3().copy(this.romo.position)
             this.romo.position.z = 3
@@ -425,7 +426,7 @@ export default class Level {
     preRenderProps(callback) {
         let promises = []
         let duration = 0
-        let delay = 20
+        let delay = 150
         // time(this.fixedPropsGroup.length * 350)
 
         //FixedProps preRender

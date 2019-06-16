@@ -108,7 +108,7 @@ export default class Characters {
     }
 
     addBody() {
-        var radius = .5;
+        var radius = .65;
 
         var character_material = new CANNON.Material("character_material");
 
@@ -183,23 +183,26 @@ export default class Characters {
                     this.forceValue.x = 0
                 } else {
                     this.bothWays = false
+                    console.log(this.moveLeft, this.moveRight)
                     if (this.moveLeft) {
                         this.forceValue.x = -3;
                         if (!this.movementState.walking) {
+                            console.log('here')
+
                             if (!this.isTurnaround) {
-                                if (this.momo.scale.x == 1) {
+                                if (this.momo.scale.x == 1.5) {
                                     this.launchSprite(this.momo, "walk")
                                     this.movementState.walking = true
                                     this.isTurnaround = true
                                     this.turnToWalk()
                                     TweenMax.to(this.momo.scale, .5, {
-                                        x: -1,
+                                        x: -1.5,
                                         ease: Power4.easeOut,
                                         onComplete: () => {
                                             this.isTurnaround = false
                                         }
                                     })
-                                } else if (!this.stopWalkingLeft && this.momo.scale.x == -1) {
+                                } else if (!this.stopWalkingLeft && this.momo.scale.x == -1.5) {
                                     this.launchSprite(this.momo, "walk")
 
                                     this.stopWalkingLeft = true
@@ -215,19 +218,19 @@ export default class Characters {
                         this.forceValue.x = 3;
                         if (!this.movementState.walking) {
                             if (!this.isTurnaround) {
-                                if (this.momo.scale.x == -1) {
+                                if (this.momo.scale.x == -1.5) {
                                     this.launchSprite(this.momo, "walk")
                                     this.movementState.walking = true
                                     this.isTurnaround = true
                                     this.turnToWalk()
                                     TweenMax.to(this.momo.scale, .5, {
-                                        x: 1,
+                                        x: 1.5,
                                         ease: Power4.easeOut,
                                         onComplete: () => {
                                             this.isTurnaround = false
                                         }
                                     })
-                                } else if (!this.stopWalkingRight && this.momo.scale.x == 1) {
+                                } else if (!this.stopWalkingRight && this.momo.scale.x == 1.5) {
                                     this.launchSprite(this.momo, "walk")
 
                                     this.stopWalkingRight = true
