@@ -12,7 +12,7 @@
 
 <script>
 import { mapGetters, mapMutations, mapState, mapActions } from "vuex";
-import synchedTitle from "@/components/mobile/svg/synched";
+import SynchedTitle from "@/components/mobile/svg/SynchedTitle";
 import Joystick from "@/components/mobile/Joystick";
 
 export default {
