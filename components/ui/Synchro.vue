@@ -1,5 +1,6 @@
 <template>
-  <div class="frame" id="synchro">
+<div id="synchro">
+  <div class="frame">
     <div id="top">
       <div id="momo">
         <div class="center">
@@ -33,6 +34,7 @@
     </div>
 
     <!-- <button @click="disconnect">disconnect</button> -->
+  </div>
   </div>
 </template>
 
@@ -136,10 +138,12 @@ export default {
 }
 
 #synchro {
-  background-image: url("~static/ui/synchro/intro-fin.jpg");
+.frame {
+    background-image: url("~static/ui/synchro/intro-fin.jpg");
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center bottom;
+}
 
   #top {
     display: inline-flex;
