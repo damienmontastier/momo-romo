@@ -1,5 +1,6 @@
 export default class KeyboardManager {
-  constructor(callback) {
+  constructor(callback, keyboard) {
+    console.log(keyboard)
     this.callback = callback;
     window.addEventListener("keydown", this.onKeyDown.bind(this));
     window.addEventListener("keyup", this.onKeyUp.bind(this));

@@ -50,7 +50,9 @@ export default class Level {
         new Characters(store).then((characters) => {
             this.characters = characters
             this.momo = this.characters.momo
+            this.momo.originPosition = new THREE.Vector3().copy(this.momo.position)
             this.romo = this.characters.romo
+            this.romo.originPosition = new THREE.Vector3().copy(this.romo.position)
             this.romo.position.z = 3
             this.romo.scale.set(2, 2, 2)
 
@@ -180,6 +182,7 @@ export default class Level {
         new AnimatedProp(params).then((animate) => {
             animate.scale.set(params.scale.x, params.scale.y, params.scale.z)
             animate.position.set(params.position.x, params.position.y, params.position.z)
+            animate.originPosition = new THREE.Vector3().copy(animate.position)
             animate.rotation.set(params.rotation.x, params.rotation.y, params.rotation.z)
             animate.name = params.json.id
             this.animatesArray.push(animate)
@@ -413,30 +416,79 @@ export default class Level {
     }
 
     preRenderProps(callback) {
-        //todo faire passer les sprites momo,romo + animated props
         let promises = []
+        let duration = 0
+        let delay = 20
+        // time(this.fixedPropsGroup.length * 350)
+
+        //FixedProps preRender
         for (let i = 0; i < this.fixedPropsGroup.length; i++) {
-            let promise = new Promise((resolve, reject) => {
+            let p1 = new Promise((resolve, reject) => {
                 setTimeout(() => {
                     this.fixedPropsGroup[i].position.x = this.camera.position.x
-                    this.fixedPropsGroup[i].position.z = 7
+                    // this.fixedPropsGroup[i].position.z = 7
                     resolve(this.fixedPropsGroup[i]);
-                }, i * 50)
+                }, i * delay)
             });
-
-            promises.push(promise)
-
-            promise.then((fixed) => {
+            promises.push(p1)
+            p1.then((fixed) => {
                 setTimeout(() => {
                     fixed.position.copy(fixed.originPosition)
-                }, 50);
+                }, delay);
             })
         }
+
+        //Animates preRender
+        for (let i = 0; i < this.animatesArray.length; i++) {
+            let p2 = new Promise((resolve, reject) => {
+                setTimeout(() => {
+                    this.animatesArray[i].position.x = this.camera.position.x
+                    // this.animatesArray[i].position.z = 7
+                    resolve(this.animatesArray[i]);
+                }, i * 2000)
+            });
+            promises.push(p2)
+            p2.then((animate) => {
+                setTimeout(() => {
+                    animate.position.copy(animate.originPosition)
+                }, 2000);
+            })
+        }
+
+        //Momo preRender
+        let p3 = new Promise((resolve, reject) => {
+            setTimeout(() => {
+                this.momo.position.x = this.camera.position.x
+                // this.momo.position.z = 7
+                resolve(this.momo);
+            }, 2000)
+        });
+        promises.push(p3)
+        p3.then((momo) => {
+            setTimeout(() => {
+                momo.position.copy(momo.originPosition)
+            }, 2000);
+        })
+
+        //Romo preRender
+        let p4 = new Promise((resolve, reject) => {
+            setTimeout(() => {
+                this.romo.position.x = this.camera.position.x
+                // this.romo.position.z = 7
+                resolve(this.romo);
+            }, 2000)
+        });
+        promises.push(p4)
+        p4.then((romo) => {
+            setTimeout(() => {
+                romo.position.copy(romo.originPosition)
+            }, 2000);
+        })
 
         Promise.all(promises).then(() => {
             this.preRenderFinish = true
             callback()
-
+            console.log(duration)
             TweenMax.to(this.masks.position, 2.5, {
                 x: 0,
                 x: 0,
@@ -445,8 +497,6 @@ export default class Level {
                     this.startRestrictedZone = true
                 }
             })
-
-
         })
     }
 
