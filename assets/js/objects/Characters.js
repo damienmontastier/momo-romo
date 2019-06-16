@@ -48,7 +48,8 @@ export default class Characters {
 
         this.bothWays = false
 
-        this.stopWalking = false
+        this.stopWalkingRight = false
+        this.stopWalkingLeft = false
 
         this.sprites = MomoJson.sprites
 
@@ -198,10 +199,15 @@ export default class Characters {
                                             this.isTurnaround = false
                                         }
                                     })
+                                } else if (!this.stopWalkingLeft && this.momo.scale.x == -1) {
+                                    this.launchSprite(this.momo, "walk")
+
+                                    this.stopWalkingLeft = true
                                 }
                             }
                         }
                     } else {
+                        this.stopWalkingLeft = false;
                         this.movementState.walking = false
                     }
 
@@ -221,15 +227,15 @@ export default class Characters {
                                             this.isTurnaround = false
                                         }
                                     })
-                                } else if (!this.stopWalking && this.momo.scale.x == 1) {
+                                } else if (!this.stopWalkingRight && this.momo.scale.x == 1) {
                                     this.launchSprite(this.momo, "walk")
 
-                                    this.stopWalking = true
+                                    this.stopWalkingRight = true
                                 }
                             }
                         }
                     } else {
-                        this.stopWalking = false
+                        this.stopWalkingRight = false
                         this.movementState.walking = false
                     }
                 }
