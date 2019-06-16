@@ -43,6 +43,8 @@ export default {
     });
     this.circle.addEventListener("mouseover", this.turn);
     this.circle.addEventListener("mouseleave", this.stop);
+    this.$refs.button.addEventListener('click',this.onClick.bind(this))
+    window.addEventListener('keyup',this.onKeyUp.bind(this))
   },
   created() {},
   methods: {
@@ -51,11 +53,21 @@ export default {
     },
     stop() {
       this.hover.play();
+    },
+    onKeyUp(e) {
+      if(e.key === this.letter.toLowerCase()) {
+        this.$emit('triggered')
+      }
+    },
+    onClick(e) {
+      this.$emit('triggered')
     }
   },
   beforeDestroy() {
     this.circle.removeEventListener("mouseover", this.turn);
     this.circle.removeEventListener("mouseleave", this.stop);
+    this.$refs.button.removeEventListener('click',this.onClick.bind(this))
+    window.removeEventListener('keyup',this.onKeyUp.bind(this));
   }
 };
 </script>
