@@ -72,6 +72,8 @@ import voice_kintsugi_1 from "~/static/sounds/voice_kintsugi_1.mp3";
 import voice_kintsugi_2 from "~/static/sounds/voice_kintsugi_2.mp3";
 import voice_kintsugi_3 from "~/static/sounds/voice_kintsugi_3.mp3";
 
+import voice_to_be_continued from "~/static/sounds/voice_to_be_continued.mp3";
+
 import { TweenMax } from 'gsap'
 import HowlerManager from "~/assets/js/utils/HowlerManager";
 
@@ -120,6 +122,10 @@ export default {
             return new Promise((resolve,reject)=>{
                 HowlerManager.add([
                     {
+                        id:'voice_to_be_continued',
+                        src: voice_to_be_continued
+                    },
+                    {
                         id: "voice_kintsugi_1",
                         src: voice_kintsugi_1
                     },
@@ -157,13 +163,6 @@ export default {
             this.sounds.voice_kintsugi_3.on('end',()=>{
                 console.log("end")
             })
-            // this.current = 0
-            // this.interval = setInterval(() => {
-            //     this.current++
-            //     if(this.current === 2) {
-            //         clearInterval(this.interval)
-            //     }
-            // }, this.intervalAmount);
         },
         appear() {
             return new Promise((resolve,reject)=>{
@@ -177,7 +176,6 @@ export default {
             })
         },
         nextLevel() {
-            console.log('nextlevel')
             this.sounds.voice_kintsugi_3.fade(1,0,1000)
             let tl = new TimelineMax()
 
@@ -188,7 +186,10 @@ export default {
             },'start')
             .to(this.$refs.to_be_continued,1, {
                 opacity:1,
-                delay:0.5
+                delay:0.5,
+                onComplete:()=>{
+                    this.sounds.voice_to_be_continued.play()
+                }
             },'start')
         }
     },

@@ -90,6 +90,12 @@ import countdown_2 from "~/static/sounds/countdown_2.mp3";
 import countdown_1 from "~/static/sounds/countdown_1.mp3";
 import cta_activated from "~/static/sounds/cta_activated.mp3";
 
+import momo_minijeu_1 from "~/static/sounds/momo_minijeu_1.mp3"
+import momo_minijeu_2 from "~/static/sounds/momo_minijeu_2.mp3"
+import momo_minijeu_3 from "~/static/sounds/momo_minijeu_3.mp3"
+
+import romo_playing from "~/static/sounds/romo_playing.mp3"
+
 Number.prototype.map = function(in_min, in_max, out_min, out_max) {
   return ((this - in_min) * (out_max - out_min)) / (in_max - in_min) + out_min;
 };
@@ -1101,6 +1107,7 @@ export default {
         this.sounds.countdown_2.play();
       } else if (countdown === 1) {
         this.sounds.countdown_1.play();
+        this.sounds.momo_minijeu_1.play();
       }
     },
     loadSounds() {
@@ -1133,7 +1140,23 @@ export default {
           {
             id: "countdown_3",
             src: countdown_3
-          }
+          },
+           {
+             id:'momo_minijeu_1',
+             src: momo_minijeu_1
+           },
+           {
+             id:'momo_minijeu_2',
+             src: momo_minijeu_2
+           },
+           {
+             id:'momo_minijeu_3',
+             src: momo_minijeu_3
+           },
+           {
+             id:'romo_playing',
+             src: romo_playing
+           }
         ]).then(sounds => {
           this.sounds = sounds;
           resolve();

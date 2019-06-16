@@ -24,8 +24,8 @@
         <GreatSVG/>
       </div>
     </div>
-    <div class="launchButton" @click="launchMinigame" ref="launchButton">
-      <button-circle-red jpn="スタート" en="LAUNCH GAME" letter="E"/>
+    <div class="launchButton" ref="launchButton">
+      <button-circle-red jpn="スタート" en="LAUNCH GAME" letter="E" v-on:triggered="launchMinigame"/>
     </div>
 
     <div class="countdown" ref="countdown">

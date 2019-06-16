@@ -10,7 +10,7 @@
 
     <div id="canvas"></div>
     <!-- <mini-game :uid="$route.params.level" v-if="minigame"></mini-game> -->
-    <!-- <mini-game :uid="$route.params.level"></mini-game> -->
+    <mini-game :uid="$route.params.level"></mini-game>
   </div>
 </template>
 
@@ -55,8 +55,7 @@ export default {
     this.$store.dispatch("game/loadStage", this.$route.params.level);
   },
   mounted() {
-    console.log(this.$store);
-    this.game = new Game();
+    // this.game = new Game();
     window.addEventListener(
       "launchMiniGame",
       e => {
@@ -68,13 +67,13 @@ export default {
   watch: {
     minigame() {},
     loaded(value) {
-      this.game.start(
-        {
-          currentLevelParams: this.stage,
-          currentAltlas: this.currentAtlas
-        },
-        this.$store
-      );
+      // this.game.start(
+      //   {
+      //     currentLevelParams: this.stage,
+      //     currentAltlas: this.currentAtlas
+      //   },
+      //   this.$store
+      // );
     }
   },
   methods: {
@@ -103,7 +102,6 @@ export default {
     },
     loadingBar(value) {
       this.duration = value;
-      console.log(this.duration);
     },
     loadStart() {
       if (this.loaded) {
@@ -114,7 +112,7 @@ export default {
   },
 
   destroyed() {
-    this.game.reset();
+    // this.game.reset();
   }
 };
 </script>

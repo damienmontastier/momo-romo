@@ -30,7 +30,7 @@ const visibleWidthAtZDepth = (depth, camera) => {
 export default class Level {
     constructor(opts, store) {
 
-        this.time = 0;
+        this.time = 2000;
 
         this.canvas = document.getElementById("canvas")
         this.textureAtlas = opts.textureAtlas; // textureAtlas
@@ -381,9 +381,9 @@ export default class Level {
                 void main() {
                     vec3 color1 = vec3(253., 249., 235.)/255.;
                     vec3 color2 = vec3(234., 227., 205.)/255.;
-                    color2 = vec3(214., 197., 185.)/255.;
+                    //color2 = vec3(214., 197., 185.)/255.;
                     vec3 gradient = mix(vec3(1.0),color1,v_position.y);
-                    float noise = snoise(vec3(vec2(v_position.x * 0.1,v_position.y* 0.1* 0.5 - iTime*0.1),iTime*0.1));
+                    float noise = snoise(vec3(vec2(v_position.x * 0.1,v_position.y* 0.1* 0.5 - (iTime*0.1)),iTime*0.1));
                     float grain = snoise(vec3(v_position.xy*100000.,iTime*0.1));
                    
                     vec3 noise_color = mix(color1,color2,clamp(noise,0.0,1.0));
@@ -428,7 +428,7 @@ export default class Level {
     preRenderProps(callback) {
         let promises = []
         let duration = 0
-        let delay = 100
+        let delay = 150
         // time(this.fixedPropsGroup.length * 350)
 
         //FixedProps preRender
@@ -497,17 +497,19 @@ export default class Level {
 
         Promise.all(promises).then(() => {
             this.preRenderFinish = true
-            callback()
-            console.log(duration)
-            TweenMax.to(this.masks.position, 2.5, {
-                x: 0,
-                x: 0,
-                ease: Power4.easeOut,
-                onComplete: () => {
-                    this.startRestrictedZone = true
-                    this.animationFinish = true
-                }
-            })
+            
+            setTimeout(()=>{
+                callback()
+                TweenMax.to(this.masks.position, 2.5, {
+                    x: 0,
+                    ease: Power4.easeOut,
+                    onComplete: () => {
+                        this.startRestrictedZone = true
+                        this.animationFinish = true
+                    }
+                })
+            },1000)
+
         })
     }
 
