@@ -75,6 +75,10 @@ export default class Level {
 
         this.animateRunning = false
 
+        this.animationFinish = false
+
+        this.firstLaunch = true
+
         this.camera = new THREE.PerspectiveCamera(
             40,
             window.innerWidth / window.innerHeight,
@@ -185,6 +189,9 @@ export default class Level {
             animate.originPosition = new THREE.Vector3().copy(animate.position)
             animate.rotation.set(params.rotation.x, params.rotation.y, params.rotation.z)
             animate.name = params.json.id
+            // animate.out = fa
+            animate.alreadyAnimated = false
+            // animate.in = false
             this.animatesArray.push(animate)
             this.scene.add(animate)
         })
@@ -495,37 +502,41 @@ export default class Level {
                 ease: Power4.easeOut,
                 onComplete: () => {
                     this.startRestrictedZone = true
+                    this.animationFinish = true
                 }
             })
         })
     }
 
     render() {
-        if (this.animatesArray.length) {
+
+        if (this.animatesArray.length && this.animationFinish) {
             const delta = this.clock.getDelta() * 5000;
             this.time += delta;
             this.animatesArray.forEach(animate => {
                 animate.animate.update(delta)
                 if (this.momo.position.x >= animate.position.x - .5 && this.momo.position.x <= animate.position.x + .5) {
-
-                    if((animate.out && !animate.in) || (!animate.in && !animate.out)) {
+                    if ((animate.out && !animate.in) || (!animate.in && !animate.out)) {
                         animate.in = true
                         console.log(animate.name, 'in')
                         if (animate.name == "cat") {
-                                // this.launchSprite(animate.animate, "jump")
+                            this.launchSprite(animate.animate, "jump")
                         } else if (animate.name == "petals") {
-                                // this.launchSprite(animate.animate, "petals")
+                            this.launchSprite(animate.animate, "petals")
                         }
                     }
-                        
-                } else if(animate.in) {
-                    
-                    if(animate.in || (!animate.in && !animate.out)) {
+
+                } else if (animate.in) {
+                    if (animate.in || (!animate.in && !animate.out)) {
                         animate.out = true
                         console.log(animate.name, 'out')
+                        if (animate.name == "cat") {
+                            this.launchSprite(animate.animate, "wait")
+                        } else if (animate.name == "petals") {
+                            // this.launchSprite(animate.animate, "petals")
+                        }
                     }
                     animate.in = false
-                    
                 }
             });
         }
