@@ -203,7 +203,7 @@ export default {
         this.extends();
       }
 
-      if (currentTime > this.nextSubtitleTimecode) {
+      if (this.nextSubtitleTimecode && currentTime > this.nextSubtitleTimecode) {
         this.currentSubtitleIndex++;
       }
 
