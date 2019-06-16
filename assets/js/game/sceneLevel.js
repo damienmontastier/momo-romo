@@ -11,10 +11,6 @@ import {
     TweenMax,
     Power4
 } from 'gsap';
-import {
-    truncate
-} from 'fs';
-
 
 const visibleHeightAtZDepth = (depth, camera) => {
     const cameraOffset = camera.position.z;
