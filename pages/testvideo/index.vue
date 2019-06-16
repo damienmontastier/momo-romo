@@ -1,5 +1,5 @@
 <template>
-  <div id="page">
+  <div id="motion">
     <div class="container" ref="container">
       <div class="video_container" ref="video-container1">
         <video :src="video1" muted preload="none" ref="video1"></video>
@@ -275,7 +275,7 @@ export default {
 
 <style lang="scss" scoped>
 @import "~assets/scss/main.scss";
-#page {
+#motion {
   width: 100%;
   height: 100%;
   display: flex;
