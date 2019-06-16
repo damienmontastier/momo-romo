@@ -120,9 +120,9 @@ export default class Level {
 
         this.preRenderFinish = false
 
-        // this.controls = new OrbitControls(this.camera);
+        this.controls = new OrbitControls(this.camera);
 
-        // this.controls.enablePan = false
+        this.controls.enablePan = false
 
         this.scene = new THREE.Scene();
 
@@ -211,15 +211,19 @@ export default class Level {
     }
 
     addAnimate(params) {
+
+        // if (params.json.id == "petals") {
+        //     params.position.z = 7
+        //     console.log(params)
+        // }
         new AnimatedProp(params).then((animate) => {
             animate.scale.set(params.scale.x, params.scale.y, params.scale.z)
             animate.position.set(params.position.x, params.position.y, params.position.z)
             animate.originPosition = new THREE.Vector3().copy(animate.position)
             animate.rotation.set(params.rotation.x, params.rotation.y, params.rotation.z)
             animate.name = params.json.id
-            // animate.out = fa
             animate.alreadyAnimated = false
-            // animate.in = false
+
             this.animatesArray.push(animate)
             this.scene.add(animate)
             this.launchSprite(animate.animate, 'wait')
@@ -464,6 +468,7 @@ export default class Level {
             let p1 = new Promise((resolve, reject) => {
                 setTimeout(() => {
                     this.fixedPropsGroup[i].position.x = this.camera.position.x
+                    this.fixedPropsGroup[i].position.z = 0
                     resolve(this.fixedPropsGroup[i]);
                 }, i * delay)
             });
@@ -480,6 +485,7 @@ export default class Level {
             let p2 = new Promise((resolve, reject) => {
                 setTimeout(() => {
                     this.animatesArray[i].position.x = this.camera.position.x
+                    this.animatesArray[i].position.z = 0
                     resolve(this.animatesArray[i]);
                 }, i * 2000)
             });
@@ -495,6 +501,7 @@ export default class Level {
         let p3 = new Promise((resolve, reject) => {
             setTimeout(() => {
                 this.momo.position.x = this.camera.position.x
+                this.momo.position.z = 0
                 resolve(this.momo);
             }, 2000)
         });
@@ -509,6 +516,7 @@ export default class Level {
         let p4 = new Promise((resolve, reject) => {
             setTimeout(() => {
                 this.romo.position.x = this.camera.position.x
+                this.romo.position.z = 0
                 resolve(this.romo);
             }, 2000)
         });
@@ -553,7 +561,6 @@ export default class Level {
                         animate.in = true
                         console.log(animate.name, 'in')
                         if (animate.name == "cat") {
-                            // this.launchSprite(animate.animate, "jump")
                             let postX = animate.position.x
                             let postY = animate.position.y
                             TweenMax.to(animate.position, 2.5, {
@@ -571,7 +578,6 @@ export default class Level {
                                 .start()
 
                         } else if (animate.name == "petals") {
-                            // this.launchSprite(animate.animate, "petals")
                             animate.animate
                                 .newSprites()
                                 .addState('petals')
