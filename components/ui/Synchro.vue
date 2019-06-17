@@ -1,40 +1,40 @@
 <template>
-<div id="synchro">
-  <div class="frame">
-    <div id="top">
-      <div id="momo">
-        <div class="center">
-          <h5 class="skew stroke">Desktop player</h5>
-          <momoTitle></momoTitle>
-          <h5 class="skew fill-jpn">モモ</h5>
-        </div>
-      </div>
-      <div id="romo">
-        <div class="center">
-          <h5 class="skew stroke">Mobile player</h5>
-          <romoTitle></romoTitle>
-          <h5 class="skew fill-jpn">ロモ</h5>
-        </div>
-      </div>
-    </div>
-    <div id="bottom">
-      <div id="desktop" class="center">
-        <div id="momo-chara"></div>
-        <div id="keyboard-animation" v-if="!isReady"></div>
-      </div>
-      <div id="mobile" class="center" v-if="qrcode">
-        <div id="mobile-container" v-if="!isReady">
-          <div>
-            <a :href="url">{{url}}</a>
+  <div id="synchro">
+    <div class="frame">
+      <div id="top">
+        <div id="momo">
+          <div class="center">
+            <h5 class="skew stroke">Desktop player</h5>
+            <momoTitle></momoTitle>
+            <h5 class="skew fill-jpn">モモ</h5>
           </div>
-          <div ref="qrcode" id="qrcode" v-html="qrcode"></div>
         </div>
-        <div v-else id="synchronize"></div>
+        <div id="romo">
+          <div class="center">
+            <h5 class="skew stroke">Mobile player</h5>
+            <romoTitle></romoTitle>
+            <h5 class="skew fill-jpn">ロモ</h5>
+          </div>
+        </div>
       </div>
-    </div>
+      <div id="bottom">
+        <div id="desktop" class="center">
+          <div id="momo-chara"></div>
+          <div id="keyboard-animation" v-if="!isReady"></div>
+        </div>
+        <div id="mobile" class="center" v-if="qrcode">
+          <div id="mobile-container" v-if="!isReady">
+            <div id="link">
+              <a :href="url">{{url}}</a>
+            </div>
+            <div ref="qrcode" id="qrcode" v-html="qrcode"></div>
+          </div>
+          <div v-else id="synchronize"></div>
+        </div>
+      </div>
 
-    <!-- <button @click="disconnect">disconnect</button> -->
-  </div>
+      <!-- <button @click="disconnect">disconnect</button> -->
+    </div>
   </div>
 </template>
 
@@ -138,12 +138,14 @@ export default {
 }
 
 #synchro {
-.frame {
+  .frame {
     background-image: url("~static/ui/synchro/intro-fin.jpg");
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-position: center bottom;
-}
+    background-color: $beige;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position-x: center;
+    background-position-y: center;
+  }
 
   #top {
     display: inline-flex;
@@ -224,13 +226,16 @@ export default {
         display: flex;
         flex-direction: column;
         align-items: center;
-        a {
+        #link {
           background: white;
           border: 4px solid $a;
           border-radius: 30px;
           padding: 10px;
           text-decoration: none;
           position: relative;
+          a {
+            text-decoration: none;
+          }
           &::after {
             content: "";
             width: 100%;
@@ -250,7 +255,7 @@ export default {
           border: 4px solid $a;
           border-radius: 30px;
           padding: 10px;
-          margin-top: 15%;
+          margin-top: 45px;
           position: relative;
           &::after {
             content: "";

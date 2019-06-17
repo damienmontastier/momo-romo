@@ -10,6 +10,7 @@ export const state = () => ({
     currentStageId: null,
     stage: null,
     loaded: false,
+    duration: 0,
 })
 
 export const mutations = {
@@ -24,6 +25,9 @@ export const mutations = {
     },
     resetLoaded(state) {
         state.loaded = false
+    },
+    setLoadingDuration(state, value) {
+        state.duration = value
     },
 }
 

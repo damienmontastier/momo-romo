@@ -248,6 +248,10 @@ export default {
     start() {
       this.timecodeEvents();
       this.sounds.intro_sound.play();
+      // setTimeout(() => {
+      //           this.$emit('end')
+
+      // }, 1000);
     },
     extends() {
       let box = this.$refs["video-container3"].getBoundingClientRect();
