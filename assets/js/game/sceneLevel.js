@@ -408,8 +408,8 @@ export default class Level {
                     vec3 color2 = vec3(234., 227., 205.)/255.;
                     //color2 = vec3(214., 197., 185.)/255.;
                     vec3 gradient = mix(vec3(1.0),color1,v_position.y);
-                    float noise = snoise(vec3(vec2(v_position.x * 0.1,v_position.y* 0.1* 0.5 - (iTime*0.1)),iTime*0.1));
-                    float grain = snoise(vec3(v_position.xy*100000.,iTime*0.1));
+                    float noise = snoise(vec3(vec2(v_position.x * 0.1,v_position.y* 0.1* 0.5 - iTime*0.1),iTime*0.1));
+                    float grain = snoise(vec3(v_position.xy*500000.,iTime*0.1));
                    
                     vec3 noise_color = mix(color1,color2,clamp(noise,0.0,1.0));
                     
@@ -442,9 +442,9 @@ export default class Level {
         let delay = 250
         let duration = this.fixedPropsGroup.length * delay
         this.store.commit('game/setLoadingDuration', duration)
-        this.sounds.background_level.loop(true);
-        this.sounds.background_level.play();
-        this.sounds.background_level.fade(0, 1.0, 5000);
+        // this.sounds.background_level.loop(true);
+        // this.sounds.background_level.play();
+        // this.sounds.background_level.fade(0, 1.0, 5000);
         //FixedProps preRender
         for (let i = 0; i < this.fixedPropsGroup.length; i++) {
             let p1 = new Promise((resolve, reject) => {
@@ -520,7 +520,7 @@ export default class Level {
                     onComplete: () => {
                         this.startRestrictedZone = true
                         this.animationFinish = true
-                        this.sounds.breaking_bowl.play();
+                        // this.sounds.breaking_bowl.play();
                         this.charactersClass.blockCharacter(addTutorial, this.camera, hideTutorial)
                     }
                 }, 1000);

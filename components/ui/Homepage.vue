@@ -1,19 +1,18 @@
 <template>
   <div class="frame" id="homepage">
     <div ref="left" id="left">
-      <div id="title-text">
-        <p class="fill-en skew">The legend of</p>
-        <Momo></Momo>
-        <div id="second-row">
-          <p class="skew book">&</p>
-          <Romo></Romo>
-        </div>
-      </div>
       <div id="container">
-        <div ref="backgroundLandscape" id="background-landscape">
+        <div id="title-text">
+          <p class="fill-en skew">The legend of</p>
+          <Momo></Momo>
+          <div id="second-row">
+            <p class="skew book">&</p>
+            <Romo></Romo>
+          </div>
           <div ref="momo" id="momo"></div>
           <div ref="romo" id="romo"></div>
         </div>
+        <div ref="backgroundLandscape" id="background-landscape"></div>
         <div ref="backgroundLandscapeClone" id="background-landscape-clone"></div>
       </div>
     </div>
@@ -133,57 +132,66 @@ export default {
 .frame {
   border: none;
   background: none;
+  width: 75vw;
+  max-width: 2000px;
 }
 #homepage {
   position: relative;
   display: flex;
 
   #left {
-    width: 55%;
     position: relative;
+    width: 50%;
+    display: flex;
+    height: 100%;
     #container {
       position: relative;
       width: auto;
-      height: 95%;
+      width: 1000px;
+      max-height: 1000px;
+      height: 100%;
+      // top: calc((100vh - 1000px) / 2);
       display: flex;
       align-items: center;
       justify-content: center;
+      margin: auto;
+
+      #momo {
+        position: absolute;
+        bottom: 30%;
+        width: 160px;
+        height: 305px;
+        left: 80px;
+        z-index: 6;
+        background: url("~static/ui/characters/momo.png");
+        background-size: 100% auto;
+        background-repeat: no-repeat;
+      }
+      #romo {
+        position: absolute;
+        top: 100px;
+        width: 200px;
+        height: 20%;
+        right: 0px;
+        z-index: 3 !important;
+        background: url("~static/ui/characters/romo.png");
+        background-size: 100% auto;
+        background-repeat: no-repeat;
+      }
 
       #background-landscape {
         position: absolute;
-        width: 50vh;
+        width: 50%;
         height: inherit;
         background: url("~static/ui/homepage/homepage_fond.png");
         background-size: contain;
         background-position: center;
         background-repeat: no-repeat;
         z-index: 0;
-        #momo {
-          position: absolute;
-          bottom: 0;
-          width: 160px;
-          height: 305px;
-          left: -80px;
-          z-index: 6;
-          background: url("~static/ui/characters/momo.png");
-          background-size: 100% auto;
-          background-repeat: no-repeat;
-        }
-        #romo {
-          position: absolute;
-          top: 20vh;
-          width: 200px;
-          height: 100px;
-          right: -150px;
-          z-index: 3 !important;
-          background: url("~static/ui/characters/romo.png");
-          background-size: 100% auto;
-          background-repeat: no-repeat;
-        }
       }
       #background-landscape-clone {
         position: absolute;
-        width: 50vh;
+        width: 50%;
         height: inherit;
         z-index: 9;
         background: url("~static/ui/homepage/homepage_fond_fuji.png");
@@ -196,14 +204,12 @@ export default {
 
     #title-text {
       position: absolute;
-      width: 75vh;
+      width: 70%;
       height: inherit;
-      left: 50%;
       flex-direction: column;
-      top: 150px;
+      top: 25%;
       display: flex;
       z-index: 2;
-      transform: translateX(-50%);
       #second-row {
         display: flex;
         flex-direction: row;
