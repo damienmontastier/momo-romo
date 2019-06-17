@@ -11,7 +11,16 @@
     <div ref="tutorialKeyboard" id="tutorial-keyboard"></div>
 
     <div id="canvas"></div>
-    <mini-game :uid="$route.params.level" v-if="minigame"></mini-game>
+
+    <buttonCircleRed
+      en="Repair bowl"
+      letter="E"
+      jpn="リペアボウル"
+      id="button-start-minigame"
+      :uid="$route.params.level"
+      v-if="minigame"
+    ></buttonCircleRed>
+    <!-- <mini-game :uid="$route.params.level" v-if="minigame"></mini-game> -->
     <!-- <mini-game :uid="$route.params.level"></mini-game> -->
   </div>
 </template>
@@ -23,6 +32,7 @@ import Game from "@/assets/js/game/game";
 import TextureAtlas from "@/assets/js/utils/TextureAtlas";
 import MiniGame from "@/components/mini-game/MiniGame.vue";
 import readyKintsugi from "@/components/ui/readyKintsugi.vue";
+import buttonCircleRed from "@/components/svg/button-circle-red";
 import Loader from "@/components/ui/loader.vue";
 import { delay } from "q";
 
@@ -30,16 +40,18 @@ export default {
   components: {
     MiniGame,
     readyKintsugi,
-    Loader
+    Loader,
+    buttonCircleRed
   },
   data() {
     return {
       components: ["readyKintsugi", "Loader"],
       isLevelCompleted: false,
       value: 0,
-      minigame: true,
+      minigame: false,
       runGame: false,
-      killElement: true
+      killElement: true,
+      showTutorial: true
     };
   },
   computed: {
@@ -58,7 +70,7 @@ export default {
     this.$store.dispatch("game/loadStage", this.$route.params.level);
   },
   mounted() {
-    // this.game = new Game();
+    this.game = new Game();
     window.addEventListener(
       "launchMiniGame",
       e => {
@@ -70,13 +82,13 @@ export default {
   watch: {
     minigame() {},
     loaded(value) {
-      // this.game.start(
-      //   {
-      //     currentLevelParams: this.stage,
-      //     currentAltlas: this.currentAtlas
-      //   },
-      //   this.$store
-      // );
+      this.game.start(
+        {
+          currentLevelParams: this.stage,
+          currentAltlas: this.currentAtlas
+        },
+        this.$store
+      );
     }
   },
   methods: {
@@ -120,15 +132,16 @@ export default {
       });
     },
     hideTutorial() {
-      console.log(this.$refs.tutorialKeyboard.getBoundingClientRect().top);
-
-      TweenMax.to(this.$refs.tutorialKeyboard, 2, {
-        top: this.$refs.tutorialKeyboard.getBoundingClientRect().top - 50,
-        opacity: 0,
-        ease: Power4.easeOut
-      });
-
-      console.log("hide");
+      if (this.showTutorial) {
+        TweenMax.to(this.$refs.tutorialKeyboard, 2, {
+          top: this.$refs.tutorialKeyboard.getBoundingClientRect().top - 50,
+          opacity: 0,
+          ease: Power4.easeOut,
+          onComplete: () => {
+            this.showTutorial = false;
+          }
+        });
+      }
     },
     loadStart() {
       if (this.loaded) {
@@ -143,7 +156,7 @@ export default {
   },
 
   destroyed() {
-    // this.game.reset();
+    this.game.reset();
   }
 };
 </script>
@@ -155,8 +168,8 @@ export default {
   width: 100%;
   height: 100%;
   #tutorial-keyboard {
-    width: 170px;
-    height: 115px;
+    width: 150px;
+    height: 130px;
     background: white;
     position: absolute;
     top: 0%;
@@ -183,5 +196,14 @@ export default {
       transform: translateX(-50%) rotate(45deg);
     }
   }
+}
+
+#button-start-minigame {
+  position: absolute;
+  top: 120px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 200px;
+  height: 200px;
 }
 </style>

@@ -33,7 +33,7 @@ const visibleWidthAtZDepth = (depth, camera) => {
 export default class Level {
     constructor(opts, store) {
 
-        this.time = 2000;
+        this.time = 1000;
 
         this.store = store
 
@@ -433,21 +433,6 @@ export default class Level {
         this.camera.add(this.masks);
     }
 
-
-    nextToMinigame(value) {
-
-        if (value && !this.isMiniGameLaunched) {
-            this.isMiniGameLaunched = true
-            this.eventMinigame.minigame = value
-            // this.sounds.cta_ready.play();
-        } else {
-            this.isMiniGameLaunched = false
-            this.eventMinigame.minigame = value
-        }
-
-        window.dispatchEvent(this.eventMinigame);
-    }
-
     reset() {
         this.scene = null
     }
@@ -543,6 +528,33 @@ export default class Level {
         })
     }
 
+    nextToMinigame(value) {
+        if (value) {
+            //si dedans
+            if (this.miniGameOut) {
+                this.miniGameOut = false
+                // console.log('yesssss')
+                this.isMiniGameLaunched = true
+                this.eventMinigame.minigame = value
+                this.sounds.cta_ready.play();
+            }
+            this.miniGameIn = true
+        } else {
+            //si dehors
+            if (this.miniGameIn) {
+                this.miniGameIn = false
+                // console.log('nooooo')
+                this.isMiniGameLaunched = false
+
+            }
+            this.miniGameOut = true
+        }
+
+        this.eventMinigame.minigame = value
+
+        window.dispatchEvent(this.eventMinigame);
+    }
+
     render() {
         const delta = this.clock.getDelta();
         this.time += delta;
@@ -608,7 +620,7 @@ export default class Level {
         }
 
         if (this.minigameProps) {
-            if (this.momo.body.position.x >= this.minigameProps.position.x - 2 && this.momo.body.position.x <= this.minigameProps.position.x + 2) {
+            if (this.momo.body.position.x >= this.minigameProps.position.x - 1 && this.momo.body.position.x <= this.minigameProps.position.x + 1) {
                 this.nextToMinigame(true)
             } else {
                 this.nextToMinigame(false)
