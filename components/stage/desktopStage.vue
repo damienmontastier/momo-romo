@@ -59,8 +59,6 @@ export default {
   },
   mounted() {
     this.game = new Game();
-    console.log(this.$refs.tutorialKeyboard.getBoundingClientRect());
-
     window.addEventListener(
       "launchMiniGame",
       e => {

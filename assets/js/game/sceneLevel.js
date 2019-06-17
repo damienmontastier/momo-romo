@@ -12,8 +12,7 @@ import breaking_bowl from "@/static/sounds/breaking_bowl.mp3";
 import cta_ready from "@/static/sounds/cta_ready.mp3";
 
 import {
-    TweenMax,
-    Power4
+    TweenMax
 } from 'gsap';
 
 const visibleHeightAtZDepth = (depth, camera) => {
@@ -407,9 +406,9 @@ export default class Level {
                 void main() {
                     vec3 color1 = vec3(253., 249., 235.)/255.;
                     vec3 color2 = vec3(234., 227., 205.)/255.;
-                    // color2 = vec3(214., 197., 185.)/255.;
+                    //color2 = vec3(214., 197., 185.)/255.;
                     vec3 gradient = mix(vec3(1.0),color1,v_position.y);
-                    float noise = snoise(vec3(vec2(v_position.x * 0.1,v_position.y* 0.1* 0.5 - iTime*0.1),iTime*0.1));
+                    float noise = snoise(vec3(vec2(v_position.x * 0.1,v_position.y* 0.1* 0.5 - (iTime*0.1)),iTime*0.1));
                     float grain = snoise(vec3(v_position.xy*100000.,iTime*0.1));
                    
                     vec3 noise_color = mix(color1,color2,clamp(noise,0.0,1.0));
@@ -531,7 +530,6 @@ export default class Level {
                 callback()
 
                 TweenMax.to(this.masks.position, 2.5, {
-                    x: 0,
                     x: 0,
                     ease: Power4.easeOut,
                     onComplete: () => {

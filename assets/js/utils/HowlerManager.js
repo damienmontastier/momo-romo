@@ -36,8 +36,8 @@ class HowlerManager {
 
     }
 
-    stop(sounds) {
-        Object.values(sounds).forEach(sound => {
+    stop() {
+        Object.values(this.sounds).forEach(sound => {
             sound.stop()
         });
     }

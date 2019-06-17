@@ -72,11 +72,11 @@ let subtitles = [
   },
   {
     timecode: 29014,
-    text: "Thus laid aside"
+    text: "Thus laid aside,"
   },
   {
     timecode: 31010,
-    text: "those abandoned objects saw their spirit leave them,"
+    text: "those abandoned objects saw their spirits leave them,"
   },
   {
     timecode: 35017,
@@ -108,7 +108,7 @@ let subtitles = [
   },
   {
     timecode: 57007,
-    text: "The World's Spirit as willing to help Momo,"
+    text: "The World's Spirit was willing to help Momo,"
   },
   {
     timecode: 61001,
@@ -140,8 +140,8 @@ export default {
       return this.subtitles[this.currentSubtitleIndex].text;
     },
     nextSubtitleTimecode() {
-      if(!this.subtitles[this.currentSubtitleIndex + 1]) {
-        return undefined
+      if (!this.subtitles[this.currentSubtitleIndex + 1]) {
+        return undefined;
       }
       return this.subtitles[this.currentSubtitleIndex + 1].timecode;
     }
@@ -188,8 +188,8 @@ export default {
       });
     },
     onTimeUpdate() {
-		let seek = this.sounds.intro_sound.seek()
-		let currentTime = seek*1000
+      let seek = this.sounds.intro_sound.seek();
+      let currentTime = seek * 1000;
       if (currentTime > 1120 && !this.timecodes[0]) {
         this.timecodes[0] = true;
         this.$refs.video1.play();
@@ -198,7 +198,7 @@ export default {
         this.timecodes[1] = true;
         this.$refs.video2.play();
         this.$refs.video3.load();
-      } else if (currentTime > 39002 && !this.timecodes[2]) {
+      } else if (currentTime > 39502 && !this.timecodes[2]) {
         this.timecodes[2] = true;
         this.$refs.video3.play();
       } else if (currentTime > 43014 && !this.timecodes[3]) {
@@ -206,7 +206,10 @@ export default {
         this.extends();
       }
 
-      if (this.nextSubtitleTimecode && currentTime > this.nextSubtitleTimecode) {
+      if (
+        this.nextSubtitleTimecode &&
+        currentTime > this.nextSubtitleTimecode
+      ) {
         this.currentSubtitleIndex++;
       }
 
@@ -242,7 +245,7 @@ export default {
         requestAnimationFrame(this.onTimeUpdate.bind(this));
       });
       this.sounds.intro_sound.once("end", () => {
-        this.$emit('end')
+        this.$emit("end");
       });
     },
     start() {
@@ -269,16 +272,16 @@ export default {
       tl.to(this.$refs["video-container3"], 3, {
         width: "100%",
         ease: Power4.easeInOut
-	  })
-	//   .to(
-    //     this.$refs["video-container1"],
-    //     2.5,
-    //     {
-    //       opacity: 0,
-    //       ease: Power4.easeOut
-    //     },
-    //     0
-    //   );
+      });
+      //   .to(
+      //     this.$refs["video-container1"],
+      //     2.5,
+      //     {
+      //       opacity: 0,
+      //       ease: Power4.easeOut
+      //     },
+      //     0
+      //   );
     }
   }
 };
@@ -293,7 +296,7 @@ export default {
   position: relative;
   .container {
     margin: auto;
-    width: 90vw;
+    width: 70vw;
     height: 80vh;
     // max-width: 1214px;
     // max-height: 686px;
@@ -307,15 +310,15 @@ export default {
       max-width: 400px;
       width: 400px;
       //   max-height: 100%;
-        // display: flex;
+      // display: flex;
       opacity: 0;
-	  //   width: 400px;
-	  border: 3px solid #000;
+      //   width: 400px;
+      border: 3px solid #000;
       video {
         // margin: auto;
         max-width: unset;
         overflow: hidden;
-        
+
         height: 100%;
 
         // object-fit: contain;
@@ -328,17 +331,17 @@ export default {
           overflow: hidden;
           display: flex;
           margin: auto;
-		  height: 100%;
-		  position: relative;
+          height: 100%;
+          position: relative;
         }
         video {
-		//   object-fit: cover;
-		  width: unset;
-		  position: absolute;
-		  left: 0px;
-		  top: 0px;
-		  max-width: 90vw;
-		  min-width: 100%;
+          //   object-fit: cover;
+          width: unset;
+          position: absolute;
+          left: 0px;
+          top: 0px;
+          max-width: 70vw;
+          min-width: 100%;
         }
 
         &.extended {
@@ -351,8 +354,8 @@ export default {
           .third_container {
             width: 100%;
             video {
-				// max-width: 100%;
-            //   object-fit: contain;
+              // max-width: 100%;
+              //   object-fit: contain;
             }
           }
         }
