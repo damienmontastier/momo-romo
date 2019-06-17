@@ -21,7 +21,7 @@
       v-if="minigame"
       v-on:triggered="startMinigame"
     ></buttonCircleRed>
-    <mini-game :uid="$route.params.level" v-if="minigameStarted" ref="minigame"></mini-game>
+    <mini-game :uid="$route.params.level" v-show="minigameStarted" ref="minigame"></mini-game>
     <!-- <mini-game :uid="$route.params.level"></mini-game> -->
   </div>
 </template>
@@ -97,10 +97,13 @@ export default {
     startMinigame() {
       console.log("start minigame");
       this.minigameStarted = true;
-      // // console.log(this.$refs.minigame.$children[0]);
-      // this.$refs.minigame.$children[0].load().then(() => {
-      //   //   this.$refs.minigame.$children[0].afterLoad();
-      // });
+      this.$nextTick(()=> {
+        this.$refs.minigame.$children[0].load().then(() => {
+          // déclancher animation mask PUIS .then(()=>{this.$refs.minigame.$children[0].start()})
+          this.$refs.minigame.$children[0].start()
+        });
+      })
+
     },
     increment() {
       if (this.value !== this.components.length - 1) {
