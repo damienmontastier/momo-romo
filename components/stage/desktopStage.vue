@@ -154,6 +154,8 @@ export default {
 @import "~assets/scss/main.scss";
 #desktopStage {
   position: relative;
+  width: 100%;
+  height: 100%;
   #tutorial-keyboard {
     width: 170px;
     height: 115px;
