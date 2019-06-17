@@ -457,9 +457,9 @@ export default class Level {
         let delay = 250
         let duration = this.fixedPropsGroup.length * delay
         this.store.commit('game/setLoadingDuration', duration)
-        this.sounds.background_level.loop(true);
-        this.sounds.background_level.play();
-        this.sounds.background_level.fade(0, 1.0, 5000);
+        // this.sounds.background_level.loop(true);
+        // this.sounds.background_level.play();
+        // this.sounds.background_level.fade(0, 1.0, 5000);
         //FixedProps preRender
         for (let i = 0; i < this.fixedPropsGroup.length; i++) {
             let p1 = new Promise((resolve, reject) => {
@@ -535,7 +535,7 @@ export default class Level {
                     onComplete: () => {
                         this.startRestrictedZone = true
                         this.animationFinish = true
-                        this.sounds.breaking_bowl.play();
+                        // this.sounds.breaking_bowl.play();
                         this.charactersClass.blockCharacter(addTutorial, this.camera, hideTutorial)
                     }
                 }, 1000);
