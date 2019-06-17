@@ -55,7 +55,7 @@
       <button @click="launchCountdown()">START coutdown</button>
       <button @click="()=>{$refs.intro.setRomoReady()}">set momo ready</button>
       <button @click="launchEndGame()">end game</button>
-      <!-- <div>{{countdown}}</div> -->
+      <div v-if="tweening">tweening</div>
     </div>
   </div>
 </template>
@@ -90,11 +90,13 @@ import countdown_2 from "~/static/sounds/countdown_2.mp3";
 import countdown_1 from "~/static/sounds/countdown_1.mp3";
 import cta_activated from "~/static/sounds/cta_activated.mp3";
 
-import momo_minijeu_1 from "~/static/sounds/momo_minijeu_1.mp3"
-import momo_minijeu_2 from "~/static/sounds/momo_minijeu_2.mp3"
-import momo_minijeu_3 from "~/static/sounds/momo_minijeu_3.mp3"
+import momo_minijeu_1 from "~/static/sounds/momo_minijeu_1.mp3";
+import momo_minijeu_2 from "~/static/sounds/momo_minijeu_2.mp3";
+import momo_minijeu_3 from "~/static/sounds/momo_minijeu_3.mp3";
 
-import romo_playing from "~/static/sounds/romo_playing.mp3"
+import romo_playing from "~/static/sounds/romo_playing.mp3";
+
+import soundsTimecodes from "~/static/ui/kintsugi/mini-game/sounds";
 
 Number.prototype.map = function(in_min, in_max, out_min, out_max) {
   return ((this - in_min) * (out_max - out_min)) / (in_max - in_min) + out_min;
@@ -523,7 +525,8 @@ export default {
       currentStep: 0,
       isMiniGameStarted: false,
       fractureEnded: false,
-      isLoaded: false
+      isLoaded: false,
+      tweening: null
     };
   },
   methods: {
@@ -577,7 +580,7 @@ export default {
             this.$refs.window,
             0.5,
             {
-              x: (window.innerWidth/2 + box.width/2),
+              x: window.innerWidth / 2 + box.width / 2,
               ease: Power4.easeOut,
               delay: 0.25
             },
@@ -743,10 +746,10 @@ export default {
       this.$refs.intro.$refs.isPlaying.style.opacity = "0";
       this.$refs.keys.style.opacity = "0";
       this.$refs.steps.style.opacity = "0";
-      this.sounds.cta_activated.play()
-      this.sounds.background_level.volume(0.5)
-      this.sounds.background_level.loop(true)
-      this.sounds.background_level.play()
+      this.sounds.cta_activated.play();
+      this.sounds.background_level.volume(0.5);
+      this.sounds.background_level.loop(true);
+      this.sounds.background_level.play();
       let tl = new TimelineMax();
       tl.add("endGameAppear", 0)
         .to(
@@ -756,7 +759,7 @@ export default {
             x: 1,
             y: 1,
             z: 1,
-            ease:Back.easeOut.config(1.4),
+            ease: Back.easeOut.config(1.4),
             onStart: () => {
               this.app.model.scale.set(1.2, 1.2, 1.2);
               this.app.model.position.z = 0.7;
@@ -782,39 +785,37 @@ export default {
           {
             opacity: 1,
             scale: 1,
-            ease:Back.easeOut.config(1.4)
+            ease: Back.easeOut.config(1.4)
           },
           "endGameAppear"
         )
-        .eventCallback('onComplete',()=>{
-          setTimeout(()=>{
-            this.windowDisappear()
-          },2000)
-        })
+        .eventCallback("onComplete", () => {
+          setTimeout(() => {
+            this.windowDisappear();
+          }, 2000);
+        });
     },
     windowDisappear() {
-      console.log('windowDisappear')
+      console.log("windowDisappear");
       this.sounds.transition_windows.play();
-      this.sounds.transition_windows.fade(1,0,3000);
+      this.sounds.transition_windows.fade(1, 0, 3000);
       let box = this.$refs.window.getBoundingClientRect();
       let tl = new TimelineMax();
-        tl.add("appear", 0)
-          .set(this.$refs.window, {
-            opacity: 1
-          })
-          .to(
-            this.$refs.window,
-            0.5,
-            {
-              x: -(window.innerWidth/2 + box.width/2),
-              ease: Power4.easeOut,
-              delay: 1
-            },
-            "appear"
-          )
-          .eventCallback('onComplete',()=>{
-            
-          })
+      tl.add("appear", 0)
+        .set(this.$refs.window, {
+          opacity: 1
+        })
+        .to(
+          this.$refs.window,
+          0.5,
+          {
+            x: -(window.innerWidth / 2 + box.width / 2),
+            ease: Power4.easeOut,
+            delay: 1
+          },
+          "appear"
+        )
+        .eventCallback("onComplete", () => {});
     },
     launchCountdown() {
       this.app.momoMoods.visible = false;
@@ -940,6 +941,7 @@ export default {
       this.$refs.intro.$refs.tryAgain.style.opacity = "1";
     },
     fail() {
+      this.sounds["momo_minijeu_" + (this.currentFracture + 1)].stop();
       this.$refs.intro.$refs.isPlaying.style.opacity = "0";
       let fragments = this.gameModel[this.currentFracture].fragments;
       this.cancelFracture(fragments);
@@ -969,6 +971,7 @@ export default {
       if (this.tweening) {
         this.tweening.kill();
       }
+      this.tweening = null;
       this.currentStep = 0;
       this.fractureEnded = false;
 
@@ -983,7 +986,7 @@ export default {
       this.$refs.keys.style.opacity = "1";
       this.isMiniGameStarted = true;
       this.resetUI();
-      this.startKeyPressInterval();
+      // this.startKeyPressInterval();
     },
     onKeyPress(event) {
       if (this.isMiniGameStarted) {
@@ -993,8 +996,8 @@ export default {
             this.runningInterval > 0 &&
             this.canKeyPress
           ) {
-            console.log(this.runningInterval);
-            this.sucess();
+            console.log("good", this.runningInterval);
+            this.success();
           } else if (this.runningInterval > 0) {
             console.log("wrong key");
             this.fail();
@@ -1002,10 +1005,11 @@ export default {
         }
       }
     },
-    sucess() {
+    success() {
       if (this.tweening) {
         this.tweening.kill();
       }
+      this.tweening = null;
       let tl = new TimelineMax();
       tl.to(this.$refs.letter, 0.1, {
         // ease: Power4.easeIn,
@@ -1044,7 +1048,7 @@ export default {
           },
           onComplete: () => {
             this.nextStep();
-            this.startKeyPressInterval();
+            // this.startKeyPressInterval();
             this.$refs.svgs.style.opacity = "1";
             this.$refs.circle.style.opacity = "1";
             this.$refs.letter.classList.remove("down");
@@ -1053,7 +1057,7 @@ export default {
           }
         });
     },
-    startKeyPressInterval() {
+    startKeyPressInterval(duration) {
       this.canKeyPress = false;
       this.runningInterval = this.interval;
       if (this.tweening) {
@@ -1062,8 +1066,9 @@ export default {
       console.log("startKeyPressInterval");
       this.tweening = new TimelineMax();
 
+      this.duration = duration;
       this.tweening
-        .to(this, this.interval - this.errorMargin, {
+        .to(this, duration - this.errorMargin, {
           runningInterval: this.errorMargin,
           ease: Power0.easeNone,
           onComplete: () => {
@@ -1083,7 +1088,6 @@ export default {
         })
         .eventCallback("onUpdate", () => {
           if (!this.fractureEnded) {
-            // console.log(this.runningInterval);
           }
         });
       // this.tweening = TweenMax.to(this, this.interval, {
@@ -1107,7 +1111,8 @@ export default {
         this.sounds.countdown_2.play();
       } else if (countdown === 1) {
         this.sounds.countdown_1.play();
-        this.sounds.momo_minijeu_1.play();
+        this.sounds["momo_minijeu_" + (this.currentFracture + 1)].play();
+        this.tweening = null;
       }
     },
     loadSounds() {
@@ -1141,27 +1146,59 @@ export default {
             id: "countdown_3",
             src: countdown_3
           },
-           {
-             id:'momo_minijeu_1',
-             src: momo_minijeu_1
-           },
-           {
-             id:'momo_minijeu_2',
-             src: momo_minijeu_2
-           },
-           {
-             id:'momo_minijeu_3',
-             src: momo_minijeu_3
-           },
-           {
-             id:'romo_playing',
-             src: romo_playing
-           }
+          {
+            id: "momo_minijeu_1",
+            src: momo_minijeu_1
+          },
+          {
+            id: "momo_minijeu_2",
+            src: momo_minijeu_2
+          },
+          {
+            id: "momo_minijeu_3",
+            src: momo_minijeu_3
+          },
+          {
+            id: "romo_playing",
+            src: romo_playing
+          }
         ]).then(sounds => {
           this.sounds = sounds;
           resolve();
         });
       });
+    },
+    createTimecodeEvent() {
+      soundsTimecodes.forEach((sound, index) => {
+        this.sounds["momo_minijeu_" + (index + 1)].on("play", test => {
+          let soundID = "momo_minijeu_" + (index + 1);
+          requestAnimationFrame(this.soundLoop.bind(this, soundID, index));
+        });
+      });
+    },
+    soundLoop(soundID, index) {
+      let currentTime = this.sounds[soundID].seek() * 1000;
+
+      // console.log(currentTime);
+      // if(soundsTimecodes[i][this.current])
+      console.log(soundsTimecodes[index][this.currentStep]);
+      if (soundsTimecodes[index][this.currentStep]) {
+        let from = soundsTimecodes[index][this.currentStep];
+        let to = soundsTimecodes[index][this.currentStep + 1];
+        let duration = (to - from) * 0.001;
+        duration = isNaN(duration) ? 2 : duration;
+
+        if (
+          currentTime > soundsTimecodes[index][this.currentStep] &&
+          !this.tweening
+        ) {
+          console.log("start interval");
+          console.log("duration", duration, from, to);
+          this.startKeyPressInterval(duration);
+        }
+      }
+
+      requestAnimationFrame(this.soundLoop.bind(this, soundID, index));
     }
   },
   computed: {
@@ -1180,8 +1217,12 @@ export default {
       }
     },
     circleScale() {
+      let scale;
+      this.tweening
+        ? (scale = this.runningInterval.map(0, this.duration, 1, 2))
+        : (scale = 2);
       return {
-        transform: `scale(${this.runningInterval.map(0, this.interval, 1, 2)})`
+        transform: `scale(${scale})`
       };
     }
   },
@@ -1193,6 +1234,7 @@ export default {
     this.init();
     window.addEventListener("keydown", this.onKeyPress.bind(this));
     this.load().then(() => {
+      this.createTimecodeEvent();
       this.windowAppear().then(() => {
         this.appearToTitle();
         if (this.socket) {

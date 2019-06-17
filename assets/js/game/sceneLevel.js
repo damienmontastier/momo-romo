@@ -8,8 +8,7 @@ import cannonDebugRenderer from '../physics/CannonDebugRenderer'
 import AnimatedProp from "@/assets/js/objects/AnimatedProp";
 
 import {
-    TweenMax,
-    Power4
+    TweenMax
 } from 'gsap';
 
 const visibleHeightAtZDepth = (depth, camera) => {
@@ -196,7 +195,7 @@ export default class Level {
             // animate.in = false
             this.animatesArray.push(animate)
             this.scene.add(animate)
-            this.launchSprite(animate.animate,'wait')
+            this.launchSprite(animate.animate, 'wait')
         })
     }
 
@@ -497,8 +496,8 @@ export default class Level {
 
         Promise.all(promises).then(() => {
             this.preRenderFinish = true
-            
-            setTimeout(()=>{
+
+            setTimeout(() => {
                 callback()
                 TweenMax.to(this.masks.position, 2.5, {
                     x: 0,
@@ -508,7 +507,7 @@ export default class Level {
                         this.animationFinish = true
                     }
                 })
-            },1000)
+            }, 1000)
 
         })
     }
@@ -521,7 +520,7 @@ export default class Level {
 
         if (this.animatesArray.length && this.animationFinish) {
             this.animatesArray.forEach(animate => {
-                animate.animate.update(delta*5000)
+                animate.animate.update(delta * 5000)
                 if (this.momo.position.x >= animate.position.x - .5 && this.momo.position.x <= animate.position.x + .5 && !animate.animated) {
                     if ((animate.out && !animate.in) || (!animate.in && !animate.out)) {
                         animate.in = true
@@ -529,18 +528,18 @@ export default class Level {
                         if (animate.name == "cat") {
                             // this.launchSprite(animate.animate, "jump")
                             animate.animate
-                            .newSprites()
-                            .addState('jump')
-                            .addState('wait')
-                            .start()
-                            
+                                .newSprites()
+                                .addState('jump')
+                                .addState('wait')
+                                .start()
+
                         } else if (animate.name == "petals") {
                             // this.launchSprite(animate.animate, "petals")
                             animate.animate
-                            .newSprites()
-                            .addState('petals')
-                            .addState('wait')
-                            .start()
+                                .newSprites()
+                                .addState('petals')
+                                .addState('wait')
+                                .start()
                         }
                         animate.animated = true
                     }
