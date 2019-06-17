@@ -538,11 +538,11 @@ export default class Level {
                 }
             })
             tl.to(this.masks.position, 3, {
-                x: -this.width / 4,
+                x: -this.width / 4.5,
                 ease: Power4.easeOut,
             });
             tl.to(this.camera.position, 3, {
-                x: this.width / 4,
+                x: this.width / 4.5,
                 ease: Power4.easeOut,
             }, 0);
         })
