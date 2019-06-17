@@ -3,19 +3,19 @@
     <div class="frame">
       <div id="top">
         <div id="momo">
-          <div class="center">
-            <h5 class="skew stroke">Desktop player</h5>
-            <momoTitle></momoTitle>
-            <h5 class="skew fill-jpn">モモ</h5>
-          </div>
+          <!-- <div class="center"> -->
+          <h5 class="skew stroke">Desktop player</h5>
+          <momoTitle></momoTitle>
+          <h5 class="skew fill-jpn">モモ</h5>
+          <!-- </div> -->
         </div>
         <div id="romo">
-          <div class="center">
+          <!-- <div class="center"> -->
             <h5 class="skew stroke">Mobile player</h5>
             <romoTitle></romoTitle>
             <h5 class="skew fill-jpn">ロモ</h5>
           </div>
-        </div>
+        <!-- </div> -->
       </div>
       <div id="bottom">
         <div id="desktop" class="center">
@@ -124,7 +124,8 @@ export default {
 @import "~assets/scss/main.scss";
 .center {
   flex-direction: column;
-  width: 400px;
+  width: 80%;
+  height: 60%;
   margin: 0 auto;
 }
 #qrcode {
@@ -157,11 +158,12 @@ export default {
       width: 50%;
       height: 100%;
       display: flex;
-      align-items: center;
+      flex-direction: column;
+      justify-content: center;
+      margin: 5%;
 
       svg {
         width: 100%;
-        height: 100%;
         margin-top: -20px;
       }
 
@@ -191,12 +193,12 @@ export default {
         width: 269px;
         height: 269px;
         background-image: url("~static/ui/synchro/momo.png");
-        animation: play 1.2s steps(12) infinite;
+        animation: play 1s steps(12) infinite;
         animation-direction: reverse;
       }
       #keyboard-animation {
-        width: 160px;
-        height: 120px;
+        width: 150px;
+        height: 130px;
         border-radius: 45px;
         background: white;
         border: 4px solid $a;
@@ -204,7 +206,7 @@ export default {
         left: -5%;
         background-image: url("~static/ui/synchro/tuto_keyboard.gif");
         background-size: cover;
-        background-position: bottom;
+        background-position: center;
 
         &::after {
           content: "";
