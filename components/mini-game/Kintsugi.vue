@@ -532,6 +532,7 @@ export default {
   methods: {
     init() {
       this.app.init(this.$refs.canvas);
+      window.addEventListener("keydown", this.onKeyPress.bind(this));
     },
     createSocketEvents() {
       if (this.socket) {
@@ -552,6 +553,8 @@ export default {
       }
     },
     load() {
+      this.init();
+      
       let promises = [];
       this.app.addTitle().forEach(promise => {
         promises.push(promise);
@@ -1199,6 +1202,21 @@ export default {
       }
 
       requestAnimationFrame(this.soundLoop.bind(this, soundID, index));
+    },
+    start() {
+      this.createTimecodeEvent();
+      this.windowAppear().then(() => {
+        this.appearToTitle();
+        if (this.socket) {
+          this.socket.emit("custom-event", {
+            name: "router",
+            in: this.roomID,
+            args: {
+              id: "kintsugi"
+            }
+          });
+        }
+      });
     }
   },
   computed: {
@@ -1231,25 +1249,7 @@ export default {
     this.createSocketEvents();
   },
   mounted() {
-    this.init();
-    window.addEventListener("keydown", this.onKeyPress.bind(this));
-    this.load().then(() => {
-      this.createTimecodeEvent();
-      this.windowAppear().then(() => {
-        this.appearToTitle();
-        if (this.socket) {
-          this.socket.emit("custom-event", {
-            name: "router",
-            in: this.roomID,
-            args: {
-              id: "kintsugi"
-            }
-          });
-        }
-      });
-      console.log("mini game assets loaded");
-      this.isLoaded = true;
-    });
+
   },
   destroyed() {
     window.removeEventListener("keydown", this.onKeyPress.bind(this));

@@ -158,7 +158,7 @@ export default {
 
       #momo {
         position: absolute;
-        bottom: 30%;
+        bottom: 25%;
         width: 160px;
         height: 305px;
         left: 80px;
@@ -182,6 +182,8 @@ export default {
       #background-landscape {
         position: absolute;
         width: 50%;
+        min-width: 400px;
+        max-width: 600px;
         height: inherit;
         background: url("~static/ui/homepage/homepage_fond.png");
         background-size: contain;
@@ -192,6 +194,8 @@ export default {
       #background-landscape-clone {
         position: absolute;
         width: 50%;
+        min-width: 400px;
+        max-width: 600px;
         height: inherit;
         z-index: 9;
         background: url("~static/ui/homepage/homepage_fond_fuji.png");
@@ -204,10 +208,12 @@ export default {
 
     #title-text {
       position: absolute;
-      width: 70%;
-      height: inherit;
+      width: 100%;
+      min-width: 500px;
+      max-width: 600px;
+      height: 100%;
       flex-direction: column;
-      top: 25%;
+      top: 20%;
       display: flex;
       z-index: 2;
       #second-row {
