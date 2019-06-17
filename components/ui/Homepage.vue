@@ -139,12 +139,12 @@ export default {
   display: flex;
 
   #left {
-    width: 60%;
+    width: 55%;
     position: relative;
     #container {
       position: relative;
-      width: 100%;
-      height: 100%;
+      width: auto;
+      height: 95%;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -200,7 +200,7 @@ export default {
       height: inherit;
       left: 50%;
       flex-direction: column;
-      top: 10vh;
+      top: 150px;
       display: flex;
       z-index: 2;
       transform: translateX(-50%);
@@ -246,13 +246,13 @@ export default {
     }
   }
   #right {
-    width: 40%;
+    width: 45%;
     display: flex;
     align-items: center;
     flex-direction: column;
     justify-content: space-around;
     #content {
-      max-width: 80%;
+      max-width: 435px;
       text-align: center;
       h5 {
         text-transform: uppercase;

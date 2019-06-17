@@ -11,8 +11,6 @@ import background_level from "@/static/sounds/background_level.mp3";
 import breaking_bowl from "@/static/sounds/breaking_bowl.mp3";
 import cta_ready from "@/static/sounds/cta_ready.mp3";
 
-
-
 import {
     TweenMax,
     Power4
@@ -36,7 +34,9 @@ const visibleWidthAtZDepth = (depth, camera) => {
 export default class Level {
     constructor(opts, store) {
 
-        this.time = 0;
+        this.time = 2000;
+
+        this.store = store
 
         HowlerManager.add([{
                 id: "background_level",
@@ -72,7 +72,9 @@ export default class Level {
 
         this.clock = new THREE.Clock()
 
-        new Characters(store).then((characters) => {
+        this.charactersClass = new Characters(store)
+
+        this.charactersClass.add().then((characters) => {
             this.characters = characters
             this.momo = this.characters.momo
             this.momo.originPosition = new THREE.Vector3().copy(this.momo.position)
@@ -405,7 +407,7 @@ export default class Level {
                 void main() {
                     vec3 color1 = vec3(253., 249., 235.)/255.;
                     vec3 color2 = vec3(234., 227., 205.)/255.;
-                    color2 = vec3(214., 197., 185.)/255.;
+                    // color2 = vec3(214., 197., 185.)/255.;
                     vec3 gradient = mix(vec3(1.0),color1,v_position.y);
                     float noise = snoise(vec3(vec2(v_position.x * 0.1,v_position.y* 0.1* 0.5 - iTime*0.1),iTime*0.1));
                     float grain = snoise(vec3(v_position.xy*100000.,iTime*0.1));
@@ -451,12 +453,14 @@ export default class Level {
         this.scene = null
     }
 
-    preRenderProps(callback) {
-        this.callback = callback
+    preRenderProps(callback, addTutorial, hideTutorial) {
         let promises = []
-        let delay = 150
-        let duration = this.fixedPropsGroup.length * 350
-
+        let delay = 250
+        let duration = this.fixedPropsGroup.length * delay
+        this.store.commit('game/setLoadingDuration', duration)
+        this.sounds.background_level.loop(true);
+        this.sounds.background_level.play();
+        this.sounds.background_level.fade(0, 1.0, 5000);
         //FixedProps preRender
         for (let i = 0; i < this.fixedPropsGroup.length; i++) {
             let p1 = new Promise((resolve, reject) => {
@@ -523,19 +527,20 @@ export default class Level {
 
         Promise.all(promises).then(() => {
             this.preRenderFinish = true
-            this.callback()
-            this.sounds.background_level.loop(true);
-            this.sounds.background_level.play();
-            this.sounds.background_level.fade(0, 1.0, 5000);
-            TweenMax.to(this.masks.position, 2.5, {
-                x: 0,
-                x: 0,
-                ease: Power4.easeOut,
-                onComplete: () => {
-                    this.startRestrictedZone = true
-                    this.animationFinish = true
-                    this.sounds.breaking_bowl.play();
-                }
+            setTimeout(() => {
+                callback()
+
+                TweenMax.to(this.masks.position, 2.5, {
+                    x: 0,
+                    x: 0,
+                    ease: Power4.easeOut,
+                    onComplete: () => {
+                        this.startRestrictedZone = true
+                        this.animationFinish = true
+                        this.sounds.breaking_bowl.play();
+                        this.charactersClass.blockCharacter(addTutorial, this.camera, hideTutorial)
+                    }
+                }, 1000);
             })
         })
     }

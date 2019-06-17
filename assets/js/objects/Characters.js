@@ -16,13 +16,14 @@ const RomoJson = require("~/static/sprites/romo/romo.json");
 
 export default class Characters {
     constructor(store) {
+        this.store = store
         this.coordinate = {
             x: 0,
             y: 0
         }
         this.speed = 0
 
-        this.socket = store.state.synchro.socket
+        this.socket = this.store.state.synchro.socket
 
         if (this.socket) {
             this.socket.on("coordonate-joystick", t => {
@@ -60,9 +61,9 @@ export default class Characters {
             jump: false,
             wait: false
         }
+    }
 
-        this.KeyboardManager = new KeyboardManager(this.onInput.bind(this), store.state.keyboard);
-
+    add() {
         return new Promise((resolve, reject) => {
             this.addAnimate().then((sprites) => {
                 this.momo = sprites[0]
@@ -78,6 +79,22 @@ export default class Characters {
 
     animeRomo() {
         this.launchSprite(this.romo, "romo")
+    }
+
+    blockCharacter(addTutorial, camera, hideTutorial) {
+        this.camera = camera
+        this.hideTutorial = hideTutorial
+        let position = this.projectVectorToScreen(this.momo.position)
+        addTutorial(position)
+        this.KeyboardManager = new KeyboardManager(this.onInput.bind(this), this.store.state.keyboard);
+    }
+
+    projectVectorToScreen(vector) {
+        vector.project(this.camera);
+        vector.x = ((vector.x + 1) * window.innerWidth) / 2;
+        vector.y = (-(vector.y - 1) * window.innerHeight) / 2;
+        vector.z = 0;
+        return vector;
     }
 
     addAnimate() {
@@ -139,6 +156,9 @@ export default class Characters {
     }
 
     onInput(key, value) {
+        if (key == "ARROWLEFT" || key == "ARROWRIGHT" || key == " ") {
+            this.hideTutorial()
+        }
         switch (key) {
             case "ARROWLEFT":
                 this.moveLeft = value
