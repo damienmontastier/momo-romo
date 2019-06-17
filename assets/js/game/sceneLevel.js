@@ -6,6 +6,10 @@ import physicParams from '../physics/physicParams';
 import Characters from '../objects/Characters';
 import cannonDebugRenderer from '../physics/CannonDebugRenderer'
 import AnimatedProp from "@/assets/js/objects/AnimatedProp";
+import HowlerManager from "~/assets/js/utils/HowlerManager";
+import background_level from "@/static/sounds/background_level.mp3";
+import breaking_bowl from "@/static/sounds/breaking_bowl.mp3";
+import cta_ready from "@/static/sounds/cta_ready.mp3";
 
 import {
     TweenMax
@@ -31,6 +35,25 @@ export default class Level {
 
         this.time = 2000;
 
+        this.store = store
+
+        HowlerManager.add([{
+                id: "background_level",
+                src: background_level
+            },
+            {
+                id: "breaking_bowl",
+                src: breaking_bowl
+            },
+            {
+                id: "cta_ready",
+                src: cta_ready
+            }
+
+        ]).then(sounds => {
+            this.sounds = sounds;
+        });
+
         this.canvas = document.getElementById("canvas")
         this.textureAtlas = opts.textureAtlas; // textureAtlas
 
@@ -48,15 +71,18 @@ export default class Level {
 
         this.clock = new THREE.Clock()
 
-        new Characters(store).then((characters) => {
+        this.charactersClass = new Characters(store)
+
+        this.charactersClass.add().then((characters) => {
             this.characters = characters
             this.momo = this.characters.momo
             this.momo.originPosition = new THREE.Vector3().copy(this.momo.position)
+            this.momo.scale.set(1.5, 1.5, 1.5)
             this.romo = this.characters.romo
+            this.romo.position.z = 2.5
+            this.romo.position.y = 1
             this.romo.originPosition = new THREE.Vector3().copy(this.romo.position)
-            this.romo.position.z = 3
-            this.romo.scale.set(2, 2, 2)
-
+            this.romo.scale.set(-2, 2, 2)
             this.addCharacter()
         })
 
@@ -184,15 +210,15 @@ export default class Level {
     }
 
     addAnimate(params) {
+
         new AnimatedProp(params).then((animate) => {
             animate.scale.set(params.scale.x, params.scale.y, params.scale.z)
             animate.position.set(params.position.x, params.position.y, params.position.z)
             animate.originPosition = new THREE.Vector3().copy(animate.position)
             animate.rotation.set(params.rotation.x, params.rotation.y, params.rotation.z)
             animate.name = params.json.id
-            // animate.out = fa
             animate.alreadyAnimated = false
-            // animate.in = false
+
             this.animatesArray.push(animate)
             this.scene.add(animate)
             this.launchSprite(animate.animate, 'wait')
@@ -409,9 +435,11 @@ export default class Level {
 
 
     nextToMinigame(value) {
+
         if (value && !this.isMiniGameLaunched) {
             this.isMiniGameLaunched = true
             this.eventMinigame.minigame = value
+            // this.sounds.cta_ready.play();
         } else {
             this.isMiniGameLaunched = false
             this.eventMinigame.minigame = value
@@ -424,18 +452,20 @@ export default class Level {
         this.scene = null
     }
 
-    preRenderProps(callback) {
+    preRenderProps(callback, addTutorial, hideTutorial) {
         let promises = []
-        let duration = 0
-        let delay = 150
-        // time(this.fixedPropsGroup.length * 350)
-
+        let delay = 250
+        let duration = this.fixedPropsGroup.length * delay
+        this.store.commit('game/setLoadingDuration', duration)
+        this.sounds.background_level.loop(true);
+        this.sounds.background_level.play();
+        this.sounds.background_level.fade(0, 1.0, 5000);
         //FixedProps preRender
         for (let i = 0; i < this.fixedPropsGroup.length; i++) {
             let p1 = new Promise((resolve, reject) => {
                 setTimeout(() => {
                     this.fixedPropsGroup[i].position.x = this.camera.position.x
-                    // this.fixedPropsGroup[i].position.z = 7
+                    this.fixedPropsGroup[i].position.z = 0
                     resolve(this.fixedPropsGroup[i]);
                 }, i * delay)
             });
@@ -452,7 +482,7 @@ export default class Level {
             let p2 = new Promise((resolve, reject) => {
                 setTimeout(() => {
                     this.animatesArray[i].position.x = this.camera.position.x
-                    // this.animatesArray[i].position.z = 7
+                    this.animatesArray[i].position.z = 0
                     resolve(this.animatesArray[i]);
                 }, i * 2000)
             });
@@ -468,7 +498,7 @@ export default class Level {
         let p3 = new Promise((resolve, reject) => {
             setTimeout(() => {
                 this.momo.position.x = this.camera.position.x
-                // this.momo.position.z = 7
+                this.momo.position.z = 0
                 resolve(this.momo);
             }, 2000)
         });
@@ -483,7 +513,7 @@ export default class Level {
         let p4 = new Promise((resolve, reject) => {
             setTimeout(() => {
                 this.romo.position.x = this.camera.position.x
-                // this.romo.position.z = 7
+                this.romo.position.z = 0
                 resolve(this.romo);
             }, 2000)
         });
@@ -496,19 +526,20 @@ export default class Level {
 
         Promise.all(promises).then(() => {
             this.preRenderFinish = true
-
             setTimeout(() => {
                 callback()
+
                 TweenMax.to(this.masks.position, 2.5, {
                     x: 0,
                     ease: Power4.easeOut,
                     onComplete: () => {
                         this.startRestrictedZone = true
                         this.animationFinish = true
+                        this.sounds.breaking_bowl.play();
+                        this.charactersClass.blockCharacter(addTutorial, this.camera, hideTutorial)
                     }
-                })
-            }, 1000)
-
+                }, 1000);
+            })
         })
     }
 
@@ -524,9 +555,17 @@ export default class Level {
                 if (this.momo.position.x >= animate.position.x - .5 && this.momo.position.x <= animate.position.x + .5 && !animate.animated) {
                     if ((animate.out && !animate.in) || (!animate.in && !animate.out)) {
                         animate.in = true
-                        console.log(animate.name, 'in')
                         if (animate.name == "cat") {
-                            // this.launchSprite(animate.animate, "jump")
+                            let postX = animate.position.x
+                            let postY = animate.position.y
+                            TweenMax.to(animate.position, 2.5, {
+                                x: postX + 1,
+                                ease: Circ.easeIn
+                            })
+                            TweenMax.to(animate.position, 4, {
+                                y: postY - 2,
+                                ease: Power4.easeIn
+                            })
                             animate.animate
                                 .newSprites()
                                 .addState('jump')
@@ -534,7 +573,6 @@ export default class Level {
                                 .start()
 
                         } else if (animate.name == "petals") {
-                            // this.launchSprite(animate.animate, "petals")
                             animate.animate
                                 .newSprites()
                                 .addState('petals')
@@ -547,7 +585,6 @@ export default class Level {
                 } else if (animate.in) {
                     if (animate.in || (!animate.in && !animate.out)) {
                         animate.out = true
-                        console.log(animate.name, 'out')
                     }
                     animate.in = false
                 }

@@ -16,13 +16,14 @@ const RomoJson = require("~/static/sprites/romo/romo.json");
 
 export default class Characters {
     constructor(store) {
+        this.store = store
         this.coordinate = {
             x: 0,
             y: 0
         }
         this.speed = 0
 
-        this.socket = store.state.synchro.socket
+        this.socket = this.store.state.synchro.socket
 
         if (this.socket) {
             this.socket.on("coordonate-joystick", t => {
@@ -60,9 +61,9 @@ export default class Characters {
             jump: false,
             wait: false
         }
+    }
 
-        this.KeyboardManager = new KeyboardManager(this.onInput.bind(this), store.state.keyboard);
-
+    add() {
         return new Promise((resolve, reject) => {
             this.addAnimate().then((sprites) => {
                 this.momo = sprites[0]
@@ -78,6 +79,22 @@ export default class Characters {
 
     animeRomo() {
         this.launchSprite(this.romo, "romo")
+    }
+
+    blockCharacter(addTutorial, camera, hideTutorial) {
+        this.camera = camera
+        this.hideTutorial = hideTutorial
+        let position = this.projectVectorToScreen(this.momo.position)
+        addTutorial(position)
+        this.KeyboardManager = new KeyboardManager(this.onInput.bind(this), this.store.state.keyboard);
+    }
+
+    projectVectorToScreen(vector) {
+        vector.project(this.camera);
+        vector.x = ((vector.x + 1) * window.innerWidth) / 2;
+        vector.y = (-(vector.y - 1) * window.innerHeight) / 2;
+        vector.z = 0;
+        return vector;
     }
 
     addAnimate() {
@@ -108,13 +125,13 @@ export default class Characters {
     }
 
     addBody() {
-        var radius = .5;
+        var radius = .65;
 
         var character_material = new CANNON.Material("character_material");
 
         var body = new CANNON.Body({
             mass: 1,
-            position: new CANNON.Vec3(2, .5, 3 - radius),
+            position: new CANNON.Vec3(2, .5, 3 - .5),
             shape: new CANNON.Sphere(radius),
             material: character_material,
             sleepSpeedLimit: .1,
@@ -139,6 +156,9 @@ export default class Characters {
     }
 
     onInput(key, value) {
+        if (key == "ARROWLEFT" || key == "ARROWRIGHT" || key == " ") {
+            this.hideTutorial()
+        }
         switch (key) {
             case "ARROWLEFT":
                 this.moveLeft = value
@@ -186,24 +206,15 @@ export default class Characters {
                     if (this.moveLeft) {
                         this.forceValue.x = -3;
                         if (!this.movementState.walking) {
-                            if (!this.isTurnaround) {
-                                if (this.momo.scale.x == 1) {
-                                    this.launchSprite(this.momo, "walk")
-                                    this.movementState.walking = true
-                                    this.isTurnaround = true
-                                    this.turnToWalk()
-                                    TweenMax.to(this.momo.scale, .5, {
-                                        x: -1,
-                                        ease: Power4.easeOut,
-                                        onComplete: () => {
-                                            this.isTurnaround = false
-                                        }
-                                    })
-                                } else if (!this.stopWalkingLeft && this.momo.scale.x == -1) {
-                                    this.launchSprite(this.momo, "walk")
+                            if (this.momo.scale.x == 1.5) {
+                                this.momo.scale.x = -1.5
+                                this.turnToWalk()
+                                this.stopWalkingLeft = true
 
-                                    this.stopWalkingLeft = true
-                                }
+                            } else if (!this.stopWalkingLeft && this.momo.scale.x == -1.5) {
+                                this.launchSprite(this.momo, "walk")
+
+                                this.stopWalkingLeft = true
                             }
                         }
                     } else {
@@ -214,24 +225,15 @@ export default class Characters {
                     if (this.moveRight) {
                         this.forceValue.x = 3;
                         if (!this.movementState.walking) {
-                            if (!this.isTurnaround) {
-                                if (this.momo.scale.x == -1) {
-                                    this.launchSprite(this.momo, "walk")
-                                    this.movementState.walking = true
-                                    this.isTurnaround = true
-                                    this.turnToWalk()
-                                    TweenMax.to(this.momo.scale, .5, {
-                                        x: 1,
-                                        ease: Power4.easeOut,
-                                        onComplete: () => {
-                                            this.isTurnaround = false
-                                        }
-                                    })
-                                } else if (!this.stopWalkingRight && this.momo.scale.x == 1) {
-                                    this.launchSprite(this.momo, "walk")
+                            if (this.momo.scale.x == -1.5) {
+                                this.turnToWalk()
+                                this.stopWalkingRight = true
 
-                                    this.stopWalkingRight = true
-                                }
+                                this.momo.scale.x = 1.5
+                            } else if (!this.stopWalkingRight && this.momo.scale.x == 1.5) {
+                                this.launchSprite(this.momo, "walk")
+
+                                this.stopWalkingRight = true
                             }
                         }
                     } else {
@@ -318,16 +320,9 @@ export default class Characters {
 
                     if (this.coordinate.x > 0 && this.romo.scale.x != -2) {
                         this.romo.scale.x = -2
-                        // TweenMax.to(this.romo.scale, 1, {
-                        //     x: -2,
-                        //     ease: Power4.easeOut
-                        // })
+
                     } else if (this.coordinate.x < 0 && this.romo.scale.x != 2) {
                         this.romo.scale.x = 2
-                        // TweenMax.to(this.romo.scale, 1, {
-                        //     x: 2,
-                        //     ease: Power4.easeOut
-                        // })
                     }
 
                     TweenMax.to(this.romo.position, .3, {

@@ -16,6 +16,9 @@ import { mapState, mapMutations } from "vuex";
 import { TweenMax } from "gsap";
 import Button from "@/components/svg/button-circle-red.vue";
 
+import HowlerManager from "~/assets/js/utils/HowlerManager";
+import background_enter_game from "@/static/sounds/background_enter_game.mp3";
+
 export default {
   components: {
     Button
@@ -24,6 +27,18 @@ export default {
     return {};
   },
   computed: {},
+  created() {
+    HowlerManager.add([
+      {
+        id: "background_enter_game",
+        src: background_enter_game
+      }
+    ]).then(sounds => {
+      this.sounds = sounds;
+      this.sounds.background_enter_game.loop(true);
+      this.sounds.background_enter_game.play();
+    });
+  },
   mounted() {
     window.addEventListener("keypress", this.handleKeyPress.bind(this));
   },
@@ -36,6 +51,7 @@ export default {
   },
   beforeDestroy() {
     window.removeEventListener("keypress", this.handleKeyPress.bind(this));
+    HowlerManager.stop(this.sounds);
   }
 };
 </script>
