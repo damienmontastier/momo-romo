@@ -3,7 +3,7 @@
     <div id="joystick">
       <div ref="stick" id="stick"></div>
     </div>
-    <JoystickArrows></JoystickArrows>
+    <joystickArrow></joystickArrow>
   </div>
 </template>
 
@@ -22,11 +22,11 @@ function map_roundToTwo(num) {
 
 import { mapState } from "vuex";
 import { TweenMax } from "gsap";
-import JoystickArrows from "@/components/mobile/svg/JoystickArrows";
+import joystickArrow from "@/components/mobile/svg/JoystickArrows";
 
 export default {
   components: {
-    JoystickArrows
+    joystickArrow
   },
   data() {
     return {
