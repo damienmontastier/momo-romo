@@ -439,7 +439,7 @@ export default class Level {
 
     preRenderProps(callback, addTutorial, hideTutorial) {
         let promises = []
-        let delay = 250
+        let delay = 100
         let duration = this.fixedPropsGroup.length * delay
         this.store.commit('game/setLoadingDuration', duration)
         // this.sounds.background_level.loop(true);

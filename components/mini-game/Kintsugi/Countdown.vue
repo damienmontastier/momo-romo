@@ -4,15 +4,6 @@
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 160" v-if="countdown == 0">
       <defs>
         <style>
-  .cls-1 {
-    fill: #fff;
-  }
-  .cls-2 {
-    fill: #f5876f;
-  }
-  .cls-3 {
-    fill: #f3765a;
-  }
         </style>
       </defs>
       <title>title_go</title>
@@ -587,17 +578,6 @@
       v-if="countdown == 1"
     >
       <defs>
-        <style>
-  .cls-1 {
-    fill: #fff;
-  }
-  .cls-2 {
-    fill: #f5876f;
-  }
-  .cls-3 {
-    fill: #f3765a;
-  }
-        </style>
       </defs>
       <title>title_1</title>
       <path
@@ -710,15 +690,6 @@
     >
       <defs>
         <style>
-  .cls-1 {
-    fill: #fff;
-  }
-  .cls-2 {
-    fill: #f5876f;
-  }
-  .cls-3 {
-    fill: #f3765a;
-  }
         </style>
       </defs>
       <title>title_2</title>
@@ -826,15 +797,6 @@
     >
       <defs>
         <style>
-  .cls-1 {
-    fill: #fff;
-  }
-  .cls-2 {
-    fill: #f5876f;
-  }
-  .cls-3 {
-    fill: #f3765a;
-  }
         </style>
       </defs>
       <title>title_3</title>
