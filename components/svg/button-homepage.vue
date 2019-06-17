@@ -8,8 +8,8 @@
 
       <text ref="textCurved" id="textCurved">
         <textPath side="right" ref="pathTextCurved" id="pathTextCurved" xlink:href="#circlePath">
-          <tspan class="button-curved-en">• Launch Game</tspan>
-          <tspan class="button-curved-jpn">• ホームマ</tspan>
+          <tspan class="button-curved-en">• {{en}}</tspan>
+          <tspan class="button-curved-jpn">• {{jpn}}</tspan>
         </textPath>
       </text>
     </g>
@@ -21,7 +21,7 @@ import { mapState, mapMutations } from "vuex";
 import { TweenMax } from "gsap";
 
 export default {
-  props: ["en", "jpn", "letter"],
+  props: ["en", "jpn"],
   data() {
     return {};
   },
