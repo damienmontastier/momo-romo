@@ -19,8 +19,9 @@
       id="button-start-minigame"
       :uid="$route.params.level"
       v-if="minigame"
+      v-on:triggered="startMinigame"
     ></buttonCircleRed>
-    <!-- <mini-game :uid="$route.params.level" v-if="minigame"></mini-game> -->
+    <mini-game :uid="$route.params.level" v-if="minigameStarted" ref="minigame"></mini-game>
     <!-- <mini-game :uid="$route.params.level"></mini-game> -->
   </div>
 </template>
@@ -51,7 +52,8 @@ export default {
       minigame: false,
       runGame: false,
       killElement: true,
-      showTutorial: true
+      showTutorial: true,
+      minigameStarted: false
     };
   },
   computed: {
@@ -92,6 +94,14 @@ export default {
     }
   },
   methods: {
+    startMinigame() {
+      console.log("start minigame");
+      this.minigameStarted = true;
+      // // console.log(this.$refs.minigame.$children[0]);
+      // this.$refs.minigame.$children[0].load().then(() => {
+      //   //   this.$refs.minigame.$children[0].afterLoad();
+      // });
+    },
     increment() {
       if (this.value !== this.components.length - 1) {
         this.value++;
