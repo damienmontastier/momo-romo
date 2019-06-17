@@ -12,7 +12,8 @@ import breaking_bowl from "@/static/sounds/breaking_bowl.mp3";
 import cta_ready from "@/static/sounds/cta_ready.mp3";
 
 import {
-    TweenMax
+    TweenMax,
+    TimelineMax
 } from 'gsap';
 
 const visibleHeightAtZDepth = (depth, camera) => {
@@ -525,6 +526,25 @@ export default class Level {
                     }
                 }, 1000);
             })
+        })
+    }
+
+    launchMiniGame() {
+
+        return new Promise((resolve, reject) => {
+            let tl = new TimelineMax({
+                onComplete: () => {
+                    resolve()
+                }
+            })
+            tl.to(this.masks.position, 3, {
+                x: -this.width / 5,
+                ease: Power4.easeOut,
+            });
+            tl.to(this.camera.position, 3, {
+                x: this.width / 5,
+                ease: Power4.easeOut,
+            }, 0);
         })
     }
 

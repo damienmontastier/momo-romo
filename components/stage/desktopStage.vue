@@ -97,13 +97,14 @@ export default {
     startMinigame() {
       console.log("start minigame");
       this.minigameStarted = true;
-      this.$nextTick(()=> {
+      this.$nextTick(() => {
         this.$refs.minigame.$children[0].load().then(() => {
+          this.game.launchMiniGame().then(value => {
+            this.$refs.minigame.$children[0].start();
+          });
           // déclancher animation mask PUIS .then(()=>{this.$refs.minigame.$children[0].start()})
-          this.$refs.minigame.$children[0].start()
         });
-      })
-
+      });
     },
     increment() {
       if (this.value !== this.components.length - 1) {
