@@ -99,10 +99,11 @@ export default {
       this.minigameStarted = true;
       this.$nextTick(() => {
         this.$refs.minigame.$children[0].load().then(() => {
-          this.game.launchMiniGame().then(value => {
-            this.$refs.minigame.$children[0].start();
+          this.$refs.minigame.$children[0].start().then(() => {
+            this.game.launchMiniGame().then(value => {
+              console.log("yeees");
+            });
           });
-          // déclancher animation mask PUIS .then(()=>{this.$refs.minigame.$children[0].start()})
         });
       });
     },
