@@ -886,6 +886,15 @@ export default {
             1
           );
         this.$refs.intro.$refs.isPlaying.style.opacity = "1";
+        console.log('romo is playing')
+        
+        this.sounds.momo_minijeu_1.fade(1,0,3000)
+        this.sounds.momo_minijeu_2.fade(1,0,3000)
+        this.sounds.momo_minijeu_3.fade(1,0,3000)
+        setTimeout(()=>{
+          this.sounds.romo_playing.play()
+        },2500)
+        
         this.launchStep();
         this.currentStep++;
         this.fractureEnded = true;
@@ -1109,12 +1118,14 @@ export default {
     },
     updateCountdown(countdown) {
       if (countdown === 3) {
+        this.sounds.romo_playing.stop()
         this.sounds.countdown_3.play();
       } else if (countdown === 2) {
         this.sounds.countdown_2.play();
       } else if (countdown === 1) {
         this.sounds.countdown_1.play();
         this.sounds["momo_minijeu_" + (this.currentFracture + 1)].play();
+        this.sounds["momo_minijeu_" + (this.currentFracture + 1)].volume(1);
         this.tweening = null;
       }
     },
