@@ -1,19 +1,19 @@
 <template>
   <div id="level">
-    <DesktopStage v-if="$device.isDesktop"></DesktopStage>
-    <MobileStage v-else-if="$device.isMobileOrTablet"></MobileStage>
+    <desktopStage v-if="$device.isDesktop"></desktopStage>
+    <mobileStage v-else-if="$device.isMobileOrTablet"></mobileStage>
   </div>
 </template>
 
 <script>
 import { mapGetters, mapMutations, mapState } from "vuex";
-import DesktopStage from "@/components/stage/DesktopStage";
-import MobileStage from "@/components/stage/MobileStage";
+import desktopStage from "@/components/stage/desktopStage";
+import mobileStage from "@/components/stage/mobileStage";
 
 export default {
   components: {
-    DesktopStage,
-    MobileStage
+    desktopStage,
+    mobileStage
   },
   computed: {},
   mounted() {},

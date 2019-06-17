@@ -5,16 +5,16 @@
       v-on:changeComponent="changeComponent"
       v-bind:is="components[numberComponent]"
     ></component>
-    <Level v-else></Level>
+    <level v-else></level>
   </div>
 </template>
 
 <script>
 import { mapState, mapGetters, mapMutations } from "vuex";
-import Level from "@/components/Level";
-import SynchRomo from "@/components/mobile/SynchRomo";
-import WaitingPageRomo from "@/components/mobile/WaitingPageRomo";
-import NavigateRomo from "@/components/mobile/NavigateRomo";
+import level from "@/components/level";
+import synchRomo from "@/components/mobile/SynchRomo";
+import waitingPageRomo from "@/components/mobile/WaitingPageRomo";
+import navigateRomo from "@/components/mobile/NavigateRomo";
 
 export default {
   // middleware: "loadStage",
@@ -25,16 +25,16 @@ export default {
   // },
 
   components: {
-    Level,
-    SynchRomo,
-    NavigateRomo,
-    WaitingPageRomo
+    level,
+    synchRomo,
+    navigateRomo,
+    waitingPageRomo
   },
   data: () => {
     return {
       renderComponent: true,
       isRoom: false,
-      components: ["SynchRomo", "WaitingPageRomo", "NavigateRomo"],
+      components: ["synchRomo", "waitingPageRomo", "navigateRomo"],
       numberComponent: 0
     };
   },

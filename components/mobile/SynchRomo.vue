@@ -2,7 +2,7 @@
   <div class="mobile-layout" id="room">
     <div>
       <p class="skew stroke">You are</p>
-      <SynchedTitle></SynchedTitle>
+      <synchedTitle></synchedTitle>
     </div>
     <div class="character-romo"></div>
     <div class="center-horizontaly">
@@ -16,8 +16,7 @@
 
 <script>
 import { mapGetters, mapMutations, mapState, mapActions } from "vuex";
-import SynchedTitle from "@/components/mobile/svg/SynchedTitle";
-import Joystick from "@/components/mobile/Joystick";
+import synchedTitle from "@/components/mobile/svg/SynchedTitle";
 
 export default {
   data() {
@@ -27,8 +26,7 @@ export default {
     };
   },
   components: {
-    SynchedTitle,
-    Joystick
+    synchedTitle
   },
   computed: {
     ...mapState({

@@ -96,7 +96,7 @@ module.exports = {
     //       exclude: /(node_modules)/
     //     })
     //   }
-    // }
+    // },
     // build: {
     vendor: ['three-orbit-controls', 'dat.gui', 'firebase']
     // }
