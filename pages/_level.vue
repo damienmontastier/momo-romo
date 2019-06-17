@@ -25,7 +25,7 @@ export default {
   // },
 
   components: {
-    Level,
+    level,
     synchRomo,
     navigateRomo,
     waitingPageRomo

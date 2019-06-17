@@ -16,7 +16,7 @@
 
 <script>
 import { mapGetters, mapMutations, mapState, mapActions } from "vuex";
-import SynchedTitle from "@/components/mobile/svg/SynchedTitle";
+import synchedTitle from "@/components/mobile/svg/SynchedTitle";
 
 export default {
   data() {
