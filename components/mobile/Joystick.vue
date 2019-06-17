@@ -22,7 +22,7 @@ function map_roundToTwo(num) {
 
 import { mapState } from "vuex";
 import { TweenMax } from "gsap";
-import joystickArrow from "@/components/mobile/svg/joystick_arrows";
+import joystickArrow from "@/components/mobile/svg/JoystickArrows";
 
 export default {
   components: {
