@@ -39,6 +39,7 @@ export default {
     if (this.$device.isMobileOrTablet) {
       window.addEventListener("touchstart", this.handleStart.bind(this));
       window.addEventListener("touchend", this.handleEnd.bind(this));
+      window.addEventListener("touchmove", this.handleMove.bind(this));
       this.connect({
         device: this.$device.isMobileOrTablet,
         roomID: this.$device.isMobileOrTablet ? this.$route.params.level : null
@@ -51,6 +52,9 @@ export default {
     ...mapActions({
       connect: "synchro/connect"
     }),
+    handleMove(event){
+      console.log(event.changedTouches[0].clientY)
+    },
     handleStart(event) {
       this.startCoord.x = event.touches[0].clientX;
       this.startCoord.y = event.touches[0].clientY;
