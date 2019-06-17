@@ -12,9 +12,9 @@
 <script>
 import { mapState, mapGetters, mapMutations } from "vuex";
 import Level from "@/components/Level";
-import SynchRomo from "@/components/mobile/SynchRomo";
-import WaitingPageRomo from "@/components/mobile/WaitingPageRomo";
-import NavigateRomo from "@/components/mobile/NavigateRomo";
+import synchRomo from "@/components/mobile/SynchRomo";
+import waitingPageRomo from "@/components/mobile/WaitingPageRomo";
+import navigateRomo from "@/components/mobile/NavigateRomo";
 
 export default {
   // middleware: "loadStage",
@@ -26,15 +26,15 @@ export default {
 
   components: {
     Level,
-    SynchRomo,
-    NavigateRomo,
-    WaitingPageRomo
+    synchRomo,
+    navigateRomo,
+    waitingPageRomo
   },
   data: () => {
     return {
       renderComponent: true,
       isRoom: false,
-      components: ["SynchRomo", "WaitingPageRomo", "NavigateRomo"],
+      components: ["synchRomo", "waitingPageRomo", "navigateRomo"],
       numberComponent: 0
     };
   },
