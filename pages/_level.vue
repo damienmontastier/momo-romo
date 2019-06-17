@@ -11,7 +11,7 @@
 
 <script>
 import { mapState, mapGetters, mapMutations } from "vuex";
-import Level from "@/components/Level";
+import level from "@/components/level";
 import synchRomo from "@/components/mobile/SynchRomo";
 import waitingPageRomo from "@/components/mobile/WaitingPageRomo";
 import navigateRomo from "@/components/mobile/NavigateRomo";
