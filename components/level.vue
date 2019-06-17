@@ -1,7 +1,7 @@
 <template>
   <div id="level">
-    <DesktopStage v-if="$device.isDesktop"></DesktopStage>
-    <MobileStage v-else-if="$device.isMobileOrTablet"></MobileStage>
+    <desktop-stage v-if="$device.isDesktop"></desktop-stage>
+    <mobile-stage v-else-if="$device.isMobileOrTablet"></mobile-stage>
   </div>
 </template>
 

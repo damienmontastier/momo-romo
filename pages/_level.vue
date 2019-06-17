@@ -5,7 +5,7 @@
       v-on:changeComponent="changeComponent"
       v-bind:is="components[numberComponent]"
     ></component>
-    <Level v-else></Level>
+    <level v-else></level>
   </div>
 </template>
 

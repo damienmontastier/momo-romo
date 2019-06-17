@@ -2,7 +2,7 @@
   <div class="mobile-layout" id="room">
     <div>
       <p class="skew stroke">You are</p>
-      <SynchedTitle></SynchedTitle>
+      <synched-title></synched-title>
     </div>
     <div class="character-romo"></div>
     <div class="center-horizontaly">

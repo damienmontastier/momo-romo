@@ -3,7 +3,7 @@
     <div id="joystick">
       <div ref="stick" id="stick"></div>
     </div>
-    <JoystickArrows></JoystickArrows>
+    <joystick-arrows></joystick-arrows>
   </div>
 </template>
 
