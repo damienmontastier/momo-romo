@@ -408,8 +408,8 @@ export default class Level {
                     vec3 color2 = vec3(234., 227., 205.)/255.;
                     //color2 = vec3(214., 197., 185.)/255.;
                     vec3 gradient = mix(vec3(1.0),color1,v_position.y);
-                    float noise = snoise(vec3(vec2(v_position.x * 0.1,v_position.y* 0.1* 0.5 - (iTime*0.1)),iTime*0.1));
-                    float grain = snoise(vec3(v_position.xy*100000.,iTime*0.1));
+                    float noise = snoise(vec3(vec2(v_position.x * 0.1,v_position.y* 0.1* 0.5 - iTime*0.1),iTime*0.1));
+                    float grain = snoise(vec3(v_position.xy*500000.,iTime*0.1));
                    
                     vec3 noise_color = mix(color1,color2,clamp(noise,0.0,1.0));
                     
