@@ -21,7 +21,7 @@
       v-if="minigame"
       v-on:triggered="startMinigame"
     ></buttonCircleRed>
-    <mini-game :uid="$route.params.level" v-show="minigameStarted" ref="minigame"></mini-game>
+    <!-- <mini-game :uid="$route.params.level" v-show="minigameStarted" ref="minigame"></mini-game> -->
     <!-- <mini-game :uid="$route.params.level"></mini-game> -->
   </div>
 </template>
