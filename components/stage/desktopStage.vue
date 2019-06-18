@@ -7,6 +7,10 @@
       v-on:loadStart="loadStart"
       :is="components[value]"
     ></component>
+
+    <div ref="buttonPause" id="button-pause-container">
+      <buttonCirclePause id="button-pause" letter="p" en="Pause Game" jpn="Pause Game"></buttonCirclePause>
+    </div>
     <!-- <img :src="gashyangif" id="gashyan" alt="gashyan" ref="gashyan"> -->
 
     <div ref="tutorialKeyboard" id="tutorial-keyboard"></div>
@@ -37,6 +41,7 @@ import TextureAtlas from "@/assets/js/utils/TextureAtlas";
 import MiniGame from "@/components/mini-game/MiniGame.vue";
 import readyKintsugi from "@/components/ui/readyKintsugi.vue";
 import buttonCircleRed from "@/components/svg/button-circle-red";
+import buttonCirclePause from "@/components/svg/button-circle-pause";
 import Loader from "@/components/ui/loader.vue";
 import About from "@/components/mini-game/Kintsugi/About";
 import gashyangif from "~/static/ui/gashyan.gif";
@@ -47,6 +52,7 @@ export default {
     readyKintsugi,
     Loader,
     buttonCircleRed,
+    buttonCirclePause,
     About
   },
   data() {
@@ -62,7 +68,8 @@ export default {
       minigameEnded: false,
       aboutLaunched: false,
       gashyangif: gashyangif,
-      showGashyanGif: false
+      showGashyanGif: false,
+      showPauseButton: false
     };
   },
   computed: {
@@ -109,6 +116,16 @@ export default {
         },
         this.$store
       );
+    },
+    showPauseButton(value) {
+      console.log(this.$refs.buttonPause);
+      if (value && this.$refs.buttonPause) {
+        TweenMax.to(this.$refs.buttonPause, 1, {
+          opacity: 1,
+          visibility: "visible",
+          ease: Power4.easeOut
+        });
+      }
     }
   },
   methods: {
@@ -156,6 +173,7 @@ export default {
       });
     },
     addTutorial(value) {
+      this.showPauseButton = true;
       let tl = new TimelineMax();
       tl.to(this.$refs.tutorialKeyboard, 0.01, {
         left: value.x - this.$refs.tutorialKeyboard.clientWidth / 2,
@@ -260,6 +278,15 @@ export default {
     position: absolute;
     left: 0;
     top: 0;
+  }
+  #button-pause-container {
+    position: absolute;
+    opacity: 0;
+    top: 30px;
+    left: 30px;
+    width: 150px;
+    height: 150px;
+    visibility: hidden;
   }
 }
 
