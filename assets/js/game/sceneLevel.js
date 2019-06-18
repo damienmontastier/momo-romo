@@ -624,6 +624,7 @@ export default class Level {
                                     .start()
                                 animate.animated = true
                             }
+                        }
 
                         } else if (animate.in) {
                             if (animate.in || (!animate.in && !animate.out)) {
