@@ -2,7 +2,7 @@
   <div id="default">
     <portrait v-if="this.$device.isMobile"/>
     <nuxt/>
-    <debugger id="debugger" v-if="$route.name != 'editor'"></debugger>
+    <!-- <debugger id="debugger" v-if="$route.name != 'editor'"></debugger> -->
   </div>
 </template>
 
