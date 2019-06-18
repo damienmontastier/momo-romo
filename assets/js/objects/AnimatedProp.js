@@ -37,8 +37,7 @@ export default class AnimatedProp extends THREE.Object3D {
     }
 
     highlight(value) {
-        //TODO HIGHLIGHT
-
+        // //TODO HIGHLIGHT
         // if (value === true) {
         //     this.animate.material.color.set(0x00ff00);
         //     this._highlight = true

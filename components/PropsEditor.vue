@@ -24,10 +24,16 @@
 <script>
 import { mapGetters, mapMutations, mapState } from "vuex";
 import pngCat from "@/static/sprites/cat/cat.png";
-const jsonCat = require("~/static/sprites/cat/cat.json");
+const jsonCat = require("@/static/sprites/cat/cat.json");
 
 import pngPetals from "@/static/sprites/petals/petals.png";
-const jsonPetals = require("~/static/sprites/petals/petals.json");
+const jsonPetals = require("@/static/sprites/petals/petals.json");
+
+import pngMobile from "@/static/sprites/mobile/mobile.png";
+const jsonMobile = require("@/static/sprites/mobile/mobile.json");
+
+import pngPlants from "@/static/sprites/plants/plants.png";
+const jsonPlants = require("@/static/sprites/plants/plants.json");
 
 Number.prototype.map = function(in_min, in_max, out_min, out_max) {
   return ((this - in_min) * (out_max - out_min)) / (in_max - in_min) + out_min;
@@ -38,7 +44,9 @@ export default {
     return {
       spriteParams: [
         { json: jsonCat, png: pngCat, w: 8, h: 8 },
-        { json: jsonPetals, png: pngPetals, w: 16, h: 4 }
+        { json: jsonPetals, png: pngPetals, w: 16, h: 4 },
+        { json: jsonMobile, png: pngMobile, w: 4, h: 4 },
+        { json: jsonPlants, png: pngPlants, w: 4, h: 4 }
       ]
     };
   },
