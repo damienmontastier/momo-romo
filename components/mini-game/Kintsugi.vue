@@ -793,9 +793,10 @@ export default {
           "endGameAppear"
         )
         .eventCallback("onComplete", () => {
-          setTimeout(() => {
-            this.windowDisappear();
-          }, 2000);
+          this.$emit("minigameended");
+          // setTimeout(() => {
+          this.windowDisappear();
+          // }, 1000);
         });
     },
     windowDisappear() {
@@ -810,7 +811,7 @@ export default {
         })
         .to(
           this.$refs.window,
-          0.5,
+          3,
           {
             x: -(window.innerWidth / 2 + box.width / 2),
             ease: Power4.easeOut,

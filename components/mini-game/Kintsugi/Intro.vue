@@ -13,7 +13,7 @@
             <div class="inline book">Get the pieces back together</div>
           </span>
           <span class="skew">
-            <div class="inline book">So Romo can applay golden glue</div>
+            <div class="inline book">So Romo can applays golden glue</div>
           </span>
         </div>
         <div class="gif"></div>
