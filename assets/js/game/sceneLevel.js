@@ -583,83 +583,94 @@ export default class Level {
 
         if (this.animatesArray.length && this.animationFinish) {
             this.animatesArray.forEach(animate => {
-                animate.animate.update(delta * 5000)
-                if (this.momo.position.x >= animate.position.x - .5 && this.momo.position.x <= animate.position.x + .5 && !animate.animated) {
-                    if ((animate.out && !animate.in) || (!animate.in && !animate.out)) {
-                        animate.in = true
-                        if (animate.name == "cat") {
-                            let postX = animate.position.x
-                            let postY = animate.position.y
-                            TweenMax.to(animate.position, 2.5, {
-                                x: postX + 1,
-                                ease: Circ.easeIn
-                            })
-                            TweenMax.to(animate.position, 4, {
-                                y: postY - 2,
-                                ease: Power4.easeIn
-                            })
-                            animate.animate
-                                .newSprites()
-                                .addState('jump')
-                                .addState('wait')
-                                .start()
+                    animate.animate.update(delta * 5000)
+                    if (this.momo.position.x >= animate.position.x - .5 && this.momo.position.x <= animate.position.x + .5 && !animate.animated) {
+                        if ((animate.out && !animate.in) || (!animate.in && !animate.out)) {
+                            animate.in = true
+                            if (animate.name == "cat") {
+                                let postX = animate.position.x
+                                let postY = animate.position.y
+                                TweenMax.to(animate.position, 2.5, {
+                                    x: postX + 1,
+                                    ease: Circ.easeIn
+                                })
+                                TweenMax.to(animate.position, 4, {
+                                    y: postY - 2,
+                                    ease: Power4.easeIn
+                                })
+                                animate.animate
+                                    .newSprites()
+                                    .addState('jump')
+                                    .addState('wait')
+                                    .start()
 
-                        } else if (animate.name == "petals") {
-                            animate.animate
-                                .newSprites()
-                                .addState('petals')
-                                .addState('wait')
-                                .start()
+                            } else if (animate.name == "petals") {
+                                animate.animate
+                                    .newSprites()
+                                    .addState('petals')
+                                    .addState('wait')
+                                    .start()
+                            } else if (animate.name == "plants") {
+                                animate.animate
+                                    .newSprites()
+                                    .addState('plants')
+                                    .addState('wait')
+                                    .start()
+                            } else if (animate.name == "mobile") {
+                                animate.animate
+                                    .newSprites()
+                                    .addState('mobile')
+                                    .addState('wait')
+                                    .start()
+                                animate.animated = true
+                            }
+
+                        } else if (animate.in) {
+                            if (animate.in || (!animate.in && !animate.out)) {
+                                animate.out = true
+                            }
+                            animate.in = false
                         }
-                        animate.animated = true
-                    }
-
-                } else if (animate.in) {
-                    if (animate.in || (!animate.in && !animate.out)) {
-                        animate.out = true
-                    }
-                    animate.in = false
-                }
-            });
-        }
-
-        // Romo add restrictedZone 
-        if (this.romo && this.restrictedZone && this.startRestrictedZone) {
-            this.romo.position.x = Math.max(1 + (this.camera.position.x + this.restrictedZone.left), Math.min((this.camera.position.x + this.restrictedZone.right) - 1, this.romo.position.x))
-            this.romo.position.y = Math.max(0, Math.min(this.restrictedZone.top + 1, this.romo.position.y))
-        }
-
-        this.cannonDebugRenderer.update()
-
-        if (this.characters && this.preRenderFinish) {
-            this.characters.update()
-            TweenMax.to(this.camera.position, 3, {
-                x: this.momo.position.x,
-                ease: Power4.easeOut,
-            })
-        }
-
-        if (this.minigameProps) {
-            if (this.momo.body.position.x >= this.minigameProps.position.x - 1 && this.momo.body.position.x <= this.minigameProps.position.x + 1) {
-                this.nextToMinigame(true)
-            } else {
-                this.nextToMinigame(false)
+                    });
             }
+
+            // Romo add restrictedZone 
+            if (this.romo && this.restrictedZone && this.startRestrictedZone) {
+                this.romo.position.x = Math.max(1 + (this.camera.position.x + this.restrictedZone.left), Math.min((this.camera.position.x + this.restrictedZone.right) - 1, this.romo.position.x))
+                this.romo.position.y = Math.max(0, Math.min(this.restrictedZone.top + 1, this.romo.position.y))
+            }
+
+            this.cannonDebugRenderer.update()
+
+            if (this.characters && this.preRenderFinish) {
+                this.characters.update()
+                TweenMax.to(this.camera.position, 3, {
+                    x: this.momo.position.x,
+                    ease: Power4.easeOut,
+                })
+            }
+
+            if (this.minigameProps) {
+                if (this.momo.body.position.x >= this.minigameProps.position.x - 1 && this.momo.body.position.x <= this.minigameProps.position.x + 1) {
+                    this.nextToMinigame(true)
+                } else {
+                    this.nextToMinigame(false)
+                }
+            }
+
+            this.physicParams.update()
+
+            this.renderer.render(this.scene, this.camera);
+        }
+        launchSprite(character, id) {
+            character
+                .newSprites()
+                .addState(id)
+                .start()
+            this.currentSpriteID = id;
         }
 
-        this.physicParams.update()
+        startVideo() {
 
-        this.renderer.render(this.scene, this.camera);
+        }
     }
-    launchSprite(character, id) {
-        character
-            .newSprites()
-            .addState(id)
-            .start()
-        this.currentSpriteID = id;
-    }
-
-    startVideo() {
-
-    }
-}

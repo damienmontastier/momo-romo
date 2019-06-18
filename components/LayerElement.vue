@@ -32,6 +32,16 @@
       <p>{{picked}}</p>
     </ul>
     <ul class="layer">
+      <p>Animates</p>
+      <li
+        :ref="animate.id+index"
+        v-for="(animate,index) in currentStageRef.animates"
+        v-if="animate.visible"
+        :key="index"
+      >{{animate._id + index}}</li>
+      <p>{{picked}}</p>
+    </ul>
+    <ul class="layer">
       <p>Checkpoint Minigame</p>
       <li
         v-for="(prop,index) in currentStageProps.fixedProps"
@@ -75,7 +85,8 @@ export default {
     currentStageProps() {
       return {
         fixedProps: this.currentStageRef.fixedProps,
-        platforms: this.currentStageRef.platforms
+        platforms: this.currentStageRef.platforms,
+        animates: this.currentStageRef.animates
       };
     }
   },
@@ -115,7 +126,8 @@ export default {
   },
   watch: {
     currentStageProps() {},
-    animateProps() {}
+    animateProps() {},
+    currentStageRef() {}
   },
   mounted() {}
 };
