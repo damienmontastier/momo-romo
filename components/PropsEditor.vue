@@ -18,6 +18,7 @@
         @click="addAnimate(spriteParams[index])"
       >{{spriteParams[index].json.id}} animated</p>
     </div>
+    <img :src="cool" alt>
   </div>
 </template>
 
@@ -27,14 +28,15 @@ import pngCat from "@/static/sprites/cat/cat.png";
 const jsonCat = require("~/static/sprites/cat/cat.json");
 
 import pngPetals from "@/static/sprites/petals/petals.png";
-
-const jsonPetals = require("@/static/sprites/petals/petals.json");
+const jsonPetals = require("~/static/sprites/petals/petals.json");
 
 import pngMobile from "@/static/sprites/mobile/mobile.png";
-const jsonMobile = require("@/static/sprites/mobile/mobile.json");
+const jsonMobile = require("~/static/sprites/mobile/mobile.json");
 
 import pngPlants from "@/static/sprites/plants/plants.png";
-const jsonPlants = require("@/static/sprites/plants/plants.json");
+const jsonPlants = require("~/static/sprites/plants/plants.json");
+
+console.log(pngCat, pngPetals, pngMobile, pngPlants);
 
 Number.prototype.map = function(in_min, in_max, out_min, out_max) {
   return ((this - in_min) * (out_max - out_min)) / (in_max - in_min) + out_min;
