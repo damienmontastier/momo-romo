@@ -1,0 +1,14 @@
+{
+    "sprites": [{
+        "id": "mobile",
+        "durationTile": "900",
+        "start": 0,
+        "end": 15
+    }, {
+        "id": "wait",
+        "durationTile": "900",
+        "start": 0,
+        "end": 0
+    }],
+    "id": "mobile"
+}
