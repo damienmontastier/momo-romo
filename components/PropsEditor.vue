@@ -18,7 +18,6 @@
         @click="addAnimate(spriteParams[index])"
       >{{spriteParams[index].json.id}} animated</p>
     </div>
-    <img :src="cool" alt>
   </div>
 </template>
 

@@ -301,6 +301,7 @@ export default class Level {
         plane.rotation.set(0, 0, THREE.Math.degToRad(-.5))
         plane.updateMatrix()
         planeSize = new THREE.Box3().setFromObject(plane);
+        this.displayGIFPosition = new THREE.Vector3(this.restrictedZone.right, this.restrictedZone.bottom, 0)
         this.restrictedZone.top = planeSize.min.y
         singleGeometry.merge(plane.geometry, plane.matrix);
 
@@ -443,7 +444,7 @@ export default class Level {
         this.scene = null
     }
 
-    preRenderProps(callback, addTutorial, hideTutorial) {
+    preRenderProps(propsLoad, addTutorial, hideTutorial, displayGIF) {
         let promises = []
         let delay = 200
         let duration = this.fixedPropsGroup.length * delay
@@ -518,15 +519,22 @@ export default class Level {
         Promise.all(promises).then(() => {
             this.preRenderFinish = true
             setTimeout(() => {
-                callback()
+                propsLoad()
+
+                this.sounds.breaking_bowl.play();
 
                 TweenMax.to(this.masks.position, 2.5, {
                     x: 0,
                     ease: Power4.easeOut,
                     onComplete: () => {
+                        setTimeout(() => {
+                            let position = this.projectVectorToScreen(this.displayGIFPosition)
+                            displayGIF(position)
+                        }, 1000);
+
+
                         this.startRestrictedZone = true
                         this.animationFinish = true
-                        this.sounds.breaking_bowl.play();
                         this.charactersClass.blockCharacter(addTutorial, this.camera, hideTutorial)
                     }
                 }, 1000);
@@ -535,7 +543,6 @@ export default class Level {
     }
 
     launchMiniGame() {
-
         return new Promise((resolve, reject) => {
             let tl = new TimelineMax({
                 onComplete: () => {
@@ -553,8 +560,16 @@ export default class Level {
         })
     }
 
-    launchEndMiniGame() {
+    projectVectorToScreen(vector) {
 
+        vector.project(this.camera);
+        vector.x = ((vector.x + 1) * window.innerWidth) / 2;
+        vector.y = (-(vector.y - 1) * window.innerHeight) / 2;
+        vector.z = 0;
+        return vector;
+    }
+
+    launchEndMiniGame() {
         return new Promise((resolve, reject) => {
             let tl = new TimelineMax({
                 onComplete: () => {
@@ -575,26 +590,20 @@ export default class Level {
 
     nextToMinigame(value) {
         if (value) {
-            //si dedans
             if (this.miniGameOut) {
                 this.miniGameOut = false
-                // console.log('yesssss')
                 this.isMiniGameLaunched = true
                 this.eventMinigame.minigame = value
                 this.sounds.cta_ready.play();
             }
             this.miniGameIn = true
         } else {
-            //si dehors
             if (this.miniGameIn) {
                 this.miniGameIn = false
-                // console.log('nooooo')
                 this.isMiniGameLaunched = false
-
             }
             this.miniGameOut = true
         }
-
         this.eventMinigame.minigame = value
 
         window.dispatchEvent(this.eventMinigame);
@@ -606,7 +615,7 @@ export default class Level {
 
         this.materialbis.uniforms.iTime.value = this.time
 
-        if (this.animatesArray.length && this.animationFinish) {
+        if (this.animatesArray.length && this.animationFinish && this.romo) {
             this.animatesArray.forEach(animate => {
                 animate.animate.update(delta * 5000)
                 if (this.romo.position.x >= animate.position.x - .5 && this.romo.position.x <= animate.position.x + .5 && !animate.animated) {
@@ -677,7 +686,7 @@ export default class Level {
             })
         }
 
-        if (this.minigameProps) {
+        if (this.minigameProps && this.romo) {
             if (this.romo.position.x >= this.minigameProps.position.x - 1 && this.romo.position.x <= this.minigameProps.position.x + 1) {
                 this.nextToMinigame(true)
             } else {
@@ -710,7 +719,6 @@ export default class Level {
             }).then((video) => {
                 this.video = video
                 this.scene.add(this.video)
-                console.log(this.scene)
 
                 this.video
                     .newSprites()

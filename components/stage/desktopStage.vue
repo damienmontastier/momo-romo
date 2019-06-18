@@ -7,6 +7,7 @@
       v-on:loadStart="loadStart"
       :is="components[value]"
     ></component>
+    <img :src="gashyangif" id="gashyan" alt="gashyan" ref="gashyan">
 
     <div ref="tutorialKeyboard" id="tutorial-keyboard"></div>
 
@@ -36,6 +37,7 @@ import readyKintsugi from "@/components/ui/readyKintsugi.vue";
 import buttonCircleRed from "@/components/svg/button-circle-red";
 import Loader from "@/components/ui/loader.vue";
 import { delay } from "q";
+import gashyangif from "~/static/ui/gashyan.gif";
 
 export default {
   components: {
@@ -54,7 +56,9 @@ export default {
       killElement: true,
       showTutorial: true,
       minigameStarted: false,
-      minigameEnded: false
+      minigameEnded: false,
+      gashyangif: gashyangif,
+      showGashyanGif: false
     };
   },
   computed: {
@@ -168,13 +172,28 @@ export default {
         });
       }
     },
+    displayGIF(position) {
+      this.showGashyanGif = true;
+
+      console.log("desktop stage", position);
+
+      // console.log(".gashyan", this.$refs.gashyan);
+      console.log(this.$refs.gashyan.getBoundingClientRect());
+      TweenMax.to(this.$refs.gashyan, 0.1, {
+        top:
+          "50%" - this.$refs.gashyan.getBoundingClientRect().height / 2 + "px",
+        y: "50%",
+        left: (position.x - (this.$refs.gashyan.getBoundingClientRect().width / 2) - 50)
+      });
+    },
     loadStart() {
       if (this.loaded) {
         this.runGame = true;
         this.game.preRenderProps(
           this.propsLoad.bind(this),
           this.addTutorial.bind(this),
-          this.hideTutorial.bind(this)
+          this.hideTutorial.bind(this),
+          this.displayGIF.bind(this)
         );
       }
     }
@@ -223,6 +242,12 @@ export default {
       left: 50%;
       transform: translateX(-50%) rotate(45deg);
     }
+  }
+
+  #gashyan {
+    position: absolute;
+    left: 0;
+    top: 0;
   }
 }
 
