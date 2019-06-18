@@ -6,14 +6,7 @@
         <br>
         <span class="semi">Press E</span> and enter the legend!
       </p>
-      <Button
-        ref="button"
-        id="button"
-        @click.native="$emit('increment')"
-        letter="E"
-        en="Enter the game"
-        jpn="スタート"
-      ></Button>
+      <Button @click.native="$emit('increment')" letter="E" en="Enter the game" jpn="スタート"></Button>
     </div>
   </div>
 </template>
@@ -33,11 +26,7 @@ export default {
   data() {
     return {};
   },
-  computed: {
-    ...mapState({
-      loaded: state => state.game.loaded
-    })
-  },
+  computed: {},
   created() {
     HowlerManager.add([
       {
@@ -50,22 +39,18 @@ export default {
       // this.sounds.background_enter_game.play();
     });
   },
-  mounted() {},
-  watch: {
-    loaded(value) {
-      console.log("yhere");
-      if (value) {
-        TweenMax.to(this.$refs.button.$el, 2, {
-          delay: 1,
-          visibility: "visible",
-          opacity: 1,
-          ease: Power4.easeOut
-        });
+  mounted() {
+    window.addEventListener("keypress", this.handleKeyPress.bind(this));
+  },
+  methods: {
+    handleKeyPress(event) {
+      if (event.key == "e") {
+        this.$emit("increment");
       }
     }
   },
-  methods: {},
   beforeDestroy() {
+    window.removeEventListener("keypress", this.handleKeyPress.bind(this));
     HowlerManager.stop(this.sounds);
   }
 };
@@ -92,10 +77,6 @@ export default {
     svg {
       width: 40%;
       height: 40%;
-    }
-    #button {
-      visibility: hidden;
-      opacity: 0;
     }
   }
 }
