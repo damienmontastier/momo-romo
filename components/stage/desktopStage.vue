@@ -77,7 +77,7 @@ export default {
     this.$store.dispatch("game/loadStage", this.$route.params.level);
   },
   mounted() {
-    // this.game = new Game();
+    this.game = new Game();
     window.addEventListener(
       "launchMiniGame",
       e => {
@@ -93,19 +93,19 @@ export default {
       this.$refs.about.init();
     });
 
-    this.startMinigame();
+    // this.startMinigame();
   },
   watch: {
-    minigame() {}
-    // loaded(value) {
-    //   this.game.start(
-    //     {
-    //       currentLevelParams: this.stage,
-    //       currentAltlas: this.currentAtlas
-    //     },
-    //     this.$store
-    //   );
-    // }
+    minigame() {},
+    loaded(value) {
+      this.game.start(
+        {
+          currentLevelParams: this.stage,
+          currentAltlas: this.currentAtlas
+        },
+        this.$store
+      );
+    }
   },
   methods: {
     minigameended() {
@@ -192,7 +192,7 @@ export default {
   },
 
   destroyed() {
-    // this.game.reset();
+    this.game.reset();
   }
 };
 </script>
