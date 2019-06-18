@@ -494,9 +494,9 @@ class App {
   }
 
   onWindowResize() {
-    this.camera.aspect = window.innerWidth / window.innerHeight;
+    this.camera.aspect = window.innerHeight / (window.innerHeight * 0.85);
     this.camera.updateProjectionMatrix();
-    this.renderer.setSize(window.innerWidth, window.innerHeight);
+    this.renderer.setSize(window.innerHeight, window.innerHeight * 0.85);
   }
 }
 
@@ -504,7 +504,7 @@ export default {
   components: { Intro },
   data() {
     return {
-      errorMargin: 1,
+      errorMargin: 0.25,
       interval: 2,
       runningInterval: 0,
       gameModel: [
@@ -886,6 +886,15 @@ export default {
             1
           );
         this.$refs.intro.$refs.isPlaying.style.opacity = "1";
+        console.log("romo is playing");
+
+        this.sounds.momo_minijeu_1.fade(1, 0, 3000);
+        this.sounds.momo_minijeu_2.fade(1, 0, 3000);
+        this.sounds.momo_minijeu_3.fade(1, 0, 3000);
+        setTimeout(() => {
+          this.sounds.romo_playing.play();
+        }, 2500);
+
         this.launchStep();
         this.currentStep++;
         this.fractureEnded = true;
@@ -1012,7 +1021,7 @@ export default {
       if (this.tweening) {
         this.tweening.kill();
       }
-      this.tweening = null;
+
       let tl = new TimelineMax();
       tl.to(this.$refs.letter, 0.1, {
         // ease: Power4.easeIn,
@@ -1051,6 +1060,7 @@ export default {
           },
           onComplete: () => {
             this.nextStep();
+            this.tweening = null;
             // this.startKeyPressInterval();
             this.$refs.svgs.style.opacity = "1";
             this.$refs.circle.style.opacity = "1";
@@ -1109,13 +1119,17 @@ export default {
     },
     updateCountdown(countdown) {
       if (countdown === 3) {
+        this.sounds.romo_playing.stop();
         this.sounds.countdown_3.play();
       } else if (countdown === 2) {
         this.sounds.countdown_2.play();
       } else if (countdown === 1) {
         this.sounds.countdown_1.play();
-        this.sounds["momo_minijeu_" + (this.currentFracture + 1)].play();
-        this.tweening = null;
+        requestAnimationFrame(() => {
+          this.sounds["momo_minijeu_" + (this.currentFracture + 1)].play();
+          this.sounds["momo_minijeu_" + (this.currentFracture + 1)].volume(1);
+          this.tweening = null;
+        });
       }
     },
     loadSounds() {
@@ -1182,10 +1196,12 @@ export default {
     soundLoop(soundID, index) {
       let currentTime = this.sounds[soundID].seek() * 1000;
 
-      // console.log(currentTime);
-      // if(soundsTimecodes[i][this.current])
-      console.log(soundsTimecodes[index][this.currentStep]);
-      if (soundsTimecodes[index][this.currentStep]) {
+      // console.log(
+      //   this.tweening,
+      //   currentTime,
+      //   soundsTimecodes[index][this.currentStep]
+      // );
+      if (soundsTimecodes[index][this.currentStep + 1]) {
         let from = soundsTimecodes[index][this.currentStep];
         let to = soundsTimecodes[index][this.currentStep + 1];
         let duration = (to - from) * 0.001;
@@ -1240,7 +1256,10 @@ export default {
     circleScale() {
       let scale;
       this.tweening
-        ? (scale = this.runningInterval.map(0, this.duration, 1, 2))
+        ? Math.max(
+            (scale = this.runningInterval.map(0, this.duration, 1, 2)),
+            2
+          )
         : (scale = 2);
       return {
         transform: `scale(${scale})`
@@ -1263,8 +1282,8 @@ export default {
 @import "~assets/scss/main.scss";
 $border: 3px;
 #kintsugi {
-  height: 680px;
-  width: 800px;
+  height: 85vh;
+  width: 100vh;
   margin: auto;
   background: white;
   position: relative;
@@ -1303,7 +1322,7 @@ $border: 3px;
 
   .controls {
     position: absolute;
-    bottom: 0px;
+    bottom: 2vh;
     left: 0px;
     width: 100%;
     display: flex;
