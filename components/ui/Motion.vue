@@ -245,16 +245,16 @@ export default {
         requestAnimationFrame(this.onTimeUpdate.bind(this));
       });
       this.sounds.intro_sound.once("end", () => {
-        // this.$emit("end");
+        this.$emit("end");
       });
     },
     start() {
       this.timecodeEvents();
       this.sounds.intro_sound.play();
-      setTimeout(() => {
-                this.$emit('end')
+      // setTimeout(() => {
+      //           this.$emit('end')
 
-      }, 1000);
+      // }, 1000);
     },
     extends() {
       let box = this.$refs["video-container3"].getBoundingClientRect();

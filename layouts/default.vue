@@ -9,7 +9,7 @@
 <script>
 import Debugger from "@/components/debugger/Debugger";
 import Portrait from "@/components/Portrait";
-import { mapState } from 'vuex';
+import { mapState } from "vuex";
 export default {
   components: {
     Debugger,
@@ -19,37 +19,39 @@ export default {
     ...mapState({
       socket: state => state.synchro.socket,
       roomID: state => state.synchro.roomID
-    }),
+    })
   },
   methods: {
     openFullscreen() {
-      console.log('request fullscreen')
+      console.log("request fullscreen");
       const elem = document.documentElement;
       if (elem.requestFullscreen) {
         elem.requestFullscreen();
-      } else if (elem.mozRequestFullScreen) { /* Firefox */
+      } else if (elem.mozRequestFullScreen) {
+        /* Firefox */
         elem.mozRequestFullScreen();
-      } else if (elem.webkitRequestFullscreen) { /* Chrome, Safari and Opera */
+      } else if (elem.webkitRequestFullscreen) {
+        /* Chrome, Safari and Opera */
         elem.webkitRequestFullscreen();
-      } else if (elem.msRequestFullscreen) { /* IE/Edge */
+      } else if (elem.msRequestFullscreen) {
+        /* IE/Edge */
         elem.msRequestFullscreen();
       }
     }
   },
   watch: {
     socket() {
-      if(this.socket) {
-        this.socket.on("router",(params)=>{
-          console.log('router' + params)
-          this.$router.replace({path:params.id})
-        })
+      if (this.socket) {
+        this.socket.on("router", params => {
+          console.log("router" + params);
+          this.$router.replace({ path: params.id });
+        });
       }
     }
   },
   mounted() {
-    if(this.$device.isMobile) {
+    if (this.$device.isMobile) {
       // this.openFullscreen()
-
       // if(this.socket) {
       //   this.socket.on("router",(params)=>{
       //     this.$router.replace({path:params.id})
@@ -63,11 +65,11 @@ export default {
 
 <style>
 * {
-    user-select: none; /* supported by Chrome and Opera */
-   -webkit-user-select: none; /* Safari */
-   -khtml-user-select: none; /* Konqueror HTML */
-   -moz-user-select: none; /* Firefox */
-   -ms-user-select: none; /* Internet Explorer/Edge */
+  user-select: none; /* supported by Chrome and Opera */
+  -webkit-user-select: none; /* Safari */
+  -khtml-user-select: none; /* Konqueror HTML */
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
 }
 
 html {
