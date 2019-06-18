@@ -21,7 +21,7 @@
       v-if="minigame && !minigameStarted"
       v-on:triggered="startMinigame"
     ></buttonCircleRed>
-    <mini-game :uid="$route.params.level" ref="minigame"></mini-game>
+    <mini-game :uid="$route.params.level" ref="minigame" v-on:minigameended="minigameended"></mini-game>
     <!-- <mini-game :uid="$route.params.level"></mini-game> -->
   </div>
 </template>
@@ -53,7 +53,8 @@ export default {
       runGame: false,
       killElement: true,
       showTutorial: true,
-      minigameStarted: false
+      minigameStarted: false,
+      minigameEnded: false
     };
   },
   computed: {
@@ -72,7 +73,7 @@ export default {
     this.$store.dispatch("game/loadStage", this.$route.params.level);
   },
   mounted() {
-    // this.game = new Game();
+    this.game = new Game();
     window.addEventListener(
       "launchMiniGame",
       e => {
@@ -81,21 +82,27 @@ export default {
       false
     );
 
-    this.startMinigame();
+    // this.startMinigame();
   },
   watch: {
     minigame() {},
     loaded(value) {
-      // this.game.start(
-      //   {
-      //     currentLevelParams: this.stage,
-      //     currentAltlas: this.currentAtlas
-      //   },
-      //   this.$store
-      // );
+      this.game.start(
+        {
+          currentLevelParams: this.stage,
+          currentAltlas: this.currentAtlas
+        },
+        this.$store
+      );
     }
   },
   methods: {
+    minigameended() {
+      this.game.launchEndMiniGame().then(value => {
+        console.log("yeees");
+      });
+      console.log("this.minigameEnded", this.minigameEnded);
+    },
     startMinigame() {
       console.log("start minigame");
       this.minigameStarted = true;
@@ -174,7 +181,7 @@ export default {
   },
 
   destroyed() {
-    // this.game.reset();
+    this.game.reset();
   }
 };
 </script>

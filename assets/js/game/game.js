@@ -31,4 +31,12 @@ export default class Game {
             })
         })
     }
+
+    launchEndMiniGame() {
+        return new Promise((resolve, reject) => {
+            this.sceneLevel.launchEndMiniGame().then(() => {
+                resolve()
+            })
+        })
+    }
 }

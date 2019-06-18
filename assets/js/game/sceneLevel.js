@@ -10,6 +10,10 @@ import HowlerManager from "~/assets/js/utils/HowlerManager";
 import background_level from "@/static/sounds/background_level.mp3";
 import breaking_bowl from "@/static/sounds/breaking_bowl.mp3";
 import cta_ready from "@/static/sounds/cta_ready.mp3";
+import Sprite from '@/assets/js/objects/Sprite'
+
+import kintsugi_sprite from '~/static/sprites/about/kintsugi.png'
+import kintsugi_json from '~/static/sprites/about/kintsugi.json'
 
 import {
     TweenMax,
@@ -311,6 +315,7 @@ export default class Level {
         this.masks = new THREE.Mesh(singleGeometry, material);
 
         this.materialbis = new THREE.ShaderMaterial({
+            // wireframe: true,
             uniforms: {
                 iTime: {
                     value: 0
@@ -548,6 +553,26 @@ export default class Level {
         })
     }
 
+    launchEndMiniGame() {
+
+        return new Promise((resolve, reject) => {
+            let tl = new TimelineMax({
+                onComplete: () => {
+                    resolve()
+                    this.startVideo()
+                }
+            })
+            tl.to(this.masks.position, 3, {
+                x: -this.width / 2.5,
+                ease: Power4.easeOut,
+            });
+            tl.to(this.camera.position, 3, {
+                x: this.width / 2,
+                ease: Power4.easeOut,
+            }, 0);
+        })
+    }
+
     nextToMinigame(value) {
         if (value) {
             //si dedans
@@ -583,95 +608,115 @@ export default class Level {
 
         if (this.animatesArray.length && this.animationFinish) {
             this.animatesArray.forEach(animate => {
-                    animate.animate.update(delta * 5000)
-                    if (this.momo.position.x >= animate.position.x - .5 && this.momo.position.x <= animate.position.x + .5 && !animate.animated) {
-                        if ((animate.out && !animate.in) || (!animate.in && !animate.out)) {
-                            animate.in = true
-                            if (animate.name == "cat") {
-                                let postX = animate.position.x
-                                let postY = animate.position.y
-                                TweenMax.to(animate.position, 2.5, {
-                                    x: postX + 1,
-                                    ease: Circ.easeIn
-                                })
-                                TweenMax.to(animate.position, 4, {
-                                    y: postY - 2,
-                                    ease: Power4.easeIn
-                                })
-                                animate.animate
-                                    .newSprites()
-                                    .addState('jump')
-                                    .addState('wait')
-                                    .start()
+                animate.animate.update(delta * 5000)
+                if (this.momo.position.x >= animate.position.x - .5 && this.momo.position.x <= animate.position.x + .5 && !animate.animated) {
+                    if ((animate.out && !animate.in) || (!animate.in && !animate.out)) {
+                        animate.in = true
+                        if (animate.name == "cat") {
+                            let postX = animate.position.x
+                            let postY = animate.position.y
+                            TweenMax.to(animate.position, 2.5, {
+                                x: postX + 1,
+                                ease: Circ.easeIn
+                            })
+                            TweenMax.to(animate.position, 4, {
+                                y: postY - 2,
+                                ease: Power4.easeIn
+                            })
+                            animate.animate
+                                .newSprites()
+                                .addState('jump')
+                                .addState('wait')
+                                .start()
 
-                            } else if (animate.name == "petals") {
-                                animate.animate
-                                    .newSprites()
-                                    .addState('petals')
-                                    .addState('wait')
-                                    .start()
-                            } else if (animate.name == "plants") {
-                                animate.animate
-                                    .newSprites()
-                                    .addState('plants')
-                                    .addState('wait')
-                                    .start()
-                            } else if (animate.name == "mobile") {
-                                animate.animate
-                                    .newSprites()
-                                    .addState('mobile')
-                                    .addState('wait')
-                                    .start()
-                                animate.animated = true
-                            }
+                        } else if (animate.name == "petals") {
+                            animate.animate
+                                .newSprites()
+                                .addState('petals')
+                                .addState('wait')
+                                .start()
+                        } else if (animate.name == "plants") {
+                            animate.animate
+                                .newSprites()
+                                .addState('plants')
+                                .addState('wait')
+                                .start()
+                        } else if (animate.name == "mobile") {
+                            animate.animate
+                                .newSprites()
+                                .addState('mobile')
+                                .addState('wait')
+                                .start()
+                            animate.animated = true
                         }
+                    }
 
-                        } else if (animate.in) {
-                            if (animate.in || (!animate.in && !animate.out)) {
-                                animate.out = true
-                            }
-                            animate.in = false
-                        }
-                    });
-            }
-
-            // Romo add restrictedZone 
-            if (this.romo && this.restrictedZone && this.startRestrictedZone) {
-                this.romo.position.x = Math.max(1 + (this.camera.position.x + this.restrictedZone.left), Math.min((this.camera.position.x + this.restrictedZone.right) - 1, this.romo.position.x))
-                this.romo.position.y = Math.max(0, Math.min(this.restrictedZone.top + 1, this.romo.position.y))
-            }
-
-            this.cannonDebugRenderer.update()
-
-            if (this.characters && this.preRenderFinish) {
-                this.characters.update()
-                TweenMax.to(this.camera.position, 3, {
-                    x: this.momo.position.x,
-                    ease: Power4.easeOut,
-                })
-            }
-
-            if (this.minigameProps) {
-                if (this.momo.body.position.x >= this.minigameProps.position.x - 1 && this.momo.body.position.x <= this.minigameProps.position.x + 1) {
-                    this.nextToMinigame(true)
-                } else {
-                    this.nextToMinigame(false)
+                } else if (animate.in) {
+                    if (animate.in || (!animate.in && !animate.out)) {
+                        animate.out = true
+                    }
+                    animate.in = false
                 }
+            });
+        }
+
+        // Romo add restrictedZone 
+        if (this.romo && this.restrictedZone && this.startRestrictedZone) {
+            this.romo.position.x = Math.max(1 + (this.camera.position.x + this.restrictedZone.left), Math.min((this.camera.position.x + this.restrictedZone.right) - 1, this.romo.position.x))
+            this.romo.position.y = Math.max(0, Math.min(this.restrictedZone.top + 1, this.romo.position.y))
+        }
+
+        this.cannonDebugRenderer.update()
+
+        if (this.characters && this.preRenderFinish) {
+            this.characters.update()
+            TweenMax.to(this.camera.position, 3, {
+                x: this.momo.position.x,
+                ease: Power4.easeOut,
+            })
+        }
+
+        if (this.minigameProps) {
+            if (this.momo.body.position.x >= this.minigameProps.position.x - 1 && this.momo.body.position.x <= this.minigameProps.position.x + 1) {
+                this.nextToMinigame(true)
+            } else {
+                this.nextToMinigame(false)
             }
-
-            this.physicParams.update()
-
-            this.renderer.render(this.scene, this.camera);
-        }
-        launchSprite(character, id) {
-            character
-                .newSprites()
-                .addState(id)
-                .start()
-            this.currentSpriteID = id;
         }
 
-        startVideo() {
+        this.physicParams.update()
 
+        if (this.video) {
+            this.video.update(delta * 5000)
         }
+
+        this.renderer.render(this.scene, this.camera);
     }
+    launchSprite(character, id) {
+        character
+            .newSprites()
+            .addState(id)
+            .start()
+        this.currentSpriteID = id;
+    }
+
+    startVideo() {
+        return new Promise((reolve, reject) => {
+            new Sprite(kintsugi_sprite, kintsugi_json.sprites, {
+                wTiles: 8,
+                hTiles: 16
+            }).then((video) => {
+                this.video = video
+                this.scene.add(this.video)
+                console.log(this.scene)
+
+                this.video
+                    .newSprites()
+                    .addState("default")
+                    .start();
+                this.video.scale.set(2, 1, 1)
+                this.video.position.set(this.camera.position.x, this.camera.position.y, 10)
+            })
+        })
+    }
+}
