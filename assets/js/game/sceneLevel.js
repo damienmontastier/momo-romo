@@ -440,7 +440,7 @@ export default class Level {
 
     preRenderProps(callback, addTutorial, hideTutorial) {
         let promises = []
-        let delay = 100
+        let delay = 200
         let duration = this.fixedPropsGroup.length * delay
         this.store.commit('game/setLoadingDuration', duration)
         // this.sounds.background_level.loop(true);
@@ -657,5 +657,9 @@ export default class Level {
             .addState(id)
             .start()
         this.currentSpriteID = id;
+    }
+
+    startVideo() {
+
     }
 }

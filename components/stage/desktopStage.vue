@@ -18,10 +18,10 @@
       jpn="リペアボウル"
       id="button-start-minigame"
       :uid="$route.params.level"
-      v-if="minigame"
+      v-if="minigame && !minigameStarted"
       v-on:triggered="startMinigame"
     ></buttonCircleRed>
-    <mini-game :uid="$route.params.level" v-show="minigameStarted" ref="minigame"></mini-game>
+    <mini-game :uid="$route.params.level" ref="minigame"></mini-game>
     <!-- <mini-game :uid="$route.params.level"></mini-game> -->
   </div>
 </template>
@@ -72,7 +72,7 @@ export default {
     this.$store.dispatch("game/loadStage", this.$route.params.level);
   },
   mounted() {
-    this.game = new Game();
+    // this.game = new Game();
     window.addEventListener(
       "launchMiniGame",
       e => {
@@ -80,17 +80,19 @@ export default {
       },
       false
     );
+
+    this.startMinigame();
   },
   watch: {
     minigame() {},
     loaded(value) {
-      this.game.start(
-        {
-          currentLevelParams: this.stage,
-          currentAltlas: this.currentAtlas
-        },
-        this.$store
-      );
+      // this.game.start(
+      //   {
+      //     currentLevelParams: this.stage,
+      //     currentAltlas: this.currentAtlas
+      //   },
+      //   this.$store
+      // );
     }
   },
   methods: {
@@ -98,6 +100,7 @@ export default {
       console.log("start minigame");
       this.minigameStarted = true;
       this.$nextTick(() => {
+        this.$refs.minigame.$el.style.visibility = "visible";
         this.$refs.minigame.$children[0].load().then(() => {
           this.$refs.minigame.$children[0].start().then(() => {
             this.game.launchMiniGame().then(value => {
@@ -171,13 +174,16 @@ export default {
   },
 
   destroyed() {
-    this.game.reset();
+    // this.game.reset();
   }
 };
 </script>
 
 <style lang="scss" scoped>
 @import "~assets/scss/main.scss";
+#mini-game {
+  visibility: hidden;
+}
 #desktopStage {
   position: relative;
   width: 100%;

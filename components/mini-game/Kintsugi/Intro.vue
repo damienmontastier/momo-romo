@@ -98,8 +98,8 @@ export default {
       this.$refs.isPlaying.style.opacity = "0";
       this.$refs.countdown.style.opacity = "1";
       this.countdown = 3;
-      if(this.interval) {
-        clearInterval(this.interval)
+      if (this.interval) {
+        clearInterval(this.interval);
       }
       this.interval = setInterval(() => {
         if (this.countdown == 0) {
@@ -108,15 +108,12 @@ export default {
           this.$emit("startfracture");
           clearInterval(this.interval);
         } else {
-          
-          
-
           this.countdown--;
         }
       }, 1000);
     },
     setRomoReady() {
-      this.$emit('setromoready',true)
+      this.$emit("setromoready", true);
       this.romoIsReady = true;
       this.$refs.launchButton.style.opacity = "1";
       this.$refs.launchButton.style.pointerEvents = "auto";
@@ -127,7 +124,7 @@ export default {
   },
   watch: {
     countdown() {
-      this.$emit('updatecountdown',this.countdown)
+      this.$emit("updatecountdown", this.countdown);
     }
   }
 };
@@ -195,7 +192,7 @@ export default {
       height: 160px;
       // background: $black;
       position: absolute;
-      bottom: 80px;
+      bottom: 10vh;
       left: calc(50% - 80px);
       background: url("~static/ui/kintsugi/mini-game/tuto-touche.gif");
       background-size: cover;
@@ -207,7 +204,7 @@ export default {
     // background: #f00;
     position: absolute;
     // bottom: calc(150px - 100px);
-    bottom: 60px;
+    bottom: 7.5vh;
     left: calc(50% - 100px);
     z-index: 10000;
     opacity: 0;
@@ -226,7 +223,7 @@ export default {
     width: 100%;
     left: 0px;
     position: absolute;
-    bottom: 108px;
+    bottom: 13vh;
     z-index: 11;
     display: flex;
     opacity: 0;
@@ -234,7 +231,7 @@ export default {
 
   .endTitle {
     // height: 100px;
-    bottom: 100px;
+    bottom: 12.5vh;
     transform: scale(0);
     #greatSVG {
       width: 100%;
@@ -260,7 +257,8 @@ export default {
 
   .synchro {
     position: absolute;
-    bottom: 120px;
+    // bottom: 120px;
+    bottom: 15vh;
     left: 0px;
     width: 100%;
     opacity: 0;
@@ -270,7 +268,7 @@ export default {
       display: flex;
       flex-direction: row;
       .states {
-        padding: 0 8px;
+        padding: 0 16px;
         width: 100%;
         display: flex;
         flex-direction: row;
@@ -280,6 +278,9 @@ export default {
           display: flex;
           span {
             margin: auto;
+          }
+          &.romo {
+            margin-right: 8px;
           }
         }
       }
