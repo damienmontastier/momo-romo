@@ -46,7 +46,7 @@ export default {
     return {
       spriteParams: [
         { json: jsonCat, png: pngCat, w: 8, h: 8 },
-        { json: jsonPetals, png: pngPetals, w: 16, h: 4 },
+        { json: jsonPetals, png: pngPetals, w: 8, h: 8 },
         { json: jsonMobile, png: pngMobile, w: 4, h: 4 },
         { json: jsonPlants, png: pngPlants, w: 4, h: 4 }
       ]

@@ -647,10 +647,10 @@ export default class Level {
 
         this.materialbis.uniforms.iTime.value = this.time
 
-        if (this.animatesArray.length && this.animationFinish && this.romo) {
+        if (this.animatesArray.length && this.animationFinish && this.momo) {
             this.animatesArray.forEach(animate => {
-                animate.animate.update(delta * 5000)
-                if (this.romo.position.x >= animate.position.x - .5 && this.romo.position.x <= animate.position.x + .5 && !animate.animated) {
+                animate.animate.update(delta * 10000)
+                if (this.momo.position.x >= animate.position.x - .8 && this.momo.position.x <= animate.position.x + .8 && !animate.animated) {
                     if ((animate.out && !animate.in) || (!animate.in && !animate.out)) {
                         animate.in = true
                         if (animate.name == "cat") {
@@ -669,8 +669,8 @@ export default class Level {
                                 .addState('jump')
                                 .addState('wait')
                                 .start()
-
                         } else if (animate.name == "petals") {
+                            console.log(animate.animate)
                             animate.animate
                                 .newSprites()
                                 .addState('petals')
@@ -680,13 +680,11 @@ export default class Level {
                             animate.animate
                                 .newSprites()
                                 .addState('plants')
-                                .addState('wait')
                                 .start()
                         } else if (animate.name == "mobile") {
                             animate.animate
                                 .newSprites()
                                 .addState('mobile')
-                                .addState('wait')
                                 .start()
                             animate.animated = true
                         }
