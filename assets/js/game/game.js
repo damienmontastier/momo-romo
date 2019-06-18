@@ -21,8 +21,8 @@ export default class Game {
     reset() {
         this.sceneLevel.reset()
     }
-    preRenderProps(callback, addTutorial, hideTutorial) {
-        this.sceneLevel.preRenderProps(callback, addTutorial, hideTutorial)
+    preRenderProps(propsLoad, addTutorial, hideTutorial, displayGIF) {
+        this.sceneLevel.preRenderProps(propsLoad, addTutorial, hideTutorial, displayGIF)
     }
     launchMiniGame() {
         return new Promise((resolve, reject) => {
