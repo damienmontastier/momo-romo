@@ -82,7 +82,7 @@ export default {
           .newSprites()
           .addState("default")
           .start();
-        this.video.scale.set(2,1,1)
+        this.video.scale.set(-2,1,1)
       })
     },
     // createVideo() {

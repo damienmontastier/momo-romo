@@ -78,8 +78,8 @@ import Sprite from "@/assets/js/objects/Sprite";
 import MomoSprite from "~/static/ui/kintsugi/mini-game/sprites/momo/power_momo_opti.png";
 const MomoSpriteJson = require("~/static/ui/kintsugi/mini-game/sprites/momo/power_momo.json");
 
-import BrushSprite from "~/static/sprites/brush/brush.png";
-const BrushSpriteJson = require("~/static/sprites/brush/brush.json");
+import BrushSprite from "~/static/ui/kintsugi/mini-game/sprites/romo/romo_brush.png";
+const BrushSpriteJson = require("~/static/ui/kintsugi/mini-game/sprites/romo/romo_brush.json");
 
 import background_level from "~/static/sounds/background_level.mp3";
 import transition_windows from "~/static/sounds/transition_windows.mp3";
@@ -166,23 +166,23 @@ class App {
   addBrush() {
     return new Promise((resolve, reject) => {
       new Sprite(BrushSprite, BrushSpriteJson.sprites, {
-        wTiles: 4,
-        hTiles: 2
+        wTiles: 8,
+        hTiles: 8
       }).then(brush => {
         this.brush = brush;
         this.brush.scale.set(45, 45, 45);
         this.brush.position.z = 2;
         this.brush.position.x = 60;
         this.brush.position.y = -5;
-        this.brush.rotation.z = THREE.Math.degToRad(30);
+        // this.brush.rotation.z = THREE.Math.degToRad(30);
 
-        this.brush.texture.magFilter = this.brush.texture.minFilter =
-          THREE.NearestFilter;
+        // this.brush.texture.magFilter = this.brush.texture.minFilter =
+        //   THREE.NearestFilter;
 
         this.scene.add(this.brush);
         this.brush
           .newSprites()
-          .addState("brush")
+          .addState("romo_basic")
           .start();
       });
       resolve();
@@ -596,9 +596,14 @@ export default {
       });
     },
     appearToTitle() {
-      console.log("loop stop");
+      this.app.brush
+          .newSprites()
+          .addState("romo_transform_in")
+          .addState("romo_brush")
+          .start();
       this.sounds.background_level.stop();
       this.tweeningScalar = 1;
+
       let tl = new TimelineMax();
       tl.delay(1)
         .add("titleAppear", 0)
@@ -756,8 +761,15 @@ export default {
       this.sounds.background_level.volume(0.5);
       this.sounds.background_level.loop(true);
       this.sounds.background_level.play();
+
+      this.app.brush
+          .newSprites()
+          .addState("romo_transform_out")
+          .addState("romo_basic")
+          .start();
+
       let tl = new TimelineMax();
-      tl.add("endGameAppear", 0)
+      tl.add("endGameAppear", 1)
         .to(
           [this.app.planeRosace.scale, this.app.planeGradient.scale],
           0.5,
