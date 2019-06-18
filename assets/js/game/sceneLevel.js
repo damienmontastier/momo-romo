@@ -610,18 +610,6 @@ export default class Level {
                                 .addState('petals')
                                 .addState('wait')
                                 .start()
-                        } else if (animate.name == "plants") {
-                            animate.animate
-                                .newSprites()
-                                .addState('plants')
-                                .addState('wait')
-                                .start()
-                        } else if (animate.name == "mobile") {
-                            animate.animate
-                                .newSprites()
-                                .addState('mobile')
-                                .addState('wait')
-                                .start()
                         }
                         animate.animated = true
                     }
