@@ -24,6 +24,8 @@
     ></buttonCircleRed>
     <mini-game :uid="$route.params.level" ref="minigame" v-on:minigameended="minigameended"></mini-game>
     <!-- <mini-game :uid="$route.params.level"></mini-game> -->
+
+    <about ref="about"/>
   </div>
 </template>
 
@@ -36,7 +38,7 @@ import MiniGame from "@/components/mini-game/MiniGame.vue";
 import readyKintsugi from "@/components/ui/readyKintsugi.vue";
 import buttonCircleRed from "@/components/svg/button-circle-red";
 import Loader from "@/components/ui/loader.vue";
-import { delay } from "q";
+import About from "@/components/mini-game/Kintsugi/About";
 import gashyangif from "~/static/ui/gashyan.gif";
 
 export default {
@@ -44,7 +46,8 @@ export default {
     MiniGame,
     readyKintsugi,
     Loader,
-    buttonCircleRed
+    buttonCircleRed,
+    About
   },
   data() {
     return {
@@ -57,6 +60,7 @@ export default {
       showTutorial: true,
       minigameStarted: false,
       minigameEnded: false,
+      aboutLaunched: false,
       gashyangif: gashyangif,
       showGashyanGif: false
     };
@@ -85,6 +89,13 @@ export default {
       },
       false
     );
+
+    window.addEventListener("launchAbout", () => {
+      console.log("launchAbout");
+      this.aboutLaunched = true;
+      this.$refs.about.$el.style.visibility = "visible";
+      this.$refs.about.init();
+    });
 
     // this.startMinigame();
   },
@@ -183,7 +194,8 @@ export default {
         top:
           "50%" - this.$refs.gashyan.getBoundingClientRect().height / 2 + "px",
         y: "50%",
-        left: (position.x - (this.$refs.gashyan.getBoundingClientRect().width / 2) - 50)
+        left:
+          position.x - this.$refs.gashyan.getBoundingClientRect().width / 2 - 50
       });
     },
     loadStart() {
@@ -258,5 +270,12 @@ export default {
   transform: translateX(-50%);
   width: 200px;
   height: 200px;
+}
+
+#about {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  visibility: hidden;
 }
 </style>

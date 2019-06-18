@@ -723,10 +723,18 @@ export default class Level {
                 this.video
                     .newSprites()
                     .addState("default")
-                    .start();
+                    .start(this.stopVideo.bind(this));
                 this.video.scale.set(2, 1, 1)
-                this.video.position.set(this.camera.position.x, this.camera.position.y, 10)
+                this.video.position.set(this.camera.position.x, this.camera.position.y, 10);
+                HowlerManager.sounds.voice_bowl_repaired.play()
             })
         })
+    }
+
+    stopVideo() {
+        this.video.visible = false
+        this.video = null
+        let event = new Event('launchAbout');
+        window.dispatchEvent(event)
     }
 }

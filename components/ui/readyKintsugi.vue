@@ -9,7 +9,7 @@
       <Button
         ref="button"
         id="button"
-        @click.native="$emit('increment')"
+        v-on:triggered="$emit('increment')"
         letter="E"
         en="Enter the game"
         jpn="スタート"
