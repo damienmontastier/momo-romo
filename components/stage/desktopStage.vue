@@ -18,10 +18,10 @@
       jpn="リペアボウル"
       id="button-start-minigame"
       :uid="$route.params.level"
-      v-if="minigame && !minigameStarted"
+      v-if="minigame"
       v-on:triggered="startMinigame"
     ></buttonCircleRed>
-    <!-- <mini-game :uid="$route.params.level" ref="minigame"></mini-game> -->
+    <mini-game :uid="$route.params.level" v-show="minigameStarted" ref="minigame"></mini-game>
     <!-- <mini-game :uid="$route.params.level"></mini-game> -->
   </div>
 </template>
@@ -80,8 +80,6 @@ export default {
       },
       false
     );
-
-    this.startMinigame();
   },
   watch: {
     minigame() {},
@@ -100,7 +98,6 @@ export default {
       console.log("start minigame");
       this.minigameStarted = true;
       this.$nextTick(() => {
-        this.$refs.minigame.$el.style.visibility = "visible";
         this.$refs.minigame.$children[0].load().then(() => {
           this.$refs.minigame.$children[0].start().then(() => {
             this.game.launchMiniGame().then(value => {
@@ -181,9 +178,6 @@ export default {
 
 <style lang="scss" scoped>
 @import "~assets/scss/main.scss";
-#mini-game {
-  visibility: hidden;
-}
 #desktopStage {
   position: relative;
   width: 100%;
