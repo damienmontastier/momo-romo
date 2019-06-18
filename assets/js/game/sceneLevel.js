@@ -606,7 +606,7 @@ export default class Level {
 
         this.materialbis.uniforms.iTime.value = this.time
 
-        if (this.animatesArray.length && this.animationFinish) {
+        if (this.animatesArray.length && this.animationFinish && this.romo) {
             this.animatesArray.forEach(animate => {
                 animate.animate.update(delta * 5000)
                 if (this.romo.position.x >= animate.position.x - .5 && this.romo.position.x <= animate.position.x + .5 && !animate.animated) {
@@ -677,7 +677,7 @@ export default class Level {
             })
         }
 
-        if (this.minigameProps) {
+        if (this.minigameProps && this.romo) {
             if (this.romo.position.x >= this.minigameProps.position.x - 1 && this.romo.position.x <= this.minigameProps.position.x + 1) {
                 this.nextToMinigame(true)
             } else {
