@@ -41,6 +41,7 @@ export default {
       window.addEventListener("touchstart", this.handleStart.bind(this));
       window.addEventListener("touchend", this.handleEnd.bind(this));
       window.addEventListener("touchmove", this.handleMove.bind(this));
+      window.addEventListener("click", this.openFullscreen.bind(this));
       this.connect({
         device: this.$device.isMobileOrTablet,
         roomID: this.$device.isMobileOrTablet ? this.$route.params.level : null
@@ -53,6 +54,22 @@ export default {
     ...mapActions({
       connect: "synchro/connect"
     }),
+    openFullscreen() {
+      console.log("request fullscreen");
+      const elem = document.documentElement;
+      if (elem.requestFullscreen) {
+        elem.requestFullscreen();
+      } else if (elem.mozRequestFullScreen) {
+        /* Firefox */
+        elem.mozRequestFullScreen();
+      } else if (elem.webkitRequestFullscreen) {
+        /* Chrome, Safari and Opera */
+        elem.webkitRequestFullscreen();
+      } else if (elem.msRequestFullscreen) {
+        /* IE/Edge */
+        elem.msRequestFullscreen();
+      }
+    },
     handleMove(event) {
       let deltaY = Math.min(
         Math.max(this.startCoord.y - event.changedTouches[0].clientY, 0),
@@ -119,6 +136,8 @@ export default {
   beforeDestroy() {
     window.removeEventListener("touchstart", this.handleStart.bind(this));
     window.removeEventListener("touchend", this.handleEnd.bind(this));
+    window.removeEventListener("touchmove", this.handleMove.bind(this));
+    window.removeEventListener("remove", this.openFullscreen.bind(this));
   }
 };
 </script>
