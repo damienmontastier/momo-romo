@@ -448,9 +448,9 @@ export default class Level {
         let delay = 200
         let duration = this.fixedPropsGroup.length * delay
         this.store.commit('game/setLoadingDuration', duration)
-        // this.sounds.background_level.loop(true);
-        // this.sounds.background_level.play();
-        // this.sounds.background_level.fade(0, 1.0, 5000);
+        this.sounds.background_level.loop(true);
+        this.sounds.background_level.play();
+        this.sounds.background_level.fade(0, 1.0, 5000);
         //FixedProps preRender
         for (let i = 0; i < this.fixedPropsGroup.length; i++) {
             let p1 = new Promise((resolve, reject) => {
@@ -526,7 +526,7 @@ export default class Level {
                     onComplete: () => {
                         this.startRestrictedZone = true
                         this.animationFinish = true
-                        // this.sounds.breaking_bowl.play();
+                        this.sounds.breaking_bowl.play();
                         this.charactersClass.blockCharacter(addTutorial, this.camera, hideTutorial)
                     }
                 }, 1000);
@@ -609,7 +609,7 @@ export default class Level {
         if (this.animatesArray.length && this.animationFinish) {
             this.animatesArray.forEach(animate => {
                 animate.animate.update(delta * 5000)
-                if (this.momo.position.x >= animate.position.x - .5 && this.momo.position.x <= animate.position.x + .5 && !animate.animated) {
+                if (this.romo.position.x >= animate.position.x - .5 && this.romo.position.x <= animate.position.x + .5 && !animate.animated) {
                     if ((animate.out && !animate.in) || (!animate.in && !animate.out)) {
                         animate.in = true
                         if (animate.name == "cat") {
@@ -651,6 +651,7 @@ export default class Level {
                         }
                     }
 
+
                 } else if (animate.in) {
                     if (animate.in || (!animate.in && !animate.out)) {
                         animate.out = true
@@ -666,7 +667,7 @@ export default class Level {
             this.romo.position.y = Math.max(0, Math.min(this.restrictedZone.top + 1, this.romo.position.y))
         }
 
-        this.cannonDebugRenderer.update()
+        // this.cannonDebugRenderer.update()
 
         if (this.characters && this.preRenderFinish) {
             this.characters.update()
@@ -677,12 +678,13 @@ export default class Level {
         }
 
         if (this.minigameProps) {
-            if (this.momo.body.position.x >= this.minigameProps.position.x - 1 && this.momo.body.position.x <= this.minigameProps.position.x + 1) {
+            if (this.romo.position.x >= this.minigameProps.position.x - 1 && this.romo.position.x <= this.minigameProps.position.x + 1) {
                 this.nextToMinigame(true)
             } else {
                 this.nextToMinigame(false)
             }
         }
+
 
         this.physicParams.update()
 
