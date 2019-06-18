@@ -201,6 +201,38 @@ export default class Level {
                 alphaTest: 0.5,
             })
         });
+        if (prop._id == "window1" || prop._id == "window2") {
+            let singleGeometry = new THREE.Geometry();
+
+            let width = 1
+            let height = 1
+            let geometryRightLeft = new THREE.PlaneGeometry(width, height * 1.5, 1);
+            let geometryTopBottom = new THREE.PlaneGeometry(width, height, 1);
+            let material = new THREE.MeshBasicMaterial({
+                color: 0xfdf9eb,
+                side: THREE.DoubleSide
+            });
+
+            let plane = new THREE.Mesh(geometryRightLeft, material); //Right
+            plane.position.set(-width + .03, 0, 0)
+            singleGeometry.mergeMesh(plane);
+
+            plane = new THREE.Mesh(geometryRightLeft, material); //Left
+            plane.position.set(width - .03, 0, 0)
+            singleGeometry.mergeMesh(plane);
+
+            plane = new THREE.Mesh(geometryTopBottom, material); //Top
+            plane.position.set(0, width, 0)
+            singleGeometry.mergeMesh(plane);
+
+            plane = new THREE.Mesh(geometryTopBottom, material); //Bottom
+            plane.position.set(0, -width, 0)
+            singleGeometry.mergeMesh(plane);
+
+            let mask = new THREE.Mesh(singleGeometry, material);
+
+            prop.add(mask)
+        }
         prop.position.set(props.position.x, props.position.y, props.position.z);
         prop.originPosition = new THREE.Vector3().copy(prop.position)
         prop.scale.set(props.scale.x, props.scale.y, props.scale.z);

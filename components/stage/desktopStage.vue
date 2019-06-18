@@ -7,7 +7,7 @@
       v-on:loadStart="loadStart"
       :is="components[value]"
     ></component>
-    <img :src="gashyangif" id="gashyan" alt="gashyan" ref="gashyan">
+    <!-- <img :src="gashyangif" id="gashyan" alt="gashyan" ref="gashyan"> -->
 
     <div ref="tutorialKeyboard" id="tutorial-keyboard"></div>
 

@@ -41,7 +41,7 @@
       >{{animate._id + index}}</li>
       <p>{{picked}}</p>
     </ul>
-    <ul class="layer">
+    <ul style="height: 150px;" class="layer">
       <p>Checkpoint Minigame</p>
       <li
         v-for="(prop,index) in currentStageProps.fixedProps"
