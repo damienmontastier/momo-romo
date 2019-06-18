@@ -4,7 +4,7 @@
       <p class="skew stroke">You are</p>
       <synchedTitle></synchedTitle>
     </div>
-    <div class="character-romo"></div>
+    <div ref="characterRomo" class="character-romo"></div>
     <div class="center-horizontaly">
       <p class="book skew">
         <span class="semi">Swipe up</span> to join
@@ -17,6 +17,7 @@
 <script>
 import { mapGetters, mapMutations, mapState, mapActions } from "vuex";
 import synchedTitle from "@/components/mobile/svg/SynchedTitle";
+import { TweenMax } from "gsap";
 
 export default {
   data() {
@@ -39,6 +40,7 @@ export default {
     if (this.$device.isMobileOrTablet) {
       window.addEventListener("touchstart", this.handleStart.bind(this));
       window.addEventListener("touchend", this.handleEnd.bind(this));
+      window.addEventListener("touchmove", this.handleMove.bind(this));
       this.connect({
         device: this.$device.isMobileOrTablet,
         roomID: this.$device.isMobileOrTablet ? this.$route.params.level : null
@@ -51,11 +53,31 @@ export default {
     ...mapActions({
       connect: "synchro/connect"
     }),
+    handleMove(event) {
+      let deltaY = Math.min(
+        Math.max(this.startCoord.y - event.changedTouches[0].clientY, 0),
+        this.$refs.characterRomo.offsetHeight
+      );
+      console.log(deltaY / 100);
+
+      TweenMax.to(this.$refs.characterRomo, 1.5, {
+        y: -deltaY,
+        ease: Power4.easeOut
+      });
+    },
     handleStart(event) {
+      TweenMax.to(this.$refs.characterRomo, 1, {
+        scale: 1.05,
+        ease: Power4.easeOut
+      });
       this.startCoord.x = event.touches[0].clientX;
       this.startCoord.y = event.touches[0].clientY;
     },
     handleEnd(event) {
+      TweenMax.to(this.$refs.characterRomo, 2, {
+        scale: 1,
+        ease: Power4.easeOut
+      });
       this.endCoord.x = event.changedTouches[0].clientX;
       this.endCoord.y = event.changedTouches[0].clientY;
       this.handleGesture();
@@ -65,19 +87,32 @@ export default {
       let distanceX = this.startCoord.x - this.endCoord.x;
       if (
         this.startCoord.y > this.endCoord.y &&
-        distanceX < 50 &&
-        distanceY > 80
+        distanceX < 150 &&
+        distanceY > 180
       ) {
-        if (this.socket) {
-          this.socket.emit("custom-event", {
-            name: "mobile-ready",
-            in: this.roomID,
-            args: {
-              ready: true
+        TweenMax.to(this.$refs.characterRomo, 1, {
+          y: "-65vh",
+          opacity: 0,
+          ease: Power4.easeOut,
+          onComplete: () => {
+            if (this.socket) {
+              this.socket.emit("custom-event", {
+                name: "mobile-ready",
+                in: this.roomID,
+                args: {
+                  ready: true
+                }
+              });
+              if (this.isSynchro) this.$emit("changeComponent");
             }
-          });
-          if (this.isSynchro) this.$emit("changeComponent");
-        }
+          }
+        });
+      } else {
+        console.log(this.startCoord.x);
+        TweenMax.to(this.$refs.characterRomo, 1, {
+          y: 0 + "px",
+          ease: Power4.easeOut
+        });
       }
     }
   },

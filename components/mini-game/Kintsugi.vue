@@ -554,7 +554,7 @@ export default {
     },
     load() {
       this.init();
-      
+
       let promises = [];
       this.app.addTitle().forEach(promise => {
         promises.push(promise);
@@ -1215,18 +1215,21 @@ export default {
       requestAnimationFrame(this.soundLoop.bind(this, soundID, index));
     },
     start() {
-      this.createTimecodeEvent();
-      this.windowAppear().then(() => {
-        this.appearToTitle();
-        if (this.socket) {
-          this.socket.emit("custom-event", {
-            name: "router",
-            in: this.roomID,
-            args: {
-              id: "kintsugi"
-            }
-          });
-        }
+      return new Promise((resolve, reject) => {
+        this.createTimecodeEvent();
+        this.windowAppear().then(() => {
+          this.appearToTitle();
+          if (this.socket) {
+            this.socket.emit("custom-event", {
+              name: "router",
+              in: this.roomID,
+              args: {
+                id: "kintsugi"
+              }
+            });
+          }
+          resolve();
+        });
       });
     }
   },
@@ -1259,9 +1262,7 @@ export default {
     this.app = new App();
     this.createSocketEvents();
   },
-  mounted() {
-
-  },
+  mounted() {},
   destroyed() {
     window.removeEventListener("keydown", this.onKeyPress.bind(this));
     window.removeEventListener("resize", this.app.onWindowResize.bind(this));
