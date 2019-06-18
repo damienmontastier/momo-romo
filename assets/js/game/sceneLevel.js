@@ -658,4 +658,8 @@ export default class Level {
             .start()
         this.currentSpriteID = id;
     }
+
+    startVideo() {
+
+    }
 }
