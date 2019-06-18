@@ -149,9 +149,10 @@ export default {
   }
 
   #top {
-    display: inline-flex;
+    display: flex;
     height: 50%;
     width: 100%;
+    
 
     #momo,
     #romo {
