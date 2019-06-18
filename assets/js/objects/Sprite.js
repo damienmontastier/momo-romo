@@ -116,8 +116,9 @@ export default class Sprite extends THREE.Object3D {
         return this
     }
 
-    start() {
+    start(callback) {
         this.changeState(this.spritesMap[0])
+        this.callback = callback
     }
 
     addState(id) {
@@ -159,6 +160,9 @@ export default class Sprite extends THREE.Object3D {
             this.currentTile += 1
             this.currentTime = 0
             if (this.currentTile > this.endTile) {
+                if (!!this.callback) {
+                    this.callback()
+                }
                 if (this.spritesMap.length > 1) {
                     this.spritesMap.shift()
                     this.start()

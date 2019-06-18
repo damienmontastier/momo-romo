@@ -87,11 +87,14 @@ export default {
       this.$refs.synchro.style.opacity = "1";
     },
     launchMinigame() {
-      this.$refs.launchButton.style.opacity = "0";
-      this.$refs.launchButton.style.pointerEvents = "none";
-      this.$refs.tuto.style.opacity = "0";
-      this.$refs.synchro.style.opacity = "0";
-      this.$parent.launchCountdown();
+      if (this.romoIsReady) {
+        console.log("launchMinigame");
+        this.$refs.launchButton.style.opacity = "0";
+        this.$refs.launchButton.style.pointerEvents = "none";
+        this.$refs.tuto.style.opacity = "0";
+        this.$refs.synchro.style.opacity = "0";
+        this.$parent.launchCountdown();
+      }
     },
     launchCountdown() {
       this.$refs.tryAgain.style.opacity = "0";
@@ -192,7 +195,7 @@ export default {
       height: 160px;
       // background: $black;
       position: absolute;
-      bottom: 10vh;
+      bottom: 9vh;
       left: calc(50% - 80px);
       background: url("~static/ui/kintsugi/mini-game/tuto-touche.gif");
       background-size: cover;

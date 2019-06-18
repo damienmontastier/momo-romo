@@ -23,6 +23,8 @@
     ></buttonCircleRed>
     <mini-game :uid="$route.params.level" ref="minigame" v-on:minigameended="minigameended"></mini-game>
     <!-- <mini-game :uid="$route.params.level"></mini-game> -->
+
+    <about ref="about"/>
   </div>
 </template>
 
@@ -35,14 +37,15 @@ import MiniGame from "@/components/mini-game/MiniGame.vue";
 import readyKintsugi from "@/components/ui/readyKintsugi.vue";
 import buttonCircleRed from "@/components/svg/button-circle-red";
 import Loader from "@/components/ui/loader.vue";
-import { delay } from "q";
+import About from "@/components/mini-game/Kintsugi/About";
 
 export default {
   components: {
     MiniGame,
     readyKintsugi,
     Loader,
-    buttonCircleRed
+    buttonCircleRed,
+    About
   },
   data() {
     return {
@@ -54,7 +57,8 @@ export default {
       killElement: true,
       showTutorial: true,
       minigameStarted: false,
-      minigameEnded: false
+      minigameEnded: false,
+      aboutLaunched: false
     };
   },
   computed: {
@@ -73,7 +77,7 @@ export default {
     this.$store.dispatch("game/loadStage", this.$route.params.level);
   },
   mounted() {
-    this.game = new Game();
+    // this.game = new Game();
     window.addEventListener(
       "launchMiniGame",
       e => {
@@ -82,19 +86,26 @@ export default {
       false
     );
 
-    // this.startMinigame();
+    window.addEventListener("launchAbout", () => {
+      console.log("launchAbout");
+      this.aboutLaunched = true;
+      this.$refs.about.$el.style.visibility = "visible";
+      this.$refs.about.init();
+    });
+
+    this.startMinigame();
   },
   watch: {
-    minigame() {},
-    loaded(value) {
-      this.game.start(
-        {
-          currentLevelParams: this.stage,
-          currentAltlas: this.currentAtlas
-        },
-        this.$store
-      );
-    }
+    minigame() {}
+    // loaded(value) {
+    //   this.game.start(
+    //     {
+    //       currentLevelParams: this.stage,
+    //       currentAltlas: this.currentAtlas
+    //     },
+    //     this.$store
+    //   );
+    // }
   },
   methods: {
     minigameended() {
@@ -181,7 +192,7 @@ export default {
   },
 
   destroyed() {
-    this.game.reset();
+    // this.game.reset();
   }
 };
 </script>
@@ -233,5 +244,12 @@ export default {
   transform: translateX(-50%);
   width: 200px;
   height: 200px;
+}
+
+#about {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  visibility: hidden;
 }
 </style>

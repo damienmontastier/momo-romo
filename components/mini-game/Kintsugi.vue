@@ -50,13 +50,12 @@
         </div>
       </div>
     </div>
-    <!-- <div id="debug">
+    <div id="debug">
       <button @click="nextFracture()">Next fracture</button>
       <button @click="launchCountdown()">START coutdown</button>
       <button @click="()=>{$refs.intro.setRomoReady()}">set momo ready</button>
       <button @click="launchEndGame()">end game</button>
-      <div v-if="tweening">tweening</div>
-    </div>-->
+    </div>
   </div>
 </template>
 
@@ -93,6 +92,8 @@ import cta_activated from "~/static/sounds/cta_activated.mp3";
 import momo_minijeu_1 from "~/static/sounds/momo_minijeu_1.mp3";
 import momo_minijeu_2 from "~/static/sounds/momo_minijeu_2.mp3";
 import momo_minijeu_3 from "~/static/sounds/momo_minijeu_3.mp3";
+
+import voice_bowl_repaired from "~/static/sounds/voice_bowl_repaired.mp3";
 
 import romo_playing from "~/static/sounds/romo_playing.mp3";
 
@@ -815,7 +816,7 @@ export default {
           this.$refs.window,
           3,
           {
-            x: -(window.innerWidth / 2 + box.width / 2),
+            x: -(window.innerWidth / 2 + box.width / 2 + 100),
             ease: Power4.easeOut,
             delay: 1
           },
@@ -1129,6 +1130,8 @@ export default {
       } else if (countdown === 1) {
         this.sounds.countdown_1.play();
         requestAnimationFrame(() => {
+          // this.sounds["momo_minijeu_3"].play();
+          // this.sounds["momo_minijeu_3"].volume(1);
           this.sounds["momo_minijeu_" + (this.currentFracture + 1)].play();
           this.sounds["momo_minijeu_" + (this.currentFracture + 1)].volume(1);
           this.tweening = null;
@@ -1138,6 +1141,10 @@ export default {
     loadSounds() {
       return new Promise((resolve, reject) => {
         HowlerManager.add([
+          {
+            id: "voice_bowl_repaired",
+            src: voice_bowl_repaired
+          },
           {
             id: "transition_windows",
             src: transition_windows
