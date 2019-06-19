@@ -490,7 +490,7 @@ export default class Level {
 
     preRenderProps(propsLoad, addTutorial, hideTutorial, displayGIF) {
         let promises = []
-        let delay = 200
+        let delay = 250
         let duration = this.fixedPropsGroup.length * delay
         this.store.commit('game/setLoadingDuration', duration)
         this.sounds.background_level.loop(true);
@@ -518,7 +518,6 @@ export default class Level {
             let p2 = new Promise((resolve, reject) => {
                 setTimeout(() => {
                     this.animatesArray[i].position.x = this.camera.position.x
-                    this.animatesArray[i].position.z = 10
                     resolve(this.animatesArray[i]);
                 }, i * 2000)
             });
