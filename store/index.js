@@ -9,7 +9,8 @@ export const state = () => ({
     loaded: false,
     stagesList: null,
     quality: null,
-    keyboard: null
+    keyboard: null,
+    readyButton: false
 })
 
 export const mutations = {
@@ -24,6 +25,9 @@ export const mutations = {
     },
     setKeyboard(state, data) {
         state.keyboard = data
+    },
+    setReadyButton(state, value) {
+        state.readyButton = value
     }
 }
 
