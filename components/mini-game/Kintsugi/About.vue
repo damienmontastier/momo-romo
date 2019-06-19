@@ -263,7 +263,7 @@ export default {
       position: relative;
       margin: auto;
       transform: translateX(-150px);
-      top: 60px;
+      top: 13vh;
       .first {
         position: relative;
         top: 16px;

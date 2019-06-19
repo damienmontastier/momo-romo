@@ -20,8 +20,7 @@ import s_mobile from "@/static/sprites/mobile/mobile.png";
 import s_plants from "@/static/sprites/plants/plants.png";
 
 import {
-    TweenMax,
-    TimelineMax
+    TweenMax
 } from 'gsap';
 
 const visibleHeightAtZDepth = (depth, camera) => {
@@ -579,6 +578,14 @@ export default class Level {
     }
 
     launchMiniGame() {
+        this.romo.visible = false;
+        this.momo.visible = false;
+        this.scene.children.filter((child) => child.type !== "PerspectiveCamera").forEach((child) => {
+            child.matrixAutoUpdate = false
+            child.traverse((deep_child) => {
+                deep_child.matrixAutoUpdate = false
+            })
+        })
         return new Promise((resolve, reject) => {
             let tl = new TimelineMax({
                 onComplete: () => {

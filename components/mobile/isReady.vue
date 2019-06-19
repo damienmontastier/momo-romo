@@ -17,7 +17,11 @@
           <span class="title skew">
             <div class="inline fill-en">apply glue</div>
           </span>
-          <p class="book skew">Play after Momo.<br><b class="semi">Trace to apply golden glue</b> along the broken pieces.</p>
+          <p class="book skew">
+            Play after Momo.
+            <br>
+            <b class="semi">Trace to apply golden glue</b> along the broken pieces.
+          </p>
         </div>
       </div>
     </div>
@@ -25,17 +29,20 @@
 </template>
 
 <script>
-import {mapState} from 'vuex'
-import {TweenLite} from 'gsap'
+import { mapState } from "vuex";
+import { TweenLite } from "gsap";
 export default {
   mounted() {
-    this.$refs.circle.addEventListener('touchstart',this.onTouchStart.bind(this))
-    this.$refs.circle.addEventListener('touchend',this.onTouchEnd.bind(this))
-    this.$refs.swipe.addEventListener('touchmove',this.onTouchMove.bind(this))
-    TweenLite.to(this.$refs.isReady,0.5, {
-      ease:Power4.easeOut,
-      opacity:1
-    })
+    this.$refs.circle.addEventListener(
+      "touchstart",
+      this.onTouchStart.bind(this)
+    );
+    this.$refs.circle.addEventListener("touchend", this.onTouchEnd.bind(this));
+    this.$refs.swipe.addEventListener("touchmove", this.onTouchMove.bind(this));
+    TweenLite.to(this.$refs.isReady, 0.5, {
+      ease: Power4.easeOut,
+      opacity: 1
+    });
   },
   computed: {
     ...mapState({
@@ -45,50 +52,61 @@ export default {
   },
   methods: {
     onTouchStart(event) {
-      console.log('touchstart')
-      this.touchStart = event.touches[0].clientY
+      console.log("touchstart");
+      this.touchStart = event.touches[0].clientY;
     },
     onTouchEnd(event) {
-      if(!this.isReady){
-        this.touchStart = false
-        TweenLite.to(this.$refs.circle,0.5, {
-          ease:Power4.easeOut,
-          y:0
-        })
+      if (!this.isReady) {
+        this.touchStart = false;
+        TweenLite.to(this.$refs.circle, 0.5, {
+          ease: Power4.easeOut,
+          y: 0
+        });
       }
     },
     onTouchMove(event) {
-      if(this.touchStart && !this.isReady) {
-        let deltaY = Math.min(Math.max(this.touchStart - event.touches[0].clientY,0),this.$refs.swipe.offsetHeight)
-        if(deltaY === this.$refs.swipe.offsetHeight) {
-          this.setIsReady()
+      if (this.touchStart && !this.isReady) {
+        let deltaY = Math.min(
+          Math.max(this.touchStart - event.touches[0].clientY, 0),
+          this.$refs.swipe.offsetHeight
+        );
+        if (deltaY === this.$refs.swipe.offsetHeight) {
+          this.setIsReady();
         } else {
-          TweenLite.to(this.$refs.circle,0.5, {
-            ease:Power4.easeOut,
-            y:-deltaY
-          })
+          TweenLite.to(this.$refs.circle, 0.5, {
+            ease: Power4.easeOut,
+            y: -deltaY
+          });
         }
-
       }
     },
     setIsReady() {
-      this.isReady = true
+      this.isReady = true;
       if (this.socket) {
-        console.log('emit kintsugi romo is ready',this.roomID)
+        console.log("emit kintsugi romo is ready", this.roomID);
         this.socket.emit("custom-event", {
           name: "kintsugi mini-game",
           in: this.roomID,
           args: {
-            id: 'romo is ready'
+            id: "romo is ready"
           }
         });
       }
     }
   },
   beforeDestroy() {
-    this.$refs.circle.removeEventListener('touchstart',this.onTouchStart.bind(this))
-    this.$refs.circle.removeEventListener('touchend',this.onTouchEnd.bind(this))
-    this.$refs.circle.removeEventListener('touchmove',this.onTouchMove.bind(this))
+    this.$refs.circle.removeEventListener(
+      "touchstart",
+      this.onTouchStart.bind(this)
+    );
+    this.$refs.circle.removeEventListener(
+      "touchend",
+      this.onTouchEnd.bind(this)
+    );
+    this.$refs.circle.removeEventListener(
+      "touchmove",
+      this.onTouchMove.bind(this)
+    );
   }
 };
 </script>
@@ -98,7 +116,7 @@ export default {
   display: inline;
 }
 .title {
-  margin-bottom: 8px; 
+  margin-bottom: 8px;
 }
 #isReady {
   z-index: 3;
@@ -107,14 +125,19 @@ export default {
   position: absolute;
   top: 0px;
   left: 0px;
-  background: #fff;
-  >.container {
+  // background: #fff;
+  background: url("~static/ui/mobile/background.jpg");
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-repeat: no-repeat;
+  > .container {
     opacity: 0;
     height: 100%;
     width: 100%;
     display: flex;
     flex-direction: row;
-    >div {
+    > div {
       width: 50%;
     }
     .right {
@@ -132,7 +155,6 @@ export default {
       }
     }
     .left {
-
       .container {
         padding-right: 8px;
         padding-left: 16px;
@@ -175,7 +197,7 @@ export default {
               border-right: 0px;
               height: 30%;
               width: 30%;
-              transform: rotate(45deg)
+              transform: rotate(45deg);
             }
           }
         }

@@ -598,11 +598,6 @@ export default {
       });
     },
     appearToTitle() {
-      this.app.brush
-        .newSprites()
-        .addState("romo_transform_in")
-        .addState("romo_brush")
-        .start();
       this.sounds.background_level.stop();
       this.tweeningScalar = 1;
 
@@ -720,7 +715,8 @@ export default {
           opacity: 1,
           onStart: () => {
             this.$refs.intro.showSynchro();
-          }
+          },
+          onComplete: () => {}
         })
         .eventCallback("onComplete", () => {
           this.app.planeGradient.position.z = 0.15;
@@ -755,14 +751,16 @@ export default {
       }, 1500);
     },
     launchEndGame() {
-      console.log("end game");
+      // console.log("end game");
       this.gameEnded = true;
       this.$refs.intro.$refs.isPlaying.style.opacity = "0";
       this.$refs.keys.style.opacity = "0";
       this.$refs.steps.style.opacity = "0";
+      HowlerManager.stop();
       this.sounds.cta_activated.play();
       this.sounds.background_level.volume(0.5);
       this.sounds.background_level.loop(true);
+
       this.sounds.background_level.play();
 
       this.app.brush
@@ -818,7 +816,7 @@ export default {
         });
     },
     windowDisappear() {
-      console.log("windowDisappear");
+      // console.log("windowDisappear");
 
       this.sounds.transition_windows.play();
       this.sounds.transition_windows.fade(1, 0, 3000);
@@ -867,7 +865,7 @@ export default {
     },
     nextStep() {
       if (this.currentStep === this.controls.length - 1) {
-        console.log("next step");
+        // console.log("next step");
         let tl = new TimelineMax();
         tl.to(
           [this.app.planeRosace.scale, this.app.planeGradient.scale],
@@ -910,7 +908,7 @@ export default {
             1
           );
         this.$refs.intro.$refs.isPlaying.style.opacity = "1";
-        console.log("romo is playing");
+        // console.log("romo is playing");
 
         this.sounds.momo_minijeu_1.fade(1, 0, 3000);
         this.sounds.momo_minijeu_2.fade(1, 0, 3000);
@@ -1032,10 +1030,10 @@ export default {
             this.runningInterval > 0 &&
             this.canKeyPress
           ) {
-            console.log("good", this.runningInterval);
+            // console.log("good", this.runningInterval);
             this.success();
           } else if (this.runningInterval > 0) {
-            console.log("wrong key");
+            // console.log("wrong key");
             this.fail();
           }
         }
@@ -1100,7 +1098,7 @@ export default {
       if (this.tweening) {
         this.tweening.kill();
       }
-      console.log("startKeyPressInterval");
+      // console.log("startKeyPressInterval");
       this.tweening = new TimelineMax();
 
       this.duration = duration;
@@ -1110,7 +1108,7 @@ export default {
           ease: Power0.easeNone,
           onComplete: () => {
             this.canKeyPress = true;
-            console.log("PRESS");
+            // console.log("PRESS");
           }
         })
         .to(this, this.errorMargin, {
@@ -1119,7 +1117,7 @@ export default {
         })
         .eventCallback("onComplete", () => {
           if (!this.fractureEnded) {
-            console.log("wrong");
+            // console.log("wrong");
             this.fail();
           }
         })
@@ -1140,6 +1138,13 @@ export default {
     },
     setRomoReady() {
       this.sounds.cta_ready.play();
+      setTimeout(() => {
+        this.app.brush
+          .newSprites()
+          .addState("romo_transform_in")
+          .addState("romo_brush")
+          .start();
+      }, 1000);
     },
     updateCountdown(countdown) {
       if (!this.gameEnded) {
@@ -1151,10 +1156,10 @@ export default {
         } else if (countdown === 1) {
           this.sounds.countdown_1.play();
           requestAnimationFrame(() => {
-            this.sounds["momo_minijeu_3"].play();
-            this.sounds["momo_minijeu_3"].volume(1);
-            // this.sounds["momo_minijeu_" + (this.currentFracture + 1)].play();
-            // this.sounds["momo_minijeu_" + (this.currentFracture + 1)].volume(1);
+            // this.sounds["momo_minijeu_3"].play();
+            // this.sounds["momo_minijeu_3"].volume(1);
+            this.sounds["momo_minijeu_" + (this.currentFracture + 1)].play();
+            this.sounds["momo_minijeu_" + (this.currentFracture + 1)].volume(1);
             this.tweening = null;
           });
         }
@@ -1243,8 +1248,6 @@ export default {
           currentTime > soundsTimecodes[index][this.currentStep] &&
           !this.tweening
         ) {
-          console.log("start interval");
-          console.log("duration", duration, from, to);
           this.startKeyPressInterval(duration);
         }
       }
