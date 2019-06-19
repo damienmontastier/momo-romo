@@ -18,11 +18,12 @@
         <!-- </div> -->
       </div>
       <div id="bottom">
-        <div id="desktop" class="center">
-          <div id="momo-chara"></div>
-          <div id="keyboard-animation" v-if="!isReady"></div>
+        <div id="desktop">
+          <div id="momo-chara">
+            <div id="keyboard-animation" v-if="!isReady"></div>
+          </div>
         </div>
-        <div id="mobile" class="center" v-if="qrcode">
+        <div id="mobile" v-if="qrcode">
           <div id="mobile-container" v-if="!isReady">
             <div id="link">
               <a :href="url">{{url}}</a>
@@ -179,31 +180,36 @@ export default {
   #desktop,
   #mobile {
     width: 50%;
+    margin: auto;
   }
   #bottom {
     width: 100%;
-    display: inline-flex;
+    display: flex;
     position: absolute;
     bottom: 35px;
 
     #desktop {
-      display: inline-flex;
+      display: flex;
       flex-direction: row;
       #momo-chara {
-        width: 269px;
-        height: 269px;
+        width: 30vh;
+        height: 30vh;
         background: transparent url("~static/ui/synchro/momo.gif");
         background-size: cover;
         background-repeat: no-repeat;
+        margin: auto;
+        position: relative;
       }
       #keyboard-animation {
         width: 150px;
-        height: 130px;
+        height: 150px;
         border-radius: 45px;
         background: white;
         border: 4px solid $a;
-        position: relative;
-        left: -5%;
+        position: absolute;
+        // left: -5%;
+        right: -4vh;
+        top: 8vh;
         background-image: url("~static/ui/synchro/tuto_keyboard.gif");
         background-size: cover;
         background-position: center;
@@ -278,6 +284,8 @@ export default {
         background: transparent url("~static/ui/synchro/romo.gif");
         height: 314px;
         width: 307px;
+        background-size: cover;
+        background-repeat: no-repeat;
       }
     }
   }

@@ -114,7 +114,7 @@ export default {
       this.$refs.about.init();
     });
 
-    // this.startMinigame();
+    this.startMinigame();
   },
   watch: {
     minigame() {},

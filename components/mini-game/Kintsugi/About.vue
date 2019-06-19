@@ -269,7 +269,7 @@ export default {
         top: 16px;
       }
       .kintsugi {
-        width: 550px;
+        width: 650px;
       }
       .jpn {
         position: relative;
