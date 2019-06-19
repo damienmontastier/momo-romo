@@ -246,7 +246,7 @@ export default class Level {
     }
 
     addAnimate(params) {
-        return new Promise((resolve, reject), () => {
+        return new Promise((resolve, reject) => {
             console.log('add animate params', params)
             new AnimatedProp(params).then((animate) => {
                 console.log('add animate', animate)
