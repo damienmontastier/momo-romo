@@ -32,7 +32,7 @@ export default class Sprite extends THREE.Object3D {
 
     resets() {
         this.texture.wrapS = this.texture.wrapT = THREE.RepeatWrapping;
-        this.texture.magFilter = this.texture.minFilter = THREE.NearestFilter;
+        // this.texture.magFilter = this.texture.minFilter = THREE.NearestFilter;
         // this.texture.anisotropy = 0;
         this.texture.flipY = true
         this.texture.flipX = true
