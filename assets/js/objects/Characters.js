@@ -7,12 +7,11 @@ import MomoSprite from '~/static/sprites/momo/momo.png';
 const MomoJson = require("~/static/sprites/momo/momo.json");
 
 import RomoSprite from '~/static/sprites/romo/romo.png';
+const RomoJson = require("~/static/sprites/romo/romo.json");
+
 import {
     TweenMax,
-    Ease,
-    Power4
 } from "gsap";
-const RomoJson = require("~/static/sprites/romo/romo.json");
 
 export default class Characters {
     constructor(store) {
@@ -99,12 +98,12 @@ export default class Characters {
     }
 
     addAnimate() {
-
         let p1 = (new Promise((resolve, reject) => {
             new Sprite(MomoSprite, MomoJson.sprites, {
                 wTiles: 8,
                 hTiles: 8
             }).then(momo => {
+                console.log("momo", momo)
                 momo.name = "momo"
                 momo.body = this.body
                 resolve(momo)
@@ -115,6 +114,8 @@ export default class Characters {
                 wTiles: 2,
                 hTiles: 2
             }).then(romo => {
+                console.log("romo", romo)
+
                 romo.name = "romo"
                 resolve(romo)
             })

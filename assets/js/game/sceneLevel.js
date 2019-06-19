@@ -73,6 +73,19 @@ export default class Level {
 
         this.charactersClass = new Characters(store)
 
+        this.charactersClass.add().then((characters) => {
+            this.characters = characters
+            this.momo = this.characters.momo
+            this.momo.originPosition = new THREE.Vector3().copy(this.momo.position)
+            this.momo.scale.set(1.5, 1.5, 1.5)
+            this.romo = this.characters.romo
+            this.romo.position.z = 2.5
+            this.romo.position.y = 1
+            this.romo.originPosition = new THREE.Vector3().copy(this.romo.position)
+            this.romo.scale.set(-2, 2, 2)
+            this.addCharacter()
+        })
+
         this.loaderTexture()
 
         this.eventAnimate = new Event('launchAnimated');
@@ -146,20 +159,6 @@ export default class Level {
     }
 
     loaderTexture() {
-
-        this.charactersClass.add().then((characters) => {
-            this.characters = characters
-            this.momo = this.characters.momo
-            this.momo.originPosition = new THREE.Vector3().copy(this.momo.position)
-            this.momo.scale.set(1.5, 1.5, 1.5)
-            this.romo = this.characters.romo
-            this.romo.position.z = 2.5
-            this.romo.position.y = 1
-            this.romo.originPosition = new THREE.Vector3().copy(this.romo.position)
-            this.romo.scale.set(-2, 2, 2)
-            this.addCharacter()
-        })
-
         this.textureAtlas.load().then(textures => {
             this.textures = textures;
             this.init()
