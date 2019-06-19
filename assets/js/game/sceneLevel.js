@@ -593,7 +593,6 @@ export default class Level {
     }
 
     projectVectorToScreen(vector) {
-
         vector.project(this.camera);
         vector.x = ((vector.x + 1) * window.innerWidth) / 2;
         vector.y = (-(vector.y - 1) * window.innerHeight) / 2;
