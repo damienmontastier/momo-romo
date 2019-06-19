@@ -14,6 +14,11 @@ import Sprite from '@/assets/js/objects/Sprite'
 import kintsugi_sprite from '~/static/sprites/about/kintsugi.png'
 import kintsugi_json from '~/static/sprites/about/kintsugi.json'
 
+import s_cat from "@/static/sprites/cat/cat.png";
+import s_petals from "@/static/sprites/petals/petals.png";
+import s_mobile from "@/static/sprites/mobile/mobile.png";
+import s_plants from "@/static/sprites/plants/plants.png";
+
 import {
     TweenMax,
     TimelineMax
@@ -179,6 +184,15 @@ export default class Level {
         console.log('init', this.animates)
         if (this.animates) {
             this.animates.forEach(animate => {
+                if (animate.json.id == "cat") {
+                    animate.png = s_cat
+                } else if (animate.json.id == "petals") {
+                    animate.png = s_petals
+                } else if (animate.json.id == "mobile") {
+                    animate.png = s_mobile
+                } else if (animate.json.id == "plants") {
+                    animate.png = s_plants
+                }
                 this.addAnimate(animate).then(() => {
                     this.scene.add(animate)
                 })
