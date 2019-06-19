@@ -915,6 +915,7 @@ export default {
         this.sounds.momo_minijeu_3.fade(1, 0, 3000);
         setTimeout(() => {
           this.sounds.romo_playing.play();
+          this.sounds.romo_playing.volume(0.8);
         }, 2500);
 
         this.launchStep();
