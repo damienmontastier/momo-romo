@@ -26,6 +26,7 @@
       v-if="minigame && !minigameStarted"
       v-on:triggered="startMinigame"
     ></buttonCircleRed>
+    
     <mini-game :uid="$route.params.level" ref="minigame" v-on:minigameended="minigameended"></mini-game>
     <!-- <mini-game :uid="$route.params.level"></mini-game> -->
 
@@ -80,7 +81,8 @@ export default {
       currentStageId: state => state.game.currentStageId,
       loaded: state => state.game.loaded,
       socket: state => state.synchro.socket,
-      roomID: state => state.synchro.roomID
+      roomID: state => state.synchro.roomID,
+      readyButton: state => state.readyButton
     }),
     ...mapGetters({
       currentAtlas: "game/currentAtlas"

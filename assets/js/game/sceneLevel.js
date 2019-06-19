@@ -86,7 +86,7 @@ export default class Level {
             this.romo.position.z = 2.5
             this.romo.position.y = 1
             this.romo.originPosition = new THREE.Vector3().copy(this.romo.position)
-            this.romo.scale.set(-2, 2, 2)
+            this.romo.scale.set(-1.8, 1.8, 1.8)
         })
 
         this.loaderTexture()
@@ -181,6 +181,7 @@ export default class Level {
             });
         }
         if (this.animates) {
+            let promises = []
             this.animates.forEach(animate => {
                 if (animate.json.id == "cat") {
                     animate.png = s_cat
@@ -191,8 +192,11 @@ export default class Level {
                 } else if (animate.json.id == "plants") {
                     animate.png = s_plants
                 }
-                this.addAnimate(animate)
-            });
+                promises.push(this.addAnimate(animate))
+            })
+            Promise.all(promises).then(() => {
+                this.store.commit('setReadyButton', true)
+            })
         }
     }
 
@@ -517,6 +521,7 @@ export default class Level {
             let p2 = new Promise((resolve, reject) => {
                 setTimeout(() => {
                     this.animatesArray[i].position.x = this.camera.position.x
+                    this.animatesArray[i].position.z = 0
                     resolve(this.animatesArray[i]);
                 }, i * 2000)
             });
@@ -664,32 +669,38 @@ export default class Level {
                     if ((animate.out && !animate.in) || (!animate.in && !animate.out)) {
                         animate.in = true
                         if (animate.name == "cat") {
+                            let tl = new TimelineMax()
                             let postX = animate.position.x
                             let postY = animate.position.y
-                            TweenMax.to(animate.position, 2.5, {
-                                x: postX + 1,
-                                ease: Circ.easeIn
+                            tl.to(animate.position, 2.5, {
+                                delay: 1.5,
+                                x: postX + 1.5,
+                                ease: Circ.easeInOut
                             })
-                            TweenMax.to(animate.position, 4, {
-                                y: postY - 2,
-                                ease: Power4.easeIn
+                            tl.to(animate.position, 4.2, {
+                                y: -2.5,
+                                ease: Power4.easeIn,
+                                delay: -3.5,
                             })
                             animate.animate
                                 .newSprites()
                                 .addState('jump')
                                 .addState('wait')
-                                .start()
+                                .start(this.hideCat.bind(this, animate))
+                            animate.animated = true
                         } else if (animate.name == "petals") {
+                            animate.position.z = 7
                             animate.animate
                                 .newSprites()
                                 .addState('petals')
                                 .addState('wait')
-                                .start()
+                                .start(this.resetPetals.bind(this, animate))
                         } else if (animate.name == "plants") {
                             animate.animate
                                 .newSprites()
                                 .addState('plants')
                                 .start()
+                            animate.animated = true
                         } else if (animate.name == "mobile") {
                             animate.animate
                                 .newSprites()
@@ -741,6 +752,14 @@ export default class Level {
         }
 
         this.renderer.render(this.scene, this.camera);
+    }
+    resetPetals(animate) {
+        animate.position.copy(animate.originPosition)
+    }
+    hideCat(animate) {
+        // setTimeout(() => {
+        animate.visible = false
+        // }, 1000);
     }
     launchSprite(character, id) {
         character

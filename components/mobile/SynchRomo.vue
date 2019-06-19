@@ -104,8 +104,8 @@ export default {
       let distanceX = this.startCoord.x - this.endCoord.x;
       if (
         this.startCoord.y > this.endCoord.y &&
-        distanceX < 150 &&
-        distanceY > 180
+        distanceX < 100 &&
+        distanceY > 150
       ) {
         TweenMax.to(this.$refs.characterRomo, 1, {
           y: "-65vh",
@@ -153,7 +153,7 @@ export default {
   }
   .character-romo {
     background-image: url("~static/ui/romo.png");
-    width: 25%;
+    width: 35%;
     height: 100px;
     background-repeat: no-repeat;
     background-size: contain;
