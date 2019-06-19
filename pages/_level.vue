@@ -10,6 +10,7 @@
 </template>
 
 <script>
+import { TimelineMax } from "gsap";
 import { mapState, mapGetters, mapMutations } from "vuex";
 import level from "@/components/level";
 import synchRomo from "@/components/mobile/SynchRomo";
@@ -17,13 +18,20 @@ import waitingPageRomo from "@/components/mobile/WaitingPageRomo";
 import navigateRomo from "@/components/mobile/NavigateRomo";
 
 export default {
-  // middleware: "loadStage",
-
-  // async validate({ params, store, redirect }) {
-  //   let list = await store.dispatch("loadStagesList");
-  //   return Object.values(list).includes(params.level);
-  // },
-
+  transition: {
+    css: false,
+    mode: "out-in",
+    enter(el, done) {
+      let tl = new TimelineMax({
+        onComplete: () => {
+          done();
+        }
+      });
+      tl.from(el, 1.5, {
+        opacity: 0
+      });
+    }
+  },
   components: {
     level,
     synchRomo,

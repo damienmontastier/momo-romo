@@ -32,6 +32,20 @@ import { TweenMax } from "gsap";
 import HowlerManager from "~/assets/js/utils/HowlerManager";
 
 export default {
+  transition: {
+    mode: "out-in",
+    css: false,
+    leave(el, done) {
+      let tl = new TimelineMax({
+        onComplete: () => {
+          done();
+        }
+      });
+      tl.to(el, 1.5, {
+        opacity: 0
+      });
+    }
+  },
   data() {
     return {
       components: [
