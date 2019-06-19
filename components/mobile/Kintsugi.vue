@@ -1,6 +1,7 @@
 <template>
   <div id="kintsugi">
     <!-- <div class="title">kintsugi mobile mini game {{roomID}}</div> -->
+    <waiting-page-romo v-if="minigameEnded" class="waiting"/>
     <is-ready v-if="!isReady"/>
     <div ref="canvas" id="canvas"></div>
     <div class="ui">
@@ -36,7 +37,7 @@ import { mapState } from "vuex";
 import { TweenMax } from "gsap";
 import isReady from "./isReady";
 import Countdown from "@/components/mini-game/Kintsugi/Countdown";
-import { Vector3 } from "three";
+import WaitingPageRomo from "@/components/mobile/WaitingPageRomo";
 
 const MeshLine = require("three.meshline");
 
@@ -408,7 +409,8 @@ export default {
       isReady: false,
       timer: 10,
       timerInterval: null,
-      countdown: 4
+      countdown: 4,
+      minigameEnded: false
     };
   },
   computed: {
@@ -446,6 +448,8 @@ export default {
             this.cancelFracture(params.fragments);
           } else if (params.id === "romo is ready") {
             this.isReady = true;
+          } else if (params.id === "end") {
+            this.minigameEnded = true;
           }
         });
       }
@@ -577,7 +581,8 @@ export default {
   },
   components: {
     isReady,
-    Countdown
+    Countdown,
+    WaitingPageRomo
   }
 };
 </script>
@@ -651,5 +656,14 @@ export default {
   button {
     background: white;
   }
+}
+
+.waiting {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  height: 100%;
+  width: 100%;
+  z-index: 20;
 }
 </style>

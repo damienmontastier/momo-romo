@@ -147,6 +147,27 @@ export default {
     background-repeat: no-repeat;
     background-position-x: center;
     background-position-y: center;
+    position: relative;
+
+    &::after {
+      content: "";
+      position: absolute;
+      top: 0px;
+      left: 0px;
+      width: 100%;
+      height: 200px;
+      background: linear-gradient(180deg, #fefbf0 40%, rgba(0, 0, 0, 0));
+    }
+
+    &::before {
+      content: "";
+      position: absolute;
+      bottom: 0px;
+      left: 0px;
+      width: 100%;
+      height: 200px;
+      background: linear-gradient(0deg, #fefbf0 40%, rgba(0, 0, 0, 0));
+    }
   }
 
   #top {
@@ -186,7 +207,7 @@ export default {
     width: 100%;
     display: flex;
     position: absolute;
-    bottom: 35px;
+    bottom: 5vh;
 
     #desktop {
       display: flex;
@@ -208,7 +229,7 @@ export default {
         border: 4px solid $a;
         position: absolute;
         // left: -5%;
-        right: -4vh;
+        right: -6vh;
         top: 8vh;
         background-image: url("~static/ui/synchro/tuto_keyboard.gif");
         background-size: cover;
@@ -238,7 +259,7 @@ export default {
           background: white;
           border: 4px solid $a;
           border-radius: 30px;
-          padding: 10px;
+          padding: 10px 24px;
           text-decoration: none;
           position: relative;
           a {

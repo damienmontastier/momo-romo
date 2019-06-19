@@ -307,7 +307,7 @@ export default {
   position: relative;
   .container {
     margin: auto;
-    width: 70vw;
+    width: 75vw;
     height: 70vh;
     // max-width: 1214px;
     // max-height: 686px;
@@ -318,8 +318,8 @@ export default {
       &:nth-child(2) {
         margin: 0 16px;
       }
-      max-width: 500px;
-      width: 500px;
+      max-width: 400px;
+      width: 400px;
       // width: calc(70vw - 32px / 3);
       // max-width: calc(70vw - 32px / 3);
       opacity: 0;
@@ -336,7 +336,28 @@ export default {
         background: #fefaf0;
       }
       &.third {
-        z-index: 2;
+        z-index: 4;
+        &::after {
+          content: "";
+          position: absolute;
+          top: 0px;
+          left: 0px;
+          width: 100%;
+          height: 180px;
+          background: linear-gradient(180deg, #fefbf0 50%, rgba(0, 0, 0, 0));
+          z-index: 3;
+        }
+
+        &::before {
+          content: "";
+          position: absolute;
+          bottom: 0px;
+          left: 0px;
+          width: 100%;
+          height: 180px;
+          background: linear-gradient(0deg, #fefbf0 50%, rgba(0, 0, 0, 0));
+          z-index: 3;
+        }
         .third_container {
           overflow: hidden;
           display: flex;
@@ -379,6 +400,31 @@ export default {
     display: flex;
     .subtitles_container {
       margin: auto;
+    }
+  }
+
+  .video_container {
+    position: relative;
+    &::after {
+      content: "";
+      position: absolute;
+      top: 0px;
+      left: 0px;
+      width: 100%;
+      height: 140px;
+      background: linear-gradient(180deg, #fefbf0 40%, rgba(0, 0, 0, 0));
+      z-index: 3;
+    }
+
+    &::before {
+      content: "";
+      position: absolute;
+      bottom: 0px;
+      left: 0px;
+      width: 100%;
+      height: 140px;
+      background: linear-gradient(0deg, #fefbf0 40%, rgba(0, 0, 0, 0));
+      z-index: 3;
     }
   }
 }

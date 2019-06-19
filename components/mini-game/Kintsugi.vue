@@ -756,6 +756,15 @@ export default {
       this.$refs.intro.$refs.isPlaying.style.opacity = "0";
       this.$refs.keys.style.opacity = "0";
       this.$refs.steps.style.opacity = "0";
+      if (this.socket) {
+        this.socket.emit("custom-event", {
+          name: "kintsugi mini-game",
+          in: this.roomID,
+          args: {
+            id: "end"
+          }
+        });
+      }
       HowlerManager.stop();
       this.sounds.cta_activated.play();
       this.sounds.background_level.volume(0.5);
@@ -915,6 +924,7 @@ export default {
         this.sounds.momo_minijeu_3.fade(1, 0, 3000);
         setTimeout(() => {
           this.sounds.romo_playing.play();
+          this.sounds.romo_playing.volume(0.8);
         }, 2500);
 
         this.launchStep();
