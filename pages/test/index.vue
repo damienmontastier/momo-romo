@@ -9,18 +9,14 @@
 import * as THREE from "three";
 import OrbitControls from "orbit-controls-es6";
 
-import kintsugi_video from '~/static/videos/about/kintsugi.mp4'
-import Sprite from '@/assets/js/objects/Sprite'
+import Sprite from "@/assets/js/objects/Sprite";
 
-import kintsugi_sprite from '~/static/sprites/about/kintsugi.png'
-import kintsugi_json from '~/static/sprites/about/kintsugi.json'
+import kintsugi_sprite from "~/static/sprites/about/kintsugi.png";
+import kintsugi_json from "~/static/sprites/about/kintsugi.json";
 export default {
-  computed: {
-  },
+  computed: {},
   data() {
-    return {
-
-    }
+    return {};
   },
   mounted() {
     this.init();
@@ -37,7 +33,7 @@ export default {
 
       // scene
       this.scene = new THREE.Scene();
-      this.scene.background = new THREE.Color(0xfdf9eb)
+      this.scene.background = new THREE.Color(0xfdf9eb);
 
       // camera
       this.camera = new THREE.PerspectiveCamera(
@@ -64,26 +60,26 @@ export default {
       //   this.addVideo()
       // })
 
-      this.addVideo()
+      this.addVideo();
 
       //animation loop
       this.renderer.setAnimationLoop(this.render.bind(this));
     },
     addVideo() {
-      new Sprite(kintsugi_sprite,kintsugi_json.sprites,{
-        wTiles:8,
-        hTiles:16
-      }).then((video)=>{
-        this.video = video
-        this.scene.add(this.video)
-        console.log(this.scene)
+      new Sprite(kintsugi_sprite, kintsugi_json.sprites, {
+        wTiles: 8,
+        hTiles: 16
+      }).then(video => {
+        this.video = video;
+        this.scene.add(this.video);
+        console.log(this.scene);
 
         this.video
           .newSprites()
           .addState("default")
           .start();
-        this.video.scale.set(-2,1,1)
-      })
+        this.video.scale.set(-2, 1, 1);
+      });
     },
     // createVideo() {
     //   this.$refs.video.src = kintsugi_video
@@ -121,7 +117,7 @@ export default {
     //     fragmentShader: `
     //       uniform sampler2D video_texture;
     //       varying vec2 vUv;
-            
+
     //       void main() {
     //         vec4 texture = texture2D(video_texture,vUv);
     //         if(texture.g > 0.55) {
@@ -142,8 +138,8 @@ export default {
     render() {
       const delta = this.clock.getDelta() * 5000;
       this.time += delta;
-      if(this.video) {
-        this.video.update(delta)
+      if (this.video) {
+        this.video.update(delta);
       }
       this.renderer.render(this.scene, this.camera);
     }
