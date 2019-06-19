@@ -45,7 +45,7 @@ export default {
     ]).then(sounds => {
       this.sounds = sounds;
       this.sounds.background_enter_game.loop(true);
-      // this.sounds.background_enter_game.play();
+      this.sounds.background_enter_game.play();
     });
   },
   mounted() {},

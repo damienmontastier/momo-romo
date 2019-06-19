@@ -657,21 +657,26 @@ export default class Level {
                     if ((animate.out && !animate.in) || (!animate.in && !animate.out)) {
                         animate.in = true
                         if (animate.name == "cat") {
+                            let tl = new TimelineMax()
                             let postX = animate.position.x
                             let postY = animate.position.y
-                            TweenMax.to(animate.position, 2.5, {
+                            
+
+                            tl.to(animate.position, 2.5, {
+                                delay: 1,
                                 x: postX + 1,
                                 ease: Circ.easeIn
                             })
-                            TweenMax.to(animate.position, 4, {
-                                y: postY - 2,
-                                ease: Power4.easeIn
+                            tl.to(animate.position, 4, {
+                                y: -1,
+                                ease: Power4.easeIn,
+                                delay: -3.5,
                             })
                             animate.animate
                                 .newSprites()
                                 .addState('jump')
                                 .addState('wait')
-                                .start()
+                                .start(this.hideCat.bind(this, animate))
                             animate.animated = true
                         } else if (animate.name == "petals") {
                             animate.position.z = 7
@@ -740,6 +745,11 @@ export default class Level {
     }
     resetPetals(animate) {
         animate.position.copy(animate.originPosition)
+    }
+    hideCat(animate) {
+        // setTimeout(() => {
+        animate.visible = false
+        // }, 1000);
     }
     launchSprite(character, id) {
         character
