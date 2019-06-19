@@ -26,7 +26,7 @@
       v-if="minigame && !minigameStarted"
       v-on:triggered="startMinigame"
     ></buttonCircleRed>
-    
+
     <mini-game :uid="$route.params.level" ref="minigame" v-on:minigameended="minigameended"></mini-game>
     <!-- <mini-game :uid="$route.params.level"></mini-game> -->
 
@@ -142,10 +142,15 @@ export default {
   },
   methods: {
     minigameended() {
-      this.game.launchEndMiniGame().then(value => {
-        console.log("yeees");
+      TweenMax.to(this.$refs.buttonPause, 1, {
+        opacity: 0,
+        ease: Power4.easeOut
       });
-      console.log("this.minigameEnded", this.minigameEnded);
+
+      this.game.launchEndMiniGame();
+      // .then(value => {
+      //   console.log("yeees");
+      // });
     },
     startMinigame() {
       console.log("start minigame");
