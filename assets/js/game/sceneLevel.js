@@ -14,6 +14,11 @@ import Sprite from '@/assets/js/objects/Sprite'
 import kintsugi_sprite from '~/static/sprites/about/kintsugi.png'
 import kintsugi_json from '~/static/sprites/about/kintsugi.json'
 
+import s_cat from "@/static/sprites/cat/cat.png";
+import s_petals from "@/static/sprites/petals/petals.png";
+import s_mobile from "@/static/sprites/mobile/mobile.png";
+import s_plants from "@/static/sprites/plants/plants.png";
+
 import {
     TweenMax,
     TimelineMax
@@ -83,7 +88,6 @@ export default class Level {
             this.romo.position.y = 1
             this.romo.originPosition = new THREE.Vector3().copy(this.romo.position)
             this.romo.scale.set(-2, 2, 2)
-            this.addCharacter()
         })
 
         this.loaderTexture()
@@ -172,12 +176,22 @@ export default class Level {
             });
         }
         if (this.platforms) {
+            this.addCharacter()
             this.platforms.forEach(platform => {
                 this.addPlatforms(platform)
             });
         }
         if (this.animates) {
             this.animates.forEach(animate => {
+                if (animate.json.id == "cat") {
+                    animate.png = s_cat
+                } else if (animate.json.id == "petals") {
+                    animate.png = s_petals
+                } else if (animate.json.id == "mobile") {
+                    animate.png = s_mobile
+                } else if (animate.json.id == "plants") {
+                    animate.png = s_plants
+                }
                 this.addAnimate(animate)
             });
         }
@@ -242,18 +256,21 @@ export default class Level {
     }
 
     addAnimate(params) {
+        return new Promise((resolve, reject) => {
+            new AnimatedProp(params).then((animate) => {
+                animate.scale.set(params.scale.x, params.scale.y, params.scale.z)
+                animate.position.set(params.position.x, params.position.y, params.position.z)
+                animate.originPosition = new THREE.Vector3().copy(animate.position)
+                animate.rotation.set(params.rotation.x, params.rotation.y, params.rotation.z)
+                animate.name = params.json.id
+                animate.alreadyAnimated = false
 
-        new AnimatedProp(params).then((animate) => {
-            animate.scale.set(params.scale.x, params.scale.y, params.scale.z)
-            animate.position.set(params.position.x, params.position.y, params.position.z)
-            animate.originPosition = new THREE.Vector3().copy(animate.position)
-            animate.rotation.set(params.rotation.x, params.rotation.y, params.rotation.z)
-            animate.name = params.json.id
-            animate.alreadyAnimated = false
+                this.animatesArray.push(animate)
+                this.scene.add(animate)
 
-            this.animatesArray.push(animate)
-            this.scene.add(animate)
-            this.launchSprite(animate.animate, 'wait')
+                this.launchSprite(animate.animate, 'wait')
+                resolve(animate)
+            })
         })
     }
 
@@ -501,7 +518,7 @@ export default class Level {
             let p2 = new Promise((resolve, reject) => {
                 setTimeout(() => {
                     this.animatesArray[i].position.x = this.camera.position.x
-                    this.animatesArray[i].position.z = 0
+                    this.animatesArray[i].position.z = 10
                     resolve(this.animatesArray[i]);
                 }, i * 2000)
             });
@@ -517,7 +534,6 @@ export default class Level {
         let p3 = new Promise((resolve, reject) => {
             setTimeout(() => {
                 this.momo.position.x = this.camera.position.x
-                this.momo.position.z = 0
                 resolve(this.momo);
             }, 2000)
         });
@@ -532,7 +548,6 @@ export default class Level {
         let p4 = new Promise((resolve, reject) => {
             setTimeout(() => {
                 this.romo.position.x = this.camera.position.x
-                this.romo.position.z = 0
                 resolve(this.romo);
             }, 2000)
         });
@@ -544,6 +559,7 @@ export default class Level {
         })
 
         Promise.all(promises).then(() => {
+
             this.preRenderFinish = true
             setTimeout(() => {
                 propsLoad()
@@ -658,7 +674,6 @@ export default class Level {
                                 .addState('wait')
                                 .start()
                         } else if (animate.name == "petals") {
-                            console.log(animate.animate)
                             animate.animate
                                 .newSprites()
                                 .addState('petals')
