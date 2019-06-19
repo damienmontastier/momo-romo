@@ -110,7 +110,7 @@ export default {
         this.sounds.background_sync.stop();
         this.sounds.sync_activated.play();
         this.sounds.sync_activated.on("end", () => {
-          // this.$router.push("/kintsugi");
+          this.$router.push("/kintsugi");
         });
       }
     }

@@ -495,9 +495,11 @@ class App {
   }
 
   onWindowResize() {
-    this.camera.aspect = window.innerHeight / (window.innerHeight * 0.85);
-    this.camera.updateProjectionMatrix();
-    this.renderer.setSize(window.innerHeight, window.innerHeight * 0.85);
+    if (this.renderer) {
+      this.camera.aspect = window.innerHeight / (window.innerHeight * 0.85);
+      this.camera.updateProjectionMatrix();
+      this.renderer.setSize(window.innerHeight, window.innerHeight * 0.85);
+    }
   }
 }
 
@@ -1149,10 +1151,10 @@ export default {
         } else if (countdown === 1) {
           this.sounds.countdown_1.play();
           requestAnimationFrame(() => {
-            // this.sounds["momo_minijeu_3"].play();
-            // this.sounds["momo_minijeu_3"].volume(1);
-            this.sounds["momo_minijeu_" + (this.currentFracture + 1)].play();
-            this.sounds["momo_minijeu_" + (this.currentFracture + 1)].volume(1);
+            this.sounds["momo_minijeu_3"].play();
+            this.sounds["momo_minijeu_3"].volume(1);
+            // this.sounds["momo_minijeu_" + (this.currentFracture + 1)].play();
+            // this.sounds["momo_minijeu_" + (this.currentFracture + 1)].volume(1);
             this.tweening = null;
           });
         }
