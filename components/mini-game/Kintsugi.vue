@@ -50,12 +50,12 @@
         </div>
       </div>
     </div>
-    <div id="debug">
+    <!-- <div id="debug">
       <button @click="nextFracture()">Next fracture</button>
       <button @click="launchCountdown()">START coutdown</button>
       <button @click="()=>{$refs.intro.setRomoReady()}">set momo ready</button>
       <button @click="launchEndGame()">end game</button>
-    </div>
+    </div>-->
   </div>
 </template>
 
