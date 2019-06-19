@@ -8,7 +8,6 @@ import cannonDebugRenderer from '../physics/CannonDebugRenderer'
 import AnimatedProp from "@/assets/js/objects/AnimatedProp";
 import HowlerManager from "~/assets/js/utils/HowlerManager";
 import background_level from "@/static/sounds/background_level.mp3";
-import breaking_bowl from "@/static/sounds/breaking_bowl.mp3";
 import cta_ready from "@/static/sounds/cta_ready.mp3";
 import Sprite from '@/assets/js/objects/Sprite'
 
@@ -45,10 +44,6 @@ export default class Level {
         HowlerManager.add([{
                 id: "background_level",
                 src: background_level
-            },
-            {
-                id: "breaking_bowl",
-                src: breaking_bowl
             },
             {
                 id: "cta_ready",
@@ -552,19 +547,13 @@ export default class Level {
             this.preRenderFinish = true
             setTimeout(() => {
                 propsLoad()
-
-                this.sounds.breaking_bowl.play();
-
                 TweenMax.to(this.masks.position, 2.5, {
                     x: 0,
                     ease: Power4.easeOut,
                     onComplete: () => {
-                        setTimeout(() => {
-                            let position = this.projectVectorToScreen(this.displayGIFPosition)
-                            displayGIF(position)
-                        }, 1000);
-
-
+                        let position = this.projectVectorToScreen(this.displayGIFPosition)
+                        position.x -= 125
+                        displayGIF(position)
                         this.startRestrictedZone = true
                         this.animationFinish = true
                         this.charactersClass.blockCharacter(addTutorial, this.camera, hideTutorial)

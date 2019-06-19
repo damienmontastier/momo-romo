@@ -36,6 +36,7 @@
 <script>
 import { TweenMax } from "gsap";
 import { mapGetters, mapMutations, mapState } from "vuex";
+import HowlerManager from "~/assets/js/utils/HowlerManager";
 import Game from "@/assets/js/game/game";
 import TextureAtlas from "@/assets/js/utils/TextureAtlas";
 import MiniGame from "@/components/mini-game/MiniGame.vue";
@@ -45,6 +46,7 @@ import buttonCirclePause from "@/components/svg/button-circle-pause";
 import Loader from "@/components/ui/loader.vue";
 import About from "@/components/mini-game/Kintsugi/About";
 import gashyangif from "~/static/ui/gashyan.gif";
+import breaking_bowl from "@/static/sounds/breaking_bowl.mp3";
 
 export default {
   components: {
@@ -86,6 +88,14 @@ export default {
   },
   created() {
     this.$store.dispatch("game/loadStage", this.$route.params.level);
+    HowlerManager.add([
+      {
+        id: "breaking_bowl",
+        src: breaking_bowl
+      }
+    ]).then(sounds => {
+      this.sounds = sounds;
+    });
   },
   mounted() {
     this.game = new Game();
@@ -203,13 +213,12 @@ export default {
     },
     displayGIF(position) {
       this.showGashyanGif = true;
-
-      console.log("desktop stage", position);
-
       let getBoundingClientRect = this.$refs.gashyan.getBoundingClientRect();
+      this.sounds.breaking_bowl.play();
       TweenMax.to(this.$refs.gashyan, 0, {
-        y: "50%" - getBoundingClientRect.height / 2 + "px",
-        left: position.x - getBoundingClientRect.width / 2 - 60,
+        delay: 0.5,
+        y: "50%" - getBoundingClientRect.height + "px",
+        left: position.x - getBoundingClientRect.width / 2,
         opacity: 1,
         onComplete: () => {
           setTimeout(() => {
