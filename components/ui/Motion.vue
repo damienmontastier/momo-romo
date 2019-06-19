@@ -253,8 +253,7 @@ export default {
       this.sounds.intro_sound.play();
       window.addEventListener('keyup',this.onKeyUp.bind(this))
       // setTimeout(() => {
-      //           this.$emit('end')
-
+      //   this.$emit("end");
       // }, 1000);
     },
     onKeyUp(e) {

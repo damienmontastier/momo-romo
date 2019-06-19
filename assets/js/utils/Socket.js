@@ -19,7 +19,7 @@ export default class Socket {
         type: "desktop",
       },
     });
-    console.log('ok')
+    // console.log('ok')
     this.addEvent();
     this.createRoom();
   }
@@ -33,7 +33,7 @@ export default class Socket {
 
   addEvent() {
     this.socket.on("time", t => {
-      console.log(t);
+      // console.log(t);
     });
   }
 }

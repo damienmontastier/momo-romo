@@ -8,7 +8,6 @@ import cannonDebugRenderer from '../physics/CannonDebugRenderer'
 import AnimatedProp from "@/assets/js/objects/AnimatedProp";
 import HowlerManager from "~/assets/js/utils/HowlerManager";
 import background_level from "@/static/sounds/background_level.mp3";
-import breaking_bowl from "@/static/sounds/breaking_bowl.mp3";
 import cta_ready from "@/static/sounds/cta_ready.mp3";
 import Sprite from '@/assets/js/objects/Sprite'
 
@@ -45,10 +44,6 @@ export default class Level {
         HowlerManager.add([{
                 id: "background_level",
                 src: background_level
-            },
-            {
-                id: "breaking_bowl",
-                src: breaking_bowl
             },
             {
                 id: "cta_ready",
@@ -201,6 +196,38 @@ export default class Level {
                 alphaTest: 0.5,
             })
         });
+        if (prop._id == "window1" || prop._id == "window2") {
+            let singleGeometry = new THREE.Geometry();
+
+            let width = 1
+            let height = 1
+            let geometryRightLeft = new THREE.PlaneGeometry(width, height * 1.5, 1);
+            let geometryTopBottom = new THREE.PlaneGeometry(width, height, 1);
+            let material = new THREE.MeshBasicMaterial({
+                color: 0xfdf9eb,
+                side: THREE.DoubleSide
+            });
+
+            let plane = new THREE.Mesh(geometryRightLeft, material); //Right
+            plane.position.set(-width + .03, 0, 0)
+            singleGeometry.mergeMesh(plane);
+
+            plane = new THREE.Mesh(geometryRightLeft, material); //Left
+            plane.position.set(width - .03, 0, 0)
+            singleGeometry.mergeMesh(plane);
+
+            plane = new THREE.Mesh(geometryTopBottom, material); //Top
+            plane.position.set(0, width, 0)
+            singleGeometry.mergeMesh(plane);
+
+            plane = new THREE.Mesh(geometryTopBottom, material); //Bottom
+            plane.position.set(0, -width, 0)
+            singleGeometry.mergeMesh(plane);
+
+            let mask = new THREE.Mesh(singleGeometry, material);
+
+            prop.add(mask)
+        }
         prop.position.set(props.position.x, props.position.y, props.position.z);
         prop.originPosition = new THREE.Vector3().copy(prop.position)
         prop.scale.set(props.scale.x, props.scale.y, props.scale.z);
@@ -520,19 +547,13 @@ export default class Level {
             this.preRenderFinish = true
             setTimeout(() => {
                 propsLoad()
-
-                this.sounds.breaking_bowl.play();
-
                 TweenMax.to(this.masks.position, 2.5, {
                     x: 0,
                     ease: Power4.easeOut,
                     onComplete: () => {
-                        setTimeout(() => {
-                            let position = this.projectVectorToScreen(this.displayGIFPosition)
-                            displayGIF(position)
-                        }, 1000);
-
-
+                        let position = this.projectVectorToScreen(this.displayGIFPosition)
+                        position.x -= 125
+                        displayGIF(position)
                         this.startRestrictedZone = true
                         this.animationFinish = true
                         this.charactersClass.blockCharacter(addTutorial, this.camera, hideTutorial)
@@ -561,7 +582,6 @@ export default class Level {
     }
 
     projectVectorToScreen(vector) {
-
         vector.project(this.camera);
         vector.x = ((vector.x + 1) * window.innerWidth) / 2;
         vector.y = (-(vector.y - 1) * window.innerHeight) / 2;
@@ -615,10 +635,10 @@ export default class Level {
 
         this.materialbis.uniforms.iTime.value = this.time
 
-        if (this.animatesArray.length && this.animationFinish && this.romo) {
+        if (this.animatesArray.length && this.animationFinish && this.momo) {
             this.animatesArray.forEach(animate => {
-                animate.animate.update(delta * 5000)
-                if (this.romo.position.x >= animate.position.x - .5 && this.romo.position.x <= animate.position.x + .5 && !animate.animated) {
+                animate.animate.update(delta * 10000)
+                if (this.momo.position.x >= animate.position.x - .8 && this.momo.position.x <= animate.position.x + .8 && !animate.animated) {
                     if ((animate.out && !animate.in) || (!animate.in && !animate.out)) {
                         animate.in = true
                         if (animate.name == "cat") {
@@ -637,8 +657,8 @@ export default class Level {
                                 .addState('jump')
                                 .addState('wait')
                                 .start()
-
                         } else if (animate.name == "petals") {
+                            console.log(animate.animate)
                             animate.animate
                                 .newSprites()
                                 .addState('petals')
@@ -648,13 +668,11 @@ export default class Level {
                             animate.animate
                                 .newSprites()
                                 .addState('plants')
-                                .addState('wait')
                                 .start()
                         } else if (animate.name == "mobile") {
                             animate.animate
                                 .newSprites()
                                 .addState('mobile')
-                                .addState('wait')
                                 .start()
                             animate.animated = true
                         }

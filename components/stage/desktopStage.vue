@@ -7,6 +7,10 @@
       v-on:loadStart="loadStart"
       :is="components[value]"
     ></component>
+
+    <div ref="buttonPause" id="button-pause-container">
+      <buttonCirclePause id="button-pause" letter="p" en="Pause Game" jpn="Pause Game"></buttonCirclePause>
+    </div>
     <img :src="gashyangif" id="gashyan" alt="gashyan" ref="gashyan">
 
     <div ref="tutorialKeyboard" id="tutorial-keyboard"></div>
@@ -32,14 +36,17 @@
 <script>
 import { TweenMax } from "gsap";
 import { mapGetters, mapMutations, mapState } from "vuex";
+import HowlerManager from "~/assets/js/utils/HowlerManager";
 import Game from "@/assets/js/game/game";
 import TextureAtlas from "@/assets/js/utils/TextureAtlas";
 import MiniGame from "@/components/mini-game/MiniGame.vue";
 import readyKintsugi from "@/components/ui/readyKintsugi.vue";
 import buttonCircleRed from "@/components/svg/button-circle-red";
+import buttonCirclePause from "@/components/svg/button-circle-pause";
 import Loader from "@/components/ui/loader.vue";
 import About from "@/components/mini-game/Kintsugi/About";
 import gashyangif from "~/static/ui/gashyan.gif";
+import breaking_bowl from "@/static/sounds/breaking_bowl.mp3";
 
 export default {
   components: {
@@ -47,6 +54,7 @@ export default {
     readyKintsugi,
     Loader,
     buttonCircleRed,
+    buttonCirclePause,
     About
   },
   data() {
@@ -62,7 +70,8 @@ export default {
       minigameEnded: false,
       aboutLaunched: false,
       gashyangif: gashyangif,
-      showGashyanGif: false
+      showGashyanGif: false,
+      showPauseButton: false
     };
   },
   computed: {
@@ -79,6 +88,14 @@ export default {
   },
   created() {
     this.$store.dispatch("game/loadStage", this.$route.params.level);
+    HowlerManager.add([
+      {
+        id: "breaking_bowl",
+        src: breaking_bowl
+      }
+    ]).then(sounds => {
+      this.sounds = sounds;
+    });
   },
   mounted() {
     this.game = new Game();
@@ -109,6 +126,16 @@ export default {
         },
         this.$store
       );
+    },
+    showPauseButton(value) {
+      console.log(this.$refs.buttonPause);
+      if (value && this.$refs.buttonPause) {
+        TweenMax.to(this.$refs.buttonPause, 1, {
+          opacity: 1,
+          visibility: "visible",
+          ease: Power4.easeOut
+        });
+      }
     }
   },
   methods: {
@@ -156,6 +183,7 @@ export default {
       });
     },
     addTutorial(value) {
+      this.showPauseButton = true;
       let tl = new TimelineMax();
       tl.to(this.$refs.tutorialKeyboard, 0.01, {
         left: value.x - this.$refs.tutorialKeyboard.clientWidth / 2,
@@ -185,17 +213,20 @@ export default {
     },
     displayGIF(position) {
       this.showGashyanGif = true;
-
-      console.log("desktop stage", position);
-
-      // console.log(".gashyan", this.$refs.gashyan);
-      console.log(this.$refs.gashyan.getBoundingClientRect());
-      TweenMax.to(this.$refs.gashyan, 0.1, {
-        top:
-          "50%" - this.$refs.gashyan.getBoundingClientRect().height / 2 + "px",
-        y: "50%",
-        left:
-          position.x - this.$refs.gashyan.getBoundingClientRect().width / 2 - 50
+      let getBoundingClientRect = this.$refs.gashyan.getBoundingClientRect();
+      this.sounds.breaking_bowl.play();
+      TweenMax.to(this.$refs.gashyan, 0, {
+        delay: 0.5,
+        y: "50%" - getBoundingClientRect.height + "px",
+        left: position.x - getBoundingClientRect.width / 2,
+        opacity: 1,
+        onComplete: () => {
+          setTimeout(() => {
+            TweenMax.to(this.$refs.gashyan, 0, {
+              display: "none"
+            });
+          }, 2500);
+        }
       });
     },
     loadStart() {
@@ -260,6 +291,16 @@ export default {
     position: absolute;
     left: 0;
     top: 0;
+    opacity: 0;
+  }
+  #button-pause-container {
+    position: absolute;
+    opacity: 0;
+    top: 30px;
+    left: 30px;
+    width: 150px;
+    height: 150px;
+    visibility: hidden;
   }
 }
 
