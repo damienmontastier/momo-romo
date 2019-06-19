@@ -1,22 +1,22 @@
 {
     "sprites": [{
         "id": "romo_basic",
-        "durationTile": "900",
+        "durationTile": "700",
         "start": 0,
         "end": 5
     }, {
         "id": "romo_transform_in",
-        "durationTile": "900",
+        "durationTile": "700",
         "start": 6,
         "end": 19
     }, {
         "id": "romo_brush",
-        "durationTile": "900",
+        "durationTile": "700",
         "start": 20,
         "end": 26
     }, {
         "id": "romo_transform_out",
-        "durationTile": "900",
+        "durationTile": "700",
         "start": 27,
         "end": 41
     }]

@@ -250,15 +250,17 @@ export default {
     },
     start() {
       this.timecodeEvents();
-      this.sounds.intro_sound.play();
-      window.addEventListener('keyup',this.onKeyUp.bind(this))
+      requestAnimationFrame(() => {
+        this.sounds.intro_sound.play();
+      });
+      window.addEventListener("keyup", this.onKeyUp.bind(this));
       // setTimeout(() => {
       //   this.$emit("end");
       // }, 1000);
     },
     onKeyUp(e) {
-      if(e.key === 'y') {
-        HowlerManager.stop()
+      if (e.key === "y") {
+        HowlerManager.stop();
         this.$emit("end");
       }
     },
@@ -291,7 +293,7 @@ export default {
     }
   },
   beforeDestroy() {
-    window.removeEventListener('keyup',this.onKeyUp.bind(this))
+    window.removeEventListener("keyup", this.onKeyUp.bind(this));
   }
 };
 </script>
@@ -306,7 +308,7 @@ export default {
   .container {
     margin: auto;
     width: 70vw;
-    height: 80vh;
+    height: 70vh;
     // max-width: 1214px;
     // max-height: 686px;
     display: flex;
@@ -318,10 +320,9 @@ export default {
       }
       max-width: 400px;
       width: 400px;
-      //   max-height: 100%;
-      // display: flex;
+      // width: calc(70vw - 32px / 3);
+      // max-width: calc(70vw - 32px / 3);
       opacity: 0;
-      //   width: 400px;
       border: 3px solid #000;
       video {
         // margin: auto;

@@ -597,10 +597,10 @@ export default {
     },
     appearToTitle() {
       this.app.brush
-          .newSprites()
-          .addState("romo_transform_in")
-          .addState("romo_brush")
-          .start();
+        .newSprites()
+        .addState("romo_transform_in")
+        .addState("romo_brush")
+        .start();
       this.sounds.background_level.stop();
       this.tweeningScalar = 1;
 
@@ -754,6 +754,7 @@ export default {
     },
     launchEndGame() {
       console.log("end game");
+      this.gameEnded = true;
       this.$refs.intro.$refs.isPlaying.style.opacity = "0";
       this.$refs.keys.style.opacity = "0";
       this.$refs.steps.style.opacity = "0";
@@ -763,10 +764,10 @@ export default {
       this.sounds.background_level.play();
 
       this.app.brush
-          .newSprites()
-          .addState("romo_transform_out")
-          .addState("romo_basic")
-          .start();
+        .newSprites()
+        .addState("romo_transform_out")
+        .addState("romo_basic")
+        .start();
 
       let tl = new TimelineMax();
       tl.add("endGameAppear", 1)
@@ -816,6 +817,7 @@ export default {
     },
     windowDisappear() {
       console.log("windowDisappear");
+
       this.sounds.transition_windows.play();
       this.sounds.transition_windows.fade(1, 0, 3000);
       let box = this.$refs.window.getBoundingClientRect();
@@ -834,28 +836,32 @@ export default {
           },
           "appear"
         )
-        .eventCallback("onComplete", () => {});
+        .eventCallback("onComplete", () => {
+          this.app.renderer.setAnimationLoop(null);
+        });
     },
     launchCountdown() {
-      this.app.momoMoods.visible = false;
-      this.app.momo
-        .newSprites()
-        .addState("power_start")
-        .addState("power_loop")
-        .start();
-
-      setTimeout(() => {
-        this.app.momoMoods.visible = true;
-        this.app.momoMoods
+      if (!this.gameEnded) {
+        this.app.momoMoods.visible = false;
+        this.app.momo
           .newSprites()
-          .addState("power")
+          .addState("power_start")
+          .addState("power_loop")
           .start();
-      }, 2000);
-      this.$refs.keys.style.opacity = "0";
-      this.$refs.steps.style.opacity = "1";
-      this.app.model.scale.set(1.2, 1.2, 1.2);
-      this.app.model.position.y = 0;
-      this.$refs.intro.launchCountdown();
+
+        setTimeout(() => {
+          this.app.momoMoods.visible = true;
+          this.app.momoMoods
+            .newSprites()
+            .addState("power")
+            .start();
+        }, 2000);
+        this.$refs.keys.style.opacity = "0";
+        this.$refs.steps.style.opacity = "1";
+        this.app.model.scale.set(1.2, 1.2, 1.2);
+        this.app.model.position.y = 0;
+        this.$refs.intro.launchCountdown();
+      }
     },
     nextStep() {
       if (this.currentStep === this.controls.length - 1) {
@@ -1134,20 +1140,22 @@ export default {
       this.sounds.cta_ready.play();
     },
     updateCountdown(countdown) {
-      if (countdown === 3) {
-        this.sounds.romo_playing.stop();
-        this.sounds.countdown_3.play();
-      } else if (countdown === 2) {
-        this.sounds.countdown_2.play();
-      } else if (countdown === 1) {
-        this.sounds.countdown_1.play();
-        requestAnimationFrame(() => {
-          // this.sounds["momo_minijeu_3"].play();
-          // this.sounds["momo_minijeu_3"].volume(1);
-          this.sounds["momo_minijeu_" + (this.currentFracture + 1)].play();
-          this.sounds["momo_minijeu_" + (this.currentFracture + 1)].volume(1);
-          this.tweening = null;
-        });
+      if (!this.gameEnded) {
+        if (countdown === 3) {
+          this.sounds.romo_playing.stop();
+          this.sounds.countdown_3.play();
+        } else if (countdown === 2) {
+          this.sounds.countdown_2.play();
+        } else if (countdown === 1) {
+          this.sounds.countdown_1.play();
+          requestAnimationFrame(() => {
+            // this.sounds["momo_minijeu_3"].play();
+            // this.sounds["momo_minijeu_3"].volume(1);
+            this.sounds["momo_minijeu_" + (this.currentFracture + 1)].play();
+            this.sounds["momo_minijeu_" + (this.currentFracture + 1)].volume(1);
+            this.tweening = null;
+          });
+        }
       }
     },
     loadSounds() {
