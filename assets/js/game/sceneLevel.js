@@ -181,7 +181,6 @@ export default class Level {
                 this.addPlatforms(platform)
             });
         }
-        console.log('init', this.animates)
         if (this.animates) {
             this.animates.forEach(animate => {
                 if (animate.json.id == "cat") {
@@ -194,7 +193,6 @@ export default class Level {
                     animate.png = s_plants
                 }
                 this.addAnimate(animate)
-                console.log('init animate', animate)
             });
         }
     }
@@ -259,9 +257,7 @@ export default class Level {
 
     addAnimate(params) {
         return new Promise((resolve, reject) => {
-            console.log('add animate params', params)
             new AnimatedProp(params).then((animate) => {
-                console.log('add animate', animate)
                 animate.scale.set(params.scale.x, params.scale.y, params.scale.z)
                 animate.position.set(params.position.x, params.position.y, params.position.z)
                 animate.originPosition = new THREE.Vector3().copy(animate.position)
@@ -272,7 +268,6 @@ export default class Level {
                 this.animatesArray.push(animate)
                 this.scene.add(animate)
 
-                console.log('addAnimate', animate)
                 this.launchSprite(animate.animate, 'wait')
                 resolve(animate)
             })
@@ -519,7 +514,6 @@ export default class Level {
         }
 
         //Animates preRender
-        console.log('before animates preRender', this.animatesArray)
         for (let i = 0; i < this.animatesArray.length; i++) {
             let p2 = new Promise((resolve, reject) => {
                 setTimeout(() => {
@@ -573,9 +567,6 @@ export default class Level {
                     x: 0,
                     ease: Power4.easeOut,
                     onComplete: () => {
-                        console.log(this.animatesArray)
-                        console.log(this.momo)
-                        console.log(this.romo)
                         let position = this.projectVectorToScreen(this.displayGIFPosition)
                         position.x -= 125
                         displayGIF(position)
@@ -683,7 +674,6 @@ export default class Level {
                                 .addState('wait')
                                 .start()
                         } else if (animate.name == "petals") {
-                            console.log(animate.animate)
                             animate.animate
                                 .newSprites()
                                 .addState('petals')

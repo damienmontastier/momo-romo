@@ -6,25 +6,20 @@ export default class Sprite extends THREE.Object3D {
         hTiles
     }) {
         super()
-        console.log('yo sprite', textureURL, json, wTiles, hTiles)
         this.textureURL = textureURL
         this.json = json;
         this.wTiles = wTiles;
         this.hTiles = hTiles;
 
         if (textureURL.image) {
-            console.log('textureURL.image')
             this.texture = this.textureURL
             this.resets()
             this.init()
             return this
         } else {
-            console.log('textureURL.image else')
-
             return new Promise((resolve, reject) => {
                 this.loadTexture()
                     .then((texture) => {
-                        console.log('then((texture)')
                         this.texture = texture
                         this.resets()
                         this.init()
@@ -36,8 +31,6 @@ export default class Sprite extends THREE.Object3D {
     }
 
     resets() {
-        console.log('resets()')
-
         this.texture.wrapS = this.texture.wrapT = THREE.RepeatWrapping;
         // this.texture.magFilter = this.texture.minFilter = THREE.NearestFilter;
         // this.texture.anisotropy = 0;
@@ -46,8 +39,6 @@ export default class Sprite extends THREE.Object3D {
     }
 
     loadTexture() {
-        console.log('loader Texture / Sprite.js')
-
         let loader = new THREE.TextureLoader();
 
         return new Promise((resolve, reject) => {
@@ -59,8 +50,6 @@ export default class Sprite extends THREE.Object3D {
     }
 
     init() {
-        console.log('init()')
-
         this.loaded = true
         this.currentTile = 0;
         this.currentTime = 0;
