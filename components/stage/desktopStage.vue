@@ -206,14 +206,18 @@ export default {
 
       console.log("desktop stage", position);
 
-      // console.log(".gashyan", this.$refs.gashyan);
-      console.log(this.$refs.gashyan.getBoundingClientRect());
-      TweenMax.to(this.$refs.gashyan, 0.1, {
-        top:
-          "50%" - this.$refs.gashyan.getBoundingClientRect().height / 2 + "px",
-        y: "50%",
-        left:
-          position.x - this.$refs.gashyan.getBoundingClientRect().width / 2 - 50
+      let getBoundingClientRect = this.$refs.gashyan.getBoundingClientRect();
+      TweenMax.to(this.$refs.gashyan, 0, {
+        y: "50%" - getBoundingClientRect.height / 2 + "px",
+        left: position.x - getBoundingClientRect.width / 2 - 60,
+        opacity: 1,
+        onComplete: () => {
+          setTimeout(() => {
+            TweenMax.to(this.$refs.gashyan, 0, {
+              display: "none"
+            });
+          }, 2500);
+        }
       });
     },
     loadStart() {
@@ -278,6 +282,7 @@ export default {
     position: absolute;
     left: 0;
     top: 0;
+    opacity: 0;
   }
   #button-pause-container {
     position: absolute;
