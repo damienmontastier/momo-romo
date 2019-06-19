@@ -103,7 +103,6 @@ export default class Characters {
                 wTiles: 8,
                 hTiles: 8
             }).then(momo => {
-                console.log("momo", momo)
                 momo.name = "momo"
                 momo.body = this.body
                 resolve(momo)
@@ -114,8 +113,6 @@ export default class Characters {
                 wTiles: 2,
                 hTiles: 2
             }).then(romo => {
-                console.log("romo", romo)
-
                 romo.name = "romo"
                 resolve(romo)
             })

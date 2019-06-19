@@ -176,9 +176,11 @@ export default class Level {
                 this.addPlatforms(platform)
             });
         }
+        console.log('init', this.animates)
         if (this.animates) {
             this.animates.forEach(animate => {
                 this.addAnimate(animate)
+                console.log('init animate', animate)
             });
         }
     }
@@ -242,7 +244,6 @@ export default class Level {
     }
 
     addAnimate(params) {
-
         new AnimatedProp(params).then((animate) => {
             animate.scale.set(params.scale.x, params.scale.y, params.scale.z)
             animate.position.set(params.position.x, params.position.y, params.position.z)
@@ -253,6 +254,7 @@ export default class Level {
 
             this.animatesArray.push(animate)
             this.scene.add(animate)
+            console.log('addAnimate', animate)
             this.launchSprite(animate.animate, 'wait')
         })
     }
@@ -497,6 +499,7 @@ export default class Level {
         }
 
         //Animates preRender
+        console.log('before animates preRender', this.animatesArray)
         for (let i = 0; i < this.animatesArray.length; i++) {
             let p2 = new Promise((resolve, reject) => {
                 setTimeout(() => {
@@ -517,7 +520,6 @@ export default class Level {
         let p3 = new Promise((resolve, reject) => {
             setTimeout(() => {
                 this.momo.position.x = this.camera.position.x
-                this.momo.position.z = 10
                 resolve(this.momo);
             }, 2000)
         });
@@ -532,7 +534,6 @@ export default class Level {
         let p4 = new Promise((resolve, reject) => {
             setTimeout(() => {
                 this.romo.position.x = this.camera.position.x
-                this.romo.position.z = 10
                 resolve(this.romo);
             }, 2000)
         });
