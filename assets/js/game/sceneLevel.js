@@ -83,7 +83,6 @@ export default class Level {
             this.romo.position.y = 1
             this.romo.originPosition = new THREE.Vector3().copy(this.romo.position)
             this.romo.scale.set(-2, 2, 2)
-            this.addCharacter()
         })
 
         this.loaderTexture()
@@ -172,6 +171,7 @@ export default class Level {
             });
         }
         if (this.platforms) {
+            this.addCharacter()
             this.platforms.forEach(platform => {
                 this.addPlatforms(platform)
             });
