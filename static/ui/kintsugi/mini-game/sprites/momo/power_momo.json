@@ -31,7 +31,7 @@
         },
         {
             "id": "wait",
-            "durationTile": "900",
+            "durationTile": "500",
             "start": 52,
             "end": 63
         }
