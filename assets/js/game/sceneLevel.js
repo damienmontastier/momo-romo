@@ -672,17 +672,20 @@ export default class Level {
                                 .addState('jump')
                                 .addState('wait')
                                 .start()
+                            animate.animated = true
                         } else if (animate.name == "petals") {
+                            animate.position.z = 7
                             animate.animate
                                 .newSprites()
                                 .addState('petals')
                                 .addState('wait')
-                                .start()
+                                .start(this.resetPetals.bind(this, animate))
                         } else if (animate.name == "plants") {
                             animate.animate
                                 .newSprites()
                                 .addState('plants')
                                 .start()
+                            animate.animated = true
                         } else if (animate.name == "mobile") {
                             animate.animate
                                 .newSprites()
@@ -734,6 +737,9 @@ export default class Level {
         }
 
         this.renderer.render(this.scene, this.camera);
+    }
+    resetPetals(animate) {
+        animate.position.copy(animate.originPosition)
     }
     launchSprite(character, id) {
         character
