@@ -622,16 +622,16 @@ export default {
 
   .swipe {
     position: absolute;
-    top: -20px;
-    left: -20px;
+    top: -40px;
+    left: -40px;
     display: flex;
     pointer-events: none;
     opacity: 0;
 
     #cursor {
       margin: auto;
-      height: 40px;
-      width: 40px;
+      height: 80px;
+      width: 80px;
       background: $white;
       border: $red 3px solid;
       border-radius: 100%;

@@ -251,9 +251,16 @@ export default {
     start() {
       this.timecodeEvents();
       this.sounds.intro_sound.play();
+      window.addEventListener('keyup',this.onKeyUp.bind(this))
       // setTimeout(() => {
       //   this.$emit("end");
       // }, 1000);
+    },
+    onKeyUp(e) {
+      if(e.key === 'y') {
+        HowlerManager.stop()
+        this.$emit("end");
+      }
     },
     extends() {
       let box = this.$refs["video-container3"].getBoundingClientRect();
@@ -282,6 +289,9 @@ export default {
       //     0
       //   );
     }
+  },
+  beforeDestroy() {
+    window.removeEventListener('keyup',this.onKeyUp.bind(this))
   }
 };
 </script>

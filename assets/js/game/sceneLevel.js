@@ -742,7 +742,7 @@ export default class Level {
                     .newSprites()
                     .addState("default")
                     .start(this.stopVideo.bind(this));
-                this.video.scale.set(2, 1, 1)
+                this.video.scale.set(-2, 1, 1)
                 this.video.position.set(this.camera.position.x, this.camera.position.y, 10);
                 HowlerManager.sounds.voice_bowl_repaired.play()
             })
