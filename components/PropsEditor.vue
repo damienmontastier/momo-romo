@@ -11,6 +11,7 @@
       >
     </div>
     <div id="sprites">
+      <h5>Animated available to add</h5><br>
       <p
         :key="index"
         v-for="(sprite, index) in spriteParams"
@@ -108,7 +109,7 @@ export default {
   left: 0px;
   top: 0px;
   width: 300px;
-  height: 70vh;
+  height: 80vh;
   background: white;
   z-index: 2;
 
@@ -121,14 +122,16 @@ export default {
   overflow-x: auto;
   position: absolute;
   left: 0px;
-  top: 70vh;
   width: 300px;
-  height: 30vh;
+  height: auto;
   background: white;
   z-index: 2;
+  bottom: 0;
+  padding: 20px;
+  overflow: auto;
   p {
     &:hover {
-      background: red;
+      background: #f7fcf7;
     }
   }
 }

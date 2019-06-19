@@ -11,7 +11,7 @@
     <div ref="buttonPause" id="button-pause-container">
       <buttonCirclePause id="button-pause" letter="p" en="Pause Game" jpn="Pause Game"></buttonCirclePause>
     </div>
-    <!-- <img :src="gashyangif" id="gashyan" alt="gashyan" ref="gashyan"> -->
+    <img :src="gashyangif" id="gashyan" alt="gashyan" ref="gashyan">
 
     <div ref="tutorialKeyboard" id="tutorial-keyboard"></div>
 

@@ -1,7 +1,7 @@
 <template>
   <div id="layer">
     <ul class="layer">
-      <p>Platforms</p>
+      <h5>Platforms</h5><br>
       <li
         @click="select(platform)"
         :ref="platform.id+index"
@@ -16,7 +16,7 @@
       </li>
     </ul>
     <ul class="layer">
-      <p>Props</p>
+      <h5>Props</h5><br>
       <li
         @click="select(prop)"
         :ref="prop.id+index"
@@ -27,12 +27,12 @@
         :key="index"
       >
         <input @click="visible(prop, index)" type="checkbox" id="checkbox" checked>
-        {{prop._id + index}}
+        {{index}}
       </li>
       <p>{{picked}}</p>
     </ul>
-    <ul class="layer">
-      <p>Animates</p>
+    <ul style="height: 150px;" class="layer">
+      <h5>Lists animates in level</h5><br>
       <li
         :ref="animate.id+index"
         v-for="(animate,index) in currentStageRef.animates"
@@ -41,8 +41,8 @@
       >{{animate._id + index}}</li>
       <p>{{picked}}</p>
     </ul>
-    <ul style="height: 150px;" class="layer">
-      <p>Checkpoint Minigame</p>
+    <ul class="layer">
+      <h5>Checkpoint Minigame</h5><br>
       <li
         v-for="(prop,index) in currentStageProps.fixedProps"
         :key="index"
@@ -59,7 +59,7 @@
           :value="prop._id+index || false"
           :checked="prop.checkpointMinigame"
         >
-        {{prop._id+index}}
+        {{index}}
       </li>
     </ul>
   </div>
@@ -136,7 +136,10 @@ export default {
 #layer {
   position: absolute;
   left: 320px;
-  top: 0;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  justify-content: center;
 }
 .layer {
   margin-bottom: 20px;
@@ -159,7 +162,7 @@ export default {
       background: #f7fcf7;
     }
     #checkbox:checked {
-      background-color: red;
+      background-color: #f7fcf7;
     }
   }
   &:last-child {
