@@ -318,8 +318,8 @@ export default {
       &:nth-child(2) {
         margin: 0 16px;
       }
-      max-width: 400px;
-      width: 400px;
+      max-width: 500px;
+      width: 500px;
       // width: calc(70vw - 32px / 3);
       // max-width: calc(70vw - 32px / 3);
       opacity: 0;
@@ -374,7 +374,7 @@ export default {
   }
   .subtitles {
     position: absolute;
-    bottom: calc(5vh - (45px / 2));
+    bottom: calc(7.5vh - (45px / 2));
     width: 100%;
     display: flex;
     .subtitles_container {
