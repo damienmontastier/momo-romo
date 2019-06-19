@@ -54,7 +54,6 @@ export default class Characters {
 
         this.sprites = MomoJson.sprites
 
-        this.addBody()
 
         this.movementState = {
             walking: false,
@@ -64,6 +63,8 @@ export default class Characters {
     }
 
     add() {
+        this.addBody()
+
         return new Promise((resolve, reject) => {
             this.addAnimate().then((sprites) => {
                 this.momo = sprites[0]
