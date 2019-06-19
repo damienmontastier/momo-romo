@@ -11,10 +11,10 @@
         </div>
         <div id="romo">
           <!-- <div class="center"> -->
-            <h5 class="skew stroke">Mobile player</h5>
-            <romoTitle></romoTitle>
-            <h5 class="skew fill-jpn">ロモ</h5>
-          </div>
+          <h5 class="skew stroke">Mobile player</h5>
+          <romoTitle></romoTitle>
+          <h5 class="skew fill-jpn">ロモ</h5>
+        </div>
         <!-- </div> -->
       </div>
       <div id="bottom">
@@ -152,7 +152,6 @@ export default {
     display: flex;
     height: 50%;
     width: 100%;
-    
 
     #momo,
     #romo {
@@ -193,9 +192,9 @@ export default {
       #momo-chara {
         width: 269px;
         height: 269px;
-        background-image: url("~static/ui/synchro/momo.png");
-        animation: play 1s steps(12) infinite;
-        animation-direction: reverse;
+        background: transparent url("~static/ui/synchro/momo.gif");
+        background-size: cover;
+        background-repeat: no-repeat;
       }
       #keyboard-animation {
         width: 150px;
@@ -276,29 +275,11 @@ export default {
         }
       }
       #synchronize {
-        background-image: url("~static/ui/synchro/romo.png");
-        animation: playRomo 0.8s steps(3) infinite alternate;
+        background: transparent url("~static/ui/synchro/romo.gif");
         height: 314px;
         width: 307px;
       }
     }
-  }
-}
-
-@keyframes play {
-  from {
-    background-position-x: 0px;
-  }
-  to {
-    background-position-x: 3229px;
-  }
-}
-@keyframes playRomo {
-  from {
-    background-position-x: 0px;
-  }
-  to {
-    background-position-x: 942px;
   }
 }
 </style>

@@ -252,8 +252,7 @@ export default {
       this.timecodeEvents();
       this.sounds.intro_sound.play();
       // setTimeout(() => {
-      //           this.$emit('end')
-
+      //   this.$emit("end");
       // }, 1000);
     },
     extends() {
