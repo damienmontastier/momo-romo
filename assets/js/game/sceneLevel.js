@@ -179,7 +179,9 @@ export default class Level {
         console.log('init', this.animates)
         if (this.animates) {
             this.animates.forEach(animate => {
-                this.addAnimate(animate)
+                this.addAnimate(animate).then(() => {
+                    this.scene.add(animate)
+                })
                 console.log('init animate', animate)
             });
         }
@@ -244,20 +246,22 @@ export default class Level {
     }
 
     addAnimate(params) {
-        console.log('add animate params', params)
-        new AnimatedProp(params).then((animate) => {
-            console.log('add animate', animate)
-            animate.scale.set(params.scale.x, params.scale.y, params.scale.z)
-            animate.position.set(params.position.x, params.position.y, params.position.z)
-            animate.originPosition = new THREE.Vector3().copy(animate.position)
-            animate.rotation.set(params.rotation.x, params.rotation.y, params.rotation.z)
-            animate.name = params.json.id
-            animate.alreadyAnimated = false
+        return new Promise((resolve, reject), () => {
+            console.log('add animate params', params)
+            new AnimatedProp(params).then((animate) => {
+                console.log('add animate', animate)
+                animate.scale.set(params.scale.x, params.scale.y, params.scale.z)
+                animate.position.set(params.position.x, params.position.y, params.position.z)
+                animate.originPosition = new THREE.Vector3().copy(animate.position)
+                animate.rotation.set(params.rotation.x, params.rotation.y, params.rotation.z)
+                animate.name = params.json.id
+                animate.alreadyAnimated = false
 
-            this.animatesArray.push(animate)
-            this.scene.add(animate)
-            console.log('addAnimate', animate)
-            this.launchSprite(animate.animate, 'wait')
+                this.animatesArray.push(animate)
+                console.log('addAnimate', animate)
+                this.launchSprite(animate.animate, 'wait')
+                resolve(animate)
+            })
         })
     }
 
