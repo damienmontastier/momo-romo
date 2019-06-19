@@ -29,8 +29,8 @@ export default {
     if (this.socket) {
       this.socket.on("readyPlayMobile", value => {
         console.log(value.ready);
-        if(value.ready){
-          this.$emit('changeComponent')
+        if (value.ready) {
+          this.$emit("changeComponent");
         }
       });
     }

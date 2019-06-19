@@ -756,6 +756,15 @@ export default {
       this.$refs.intro.$refs.isPlaying.style.opacity = "0";
       this.$refs.keys.style.opacity = "0";
       this.$refs.steps.style.opacity = "0";
+      if (this.socket) {
+        this.socket.emit("custom-event", {
+          name: "kintsugi mini-game",
+          in: this.roomID,
+          args: {
+            id: "end"
+          }
+        });
+      }
       HowlerManager.stop();
       this.sounds.cta_activated.play();
       this.sounds.background_level.volume(0.5);
