@@ -75,9 +75,7 @@ export default {
     })
   },
   created() {
-    this.loadSounds()
-    .then(()=>{
-    })
+    this.loadSounds().then(() => {});
   },
   mounted() {},
   methods: {
@@ -100,7 +98,7 @@ export default {
     animationOut() {
       this.value = 4;
       setTimeout(() => {
-        this.sounds.transition_windows.play()
+        this.sounds.transition_windows.play();
         let tl = new TimelineMax();
         tl.add("start", 0)
           .to(
