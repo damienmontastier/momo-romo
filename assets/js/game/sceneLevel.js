@@ -662,10 +662,10 @@ export default class Level {
 
         this.materialbis.uniforms.iTime.value = this.time
 
-        if (this.animatesArray.length && this.animationFinish && this.momo) {
+        if (this.animatesArray.length && this.animationFinish && this.romo) {
             this.animatesArray.forEach(animate => {
                 animate.animate.update(delta * 10000)
-                if (this.momo.position.x >= animate.position.x - .8 && this.momo.position.x <= animate.position.x + .8 && !animate.animated) {
+                if (this.romo.position.x >= animate.position.x - .8 && this.romo.position.x <= animate.position.x + .8 && !animate.animated) {
                     if ((animate.out && !animate.in) || (!animate.in && !animate.out)) {
                         animate.in = true
                         if (animate.name == "cat") {
