@@ -87,7 +87,7 @@ export default class Level {
             this.romo.position.z = 2.5
             this.romo.position.y = 1
             this.romo.originPosition = new THREE.Vector3().copy(this.romo.position)
-            this.romo.scale.set(-2, 2, 2)
+            this.romo.scale.set(-1.8, 1.8, 1.8)
         })
 
         this.loaderTexture()
@@ -182,6 +182,7 @@ export default class Level {
             });
         }
         if (this.animates) {
+            let promises = []
             this.animates.forEach(animate => {
                 if (animate.json.id == "cat") {
                     animate.png = s_cat
@@ -192,8 +193,11 @@ export default class Level {
                 } else if (animate.json.id == "plants") {
                     animate.png = s_plants
                 }
-                this.addAnimate(animate)
-            });
+                promises.push(this.addAnimate(animate))
+            })
+            Promise.all(promises).then(() => {
+                this.store.commit('setReadyButton', true)
+            })
         }
     }
 
@@ -518,6 +522,7 @@ export default class Level {
             let p2 = new Promise((resolve, reject) => {
                 setTimeout(() => {
                     this.animatesArray[i].position.x = this.camera.position.x
+                    this.animatesArray[i].position.z = 0
                     resolve(this.animatesArray[i]);
                 }, i * 2000)
             });
@@ -660,15 +665,13 @@ export default class Level {
                             let tl = new TimelineMax()
                             let postX = animate.position.x
                             let postY = animate.position.y
-                            
-
                             tl.to(animate.position, 2.5, {
-                                delay: 1,
-                                x: postX + 1,
-                                ease: Circ.easeIn
+                                delay: 1.5,
+                                x: postX + 1.5,
+                                ease: Circ.easeInOut
                             })
-                            tl.to(animate.position, 4, {
-                                y: -1,
+                            tl.to(animate.position, 4.2, {
+                                y: -2.5,
                                 ease: Power4.easeIn,
                                 delay: -3.5,
                             })

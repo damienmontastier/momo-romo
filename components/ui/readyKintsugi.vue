@@ -33,7 +33,7 @@ export default {
   },
   computed: {
     ...mapState({
-      loaded: state => state.game.loaded
+      readyButton: state => state.readyButton
     })
   },
   created() {
@@ -48,10 +48,11 @@ export default {
       this.sounds.background_enter_game.play();
     });
   },
-  mounted() {},
+  mounted() {
+    console.log("fdsdfs", this.readyButton);
+  },
   watch: {
-    loaded(value) {
-      console.log("yhere");
+    readyButton(value) {
       if (value) {
         TweenMax.to(this.$refs.button.$el, 2, {
           delay: 1,
