@@ -41,7 +41,7 @@ export default {
           done();
         }
       });
-      tl.to(el, 1.5, {
+      tl.to(el, 1, {
         opacity: 0
       });
     }

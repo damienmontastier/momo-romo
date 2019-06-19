@@ -27,7 +27,7 @@ export default {
           done();
         }
       });
-      tl.from(el, 1.5, {
+      tl.from(el, 1, {
         opacity: 0
       });
     }

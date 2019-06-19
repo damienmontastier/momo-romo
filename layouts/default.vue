@@ -58,6 +58,9 @@ export default {
       //   })
       // }
     }
+  },
+  created() {
+    console.log = function() {};
   }
 };
 </script>
