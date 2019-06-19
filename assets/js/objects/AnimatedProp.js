@@ -4,6 +4,7 @@ import Sprite from "@/assets/js/objects/Sprite";
 export default class AnimatedProp extends THREE.Object3D {
     constructor(params) {
         super()
+        console.log('coucou animatedProp')
         return new Promise((resolve, reject) => {
             this.params = params
             this._type = "animatedProp";
