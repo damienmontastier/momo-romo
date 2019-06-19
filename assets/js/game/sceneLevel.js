@@ -193,9 +193,7 @@ export default class Level {
                 } else if (animate.json.id == "plants") {
                     animate.png = s_plants
                 }
-                this.addAnimate(animate).then(() => {
-                    this.scene.add(animate)
-                })
+                this.addAnimate(animate)
                 console.log('init animate', animate)
             });
         }
@@ -272,6 +270,8 @@ export default class Level {
                 animate.alreadyAnimated = false
 
                 this.animatesArray.push(animate)
+                this.scene.add(animate)
+
                 console.log('addAnimate', animate)
                 this.launchSprite(animate.animate, 'wait')
                 resolve(animate)
