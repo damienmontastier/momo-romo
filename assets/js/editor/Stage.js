@@ -3,6 +3,10 @@ import FixedProp from '../objects/FixedProp'
 import History from '../editor/History'
 import Platform from '../editor/Platform'
 import AnimatedProp from "@/assets/js/objects/AnimatedProp";
+import s_cat from "@/static/sprites/cat/cat.png";
+import s_petals from "@/static/sprites/petals/petals.png";
+import s_mobile from "@/static/sprites/mobile/mobile.png";
+import s_plants from "@/static/sprites/plants/plants.png";
 
 export default class Stage extends THREE.Object3D {
     constructor(opts) {
@@ -162,6 +166,15 @@ export default class Stage extends THREE.Object3D {
         if (this.pressets.animates) {
 
             this.pressets.animates.forEach(animate => {
+                if (animate.json.id == "cat") {
+                    animate.png = s_cat
+                } else if (animate.json.id == "petals") {
+                    animate.png = s_petals
+                } else if (animate.json.id == "mobile") {
+                    animate.png = s_mobile
+                } else if (animate.json.id == "plants") {
+                    animate.png = s_plants
+                }
                 this.addAnimate(animate)
             });
         }
