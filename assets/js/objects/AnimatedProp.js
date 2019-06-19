@@ -18,7 +18,7 @@ export default class AnimatedProp extends THREE.Object3D {
     }
 
     render() {
-        console.log("AnimatedProp Render", animate)
+        console.log("AnimatedProp Render")
 
         return new Promise((resolve, reject) => {
             new Sprite(this.params.png, this.params.json.sprites, {
