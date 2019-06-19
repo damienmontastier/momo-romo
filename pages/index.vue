@@ -1,7 +1,4 @@
 <template>
-  <!-- <div v-if="components[value] != null" id="home">
-    <component v-on:increment="increment" v-bind:is="components[value]"></component>
-  </div>-->
   <div id="home">
     <component
       v-on:increment="increment"
