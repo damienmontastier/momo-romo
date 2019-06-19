@@ -24,7 +24,12 @@
             <span class="semi">Wabi-Sabi</span>
           </h5>
         </div>
-        <buttonHomepage @click.native="$emit('increment')" jpn="ゲームします" en="Launch Game" class="content"></buttonHomepage>
+        <buttonHomepage
+          @click.native="$emit('increment')"
+          jpn="ゲームスタート"
+          en="Launch Game"
+          class="content"
+        ></buttonHomepage>
         <div class="skew content">
           <p class="book">
             This is a

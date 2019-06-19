@@ -282,10 +282,11 @@ export default {
       }
       #synchronize {
         background: transparent url("~static/ui/synchro/romo.gif");
-        height: 314px;
-        width: 307px;
+        height: 32vh;
+        width: 32vh;
         background-size: cover;
         background-repeat: no-repeat;
+        margin: auto;
       }
     }
   }

@@ -6,7 +6,7 @@
         "end": 5
     }, {
         "id": "romo_transform_in",
-        "durationTile": "700",
+        "durationTile": "300",
         "start": 6,
         "end": 19
     }, {
@@ -16,7 +16,7 @@
         "end": 26
     }, {
         "id": "romo_transform_out",
-        "durationTile": "700",
+        "durationTile": "300",
         "start": 27,
         "end": 41
     }]

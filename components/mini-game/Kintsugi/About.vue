@@ -24,8 +24,8 @@
                 <br>that
                 <strong>
                   broken objects are not something
-                  <br>to hide but do display with pride
-                </strong>.
+                  <br>to hide but do display with pride.
+                </strong>
               </p>
             </div>
           </div>
@@ -48,15 +48,15 @@
                 Each of use should look for a way to
                 <strong>
                   cope
-                  <br>with traumatic events in a positive way
-                </strong>.
+                  <br>with traumatic events in a positive way.
+                </strong>
                 <br>To learn from negative experiences, to take
                 <br>the best from them, and to convince ourselves
                 <br>that it is precisely
                 <strong>
                   these experiences
-                  <br>that make each person unique and precious
-                </strong>.
+                  <br>that make each person unique and precious.
+                </strong>
               </p>
             </div>
             <div class="btn">
@@ -263,7 +263,7 @@ export default {
       position: relative;
       margin: auto;
       transform: translateX(-150px);
-      top: 60px;
+      top: 13vh;
       .first {
         position: relative;
         top: 16px;

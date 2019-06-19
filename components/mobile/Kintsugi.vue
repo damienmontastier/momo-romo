@@ -19,12 +19,12 @@
         <div id="cursor"></div>
       </div>
     </div>
-    <div class="debug">
+    <!-- <div class="debug">
       <button @click="debugLaunchFracture([0,1],0)">0</button>
       <button @click="debugLaunchFracture([2],1)">1</button>
       <button @click="debugLaunchFracture([3],2)">2</button>
       <button @click="cancelCurrentFracture()">cancel</button>
-    </div>
+    </div>-->
   </div>
 </template>
 
@@ -170,7 +170,7 @@ class App {
 
   triggerFracturePiece(piece) {
     piece.triggered = true;
-    piece.visible = true
+    piece.visible = true;
 
     if (this.socket) {
       this.socket.emit("custom-event", {
@@ -247,7 +247,7 @@ class App {
       this.fractures.forEach(fracture => {
         fracture.children.forEach((piece, index) => {
           piece.material.color.set(new THREE.Color(0xffff00));
-          piece.visible = false
+          piece.visible = false;
           piece.name = index;
         });
       });
@@ -373,8 +373,8 @@ class App {
   }
 
   endFracture() {
-    this.resetCamera()
-    this.removeFractureUI()
+    this.resetCamera();
+    this.removeFractureUI();
   }
 
   onWindowResize() {
@@ -489,9 +489,8 @@ export default {
       this.isMouseDown = false;
     },
     launchFracture(fracture, fragments) {
-      this.$refs.momoIsPlaying.style.opacity = "0"
-      this.launchCountdown()
-      .then(() => {
+      this.$refs.momoIsPlaying.style.opacity = "0";
+      this.launchCountdown().then(() => {
         this.app
           .setCurrentFracture(fracture, fragments)
           .createFractureUI(fracture);
@@ -503,10 +502,10 @@ export default {
     },
     fail() {
       console.log("fail");
-      this.app.currentFracture.children.forEach((piece)=>{
-        piece.triggered = false
-        piece.visible = false
-      })
+      this.app.currentFracture.children.forEach(piece => {
+        piece.triggered = false;
+        piece.visible = false;
+      });
       if (this.socket) {
         this.socket.emit("custom-event", {
           name: "kintsugi mini-game",
@@ -517,7 +516,7 @@ export default {
           }
         });
       }
-      this.endFracture()
+      this.endFracture();
     },
     success() {
       console.log("success");
@@ -531,7 +530,7 @@ export default {
           }
         });
       }
-      this.endFracture()
+      this.endFracture();
     },
     cancelFracture(fragments) {
       console.log(fragments);
@@ -555,8 +554,8 @@ export default {
       clearInterval(this.timerInterval);
       this.app.currentFracture = null;
       this.app.currentFragments = null;
-      this.app.endFracture()
-      this.$refs.momoIsPlaying.style.opacity = "1"
+      this.app.endFracture();
+      this.$refs.momoIsPlaying.style.opacity = "1";
     },
     debugLaunchFracture(fragments, fracture) {
       console.log("debugLaunchFracture");
@@ -571,7 +570,10 @@ export default {
     window.removeEventListener("mousedown", this.onMouseDown.bind(this));
     window.removeEventListener("mouseup", this.onMouseUp.bind(this));
     window.removeEventListener("resize", this.app.onWindowResize.bind(this));
-    window.removeEventListener("orientationchange",this.app.onOrientationChange.bind(this));
+    window.removeEventListener(
+      "orientationchange",
+      this.app.onOrientationChange.bind(this)
+    );
   },
   components: {
     isReady,

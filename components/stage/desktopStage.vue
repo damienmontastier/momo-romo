@@ -9,7 +9,7 @@
     ></component>
 
     <div ref="buttonPause" id="button-pause-container">
-      <buttonCirclePause id="button-pause" letter="p" en="Pause Game" jpn="Pause Game"></buttonCirclePause>
+      <buttonCirclePause id="button-pause" letter="p" en="Pause Game" jpn="ポーズゲーム"></buttonCirclePause>
     </div>
     <img :src="gashyangif" id="gashyan" alt="gashyan" ref="gashyan">
 

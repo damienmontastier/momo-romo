@@ -13,7 +13,7 @@
             <div class="inline book">Get the pieces back together</div>
           </span>
           <span class="skew">
-            <div class="inline book">So Romo can applays golden glue</div>
+            <div class="inline book">So Romo can apply golden glue</div>
           </span>
         </div>
         <div class="gif"></div>
@@ -214,7 +214,7 @@ export default {
     pointer-events: none;
   }
   .countdown {
-    height: 80px;
+    height: 100px;
   }
   .countdown,
   .isPlaying,
