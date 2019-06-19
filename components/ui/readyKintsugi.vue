@@ -48,9 +48,7 @@ export default {
       this.sounds.background_enter_game.play();
     });
   },
-  mounted() {
-    console.log("fdsdfs", this.readyButton);
-  },
+  mounted() {},
   watch: {
     readyButton(value) {
       if (value) {

@@ -3,7 +3,7 @@ module.exports = {
    ** Headers of the page
    */
   head: {
-    title: 'momo-romo',
+    title: 'The Legend of Momo & Romo',
     meta: [{
         charset: 'utf-8'
       },
@@ -18,7 +18,7 @@ module.exports = {
       {
         hid: 'description',
         name: 'description',
-        content: 'Nuxt.js project'
+        content: 'An Interactive Tale'
       }
     ],
     link: [{
