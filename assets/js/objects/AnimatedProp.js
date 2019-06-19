@@ -10,6 +10,7 @@ export default class AnimatedProp extends THREE.Object3D {
             this._id = this.params.json.id
 
             this.render().then((animate) => {
+                console.log("AnimatedProp", animate)
                 resolve(animate)
             });
         })
@@ -21,6 +22,8 @@ export default class AnimatedProp extends THREE.Object3D {
                 wTiles: this.params.w,
                 hTiles: this.params.h
             }).then(animate => {
+                console.log("AnimatedProp Render", animate)
+
                 this.animate = animate
                 this.animate.name = this._id
                 this.material = animate.material

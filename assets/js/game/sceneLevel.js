@@ -244,7 +244,9 @@ export default class Level {
     }
 
     addAnimate(params) {
+        console.log('add animate params', params)
         new AnimatedProp(params).then((animate) => {
+            console.log('add animate', animate)
             animate.scale.set(params.scale.x, params.scale.y, params.scale.z)
             animate.position.set(params.position.x, params.position.y, params.position.z)
             animate.originPosition = new THREE.Vector3().copy(animate.position)
