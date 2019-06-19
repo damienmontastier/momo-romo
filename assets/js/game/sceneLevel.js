@@ -501,7 +501,7 @@ export default class Level {
             let p2 = new Promise((resolve, reject) => {
                 setTimeout(() => {
                     this.animatesArray[i].position.x = this.camera.position.x
-                    this.animatesArray[i].position.z = 0
+                    this.animatesArray[i].position.z = 10
                     resolve(this.animatesArray[i]);
                 }, i * 2000)
             });
@@ -517,7 +517,7 @@ export default class Level {
         let p3 = new Promise((resolve, reject) => {
             setTimeout(() => {
                 this.momo.position.x = this.camera.position.x
-                this.momo.position.z = 0
+                this.momo.position.z = 10
                 resolve(this.momo);
             }, 2000)
         });
@@ -532,7 +532,7 @@ export default class Level {
         let p4 = new Promise((resolve, reject) => {
             setTimeout(() => {
                 this.romo.position.x = this.camera.position.x
-                this.romo.position.z = 0
+                this.romo.position.z = 10
                 resolve(this.romo);
             }, 2000)
         });
@@ -544,6 +544,7 @@ export default class Level {
         })
 
         Promise.all(promises).then(() => {
+
             this.preRenderFinish = true
             setTimeout(() => {
                 propsLoad()
@@ -551,6 +552,9 @@ export default class Level {
                     x: 0,
                     ease: Power4.easeOut,
                     onComplete: () => {
+                        console.log(this.animatesArray)
+                        console.log(this.momo)
+                        console.log(this.romo)
                         let position = this.projectVectorToScreen(this.displayGIFPosition)
                         position.x -= 125
                         displayGIF(position)
