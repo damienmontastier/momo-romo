@@ -343,7 +343,7 @@ export default {
           top: 0px;
           left: 0px;
           width: 100%;
-          height: 180px;
+          height: 140px;
           background: linear-gradient(180deg, #fefbf0 50%, rgba(0, 0, 0, 0));
           z-index: 3;
         }
@@ -354,7 +354,7 @@ export default {
           bottom: 0px;
           left: 0px;
           width: 100%;
-          height: 180px;
+          height: 140px;
           background: linear-gradient(0deg, #fefbf0 50%, rgba(0, 0, 0, 0));
           z-index: 3;
         }
