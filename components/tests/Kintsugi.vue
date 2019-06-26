@@ -2,7 +2,7 @@
   <div id="kintsugi-minigame">
     <div class="ui">
       <div class="bottom">
-        <div class="keys">
+        <div class="keys" ref="keys">
           <div class="keys-container">
             <div class="shadow next key hidden">
               <div class="letter">
@@ -42,10 +42,10 @@
             </div>
           </div>
         </div>
-        <div class="try-again">
+        <div class="try-again hidden" ref="try-again">
           <div class="skew fill-en">try again!</div>
         </div>
-        <div class="romo-is-playing">
+        <div class="romo-is-playing hidden" ref="romo-is-playing">
           <div class="romo-is-playing-container skew">
             <div class="fill-en">romo is playing</div>
             <div class="book">Stay ready for the next step!</div>
@@ -299,6 +299,8 @@ export default {
 $border: 3px;
 .hidden {
   visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
 }
 #kintsugi-minigame {
   height: 85vh;
@@ -310,18 +312,19 @@ $border: 3px;
   position: absolute;
   top: calc(50% - (85vh / 2));
   left: calc(50% - (100vh / 2));
-  //   &::after {
-  //     content: "";
-  //     height: 98%;
-  //     width: 100%;
-  //     top: 1.03%;
-  //     left: 0px;
-  //     // background: red;
-  //     border: 5px solid $black;
-  //     transform: skew(0, -0.98deg);
-  //     position: absolute;
-  //     z-index: 2;
-  //   }
+    &::after {
+      content: "";
+      height: 98%;
+      width: 100%;
+      top: 1.03%;
+      left: 0px;
+      // background: red;
+      border: 5px solid $black;
+      transform: skew(0, -0.98deg);
+      position: absolute;
+      z-index: 2;
+      pointer-events: none;
+    }
   .ui {
     position: absolute;
     left: 0px;
@@ -459,7 +462,7 @@ $border: 3px;
 .keys {
   .keys-container {
     display: flex;
-    width: 400px;
+    width: 450px;
     margin: auto;
     .key {
       margin: auto;
