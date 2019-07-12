@@ -1,9 +1,10 @@
 <template>
   <div id="kintsugi-minigame">
+    <canvas id="canvas" ref="canvas" />
     <div class="ui">
       <div class="bottom">
-        <div class="keys">
-          <div class="keys-container">
+        <div class="keys hidden" ref="keys">
+          <div class="keys-container" :class="{'left':(currentStep%2 === 1)}">
             <div class="shadow next key hidden">
               <div class="letter">
                 <div class="l"></div>
@@ -32,7 +33,12 @@
         <div class="steps" ref="steps">
           <div class="steps-container">
             <div class="link"></div>
-            <div class="step" v-for="(step,index) in keys" :key="step">
+            <div
+              class="step"
+              v-for="(step,index) in keys"
+              :key="step"
+              :class="{'checked': index < currentStep}"
+            >
               <div class="icon" ref="step">
                 <div v-if="index < currentStep" class="check"></div>
                 <div v-else class="point"></div>
@@ -42,10 +48,27 @@
             </div>
           </div>
         </div>
-        <div class="try-again">
+        <div class="ready">
+          <div class="ready-container">
+            <div class="momo skew stroke">
+              <div v-if="isRomoReady">go?</div>
+              <div v-else>wait</div>
+            </div>
+            <div class="romo skew stroke">
+              <div v-if="isRomoReady">ready!</div>
+              <div v-else>ready?</div>
+            </div>
+          </div>
+        </div>
+        <div class="countdown">
+          <div class="countdown-container">
+            <countdown :countdown="countdown" />
+          </div>
+        </div>
+        <div class="try-again hidden" ref="try-again">
           <div class="skew fill-en">try again!</div>
         </div>
-        <div class="romo-is-playing">
+        <div class="romo-is-playing hidden">
           <div class="romo-is-playing-container skew">
             <div class="fill-en">romo is playing</div>
             <div class="book">Stay ready for the next step!</div>
@@ -66,8 +89,15 @@ import momo_minijeu_1 from "~/static/sounds/momo_minijeu_1.mp3";
 import momo_minijeu_2 from "~/static/sounds/momo_minijeu_2.mp3";
 import momo_minijeu_3 from "~/static/sounds/momo_minijeu_3.mp3";
 
+import countdown_1 from "~/static/sounds/countdown_1.mp3";
+import countdown_2 from "~/static/sounds/countdown_2.mp3";
+import countdown_3 from "~/static/sounds/countdown_3.mp3";
+
 import HowlerManager from "~/assets/js/utils/HowlerManager";
 import { TweenMax } from "gsap";
+
+import WebGL from "~/assets/js/game/mini-game/Kintsugi";
+import Countdown from "@/components/mini-game/Kintsugi/Countdown";
 
 Number.prototype.map = function(in_min, in_max, out_min, out_max) {
   return ((this - in_min) * (out_max - out_min)) / (in_max - in_min) + out_min;
@@ -84,6 +114,8 @@ export default {
       keyPressInterval: null,
       keyPressIntervalTimeline: null,
       isKeyPressed: false,
+      isRomoReady: false,
+      webGL: new WebGL(),
       model: [
         {
           fragments: [0, 1],
@@ -140,6 +172,18 @@ export default {
           {
             id: "momo_minijeu_3",
             src: momo_minijeu_3
+          },
+          {
+            id: "countdown_1",
+            src: countdown_1
+          },
+          {
+            id: "countdown_2",
+            src: countdown_2
+          },
+          {
+            id: "countdown_3",
+            src: countdown_3
           }
         ]).then(sounds => {
           this.sounds = sounds;
@@ -158,7 +202,7 @@ export default {
               opacity: 0
             });
             this.nextStep();
-          }, 250);
+          }, 100);
         }
       });
 
@@ -167,7 +211,7 @@ export default {
           opacity: 0
         })
         .add(() => {
-          this.$refs.letter.classList.add("down");
+          // this.$refs.letter.classList.add("down");
         })
         .to(
           this.$refs.letter,
@@ -185,34 +229,43 @@ export default {
             opacity: 1
           },
           "start"
-        )
-        .to(
-          this.$refs.step[this.currentStep],
-          0.1,
-          {
-            y: 4
-          },
-          "start"
-        )
-        .to(
-          this.$refs.svgstep[this.currentStep],
-          0.1,
-          {
-            scale: 2.2,
-            onStart: () => {
-              this.$refs.svgstep[this.currentStep].style.opacity = 1;
-            }
-          },
-          "start"
         );
+      // .to(
+      //     this.$refs.step[this.currentStep],
+      //     0.1, {
+      //         y: 4
+      //     },
+      //     "start"
+      // )
+      // .to(
+      //     this.$refs.svgstep[this.currentStep],
+      //     0.1, {
+      //         scale: 2.2,
+      //         onStart: () => {
+      //             this.$refs.svgstep[this.currentStep].style.opacity = 1;
+      //         }
+      //     },
+      //     "start"
+      // );
     },
     nextStep() {
       this.resetStep();
       this.currentStep++;
-      this.startKeyPressInterval();
+      if (this.currentKey) {
+        this.startKeyPressInterval();
+      } else {
+        console.log("à romo de jouer");
+      }
     },
     fail() {
       console.log("fail");
+      this.sounds[this.currentModel.audio].stop();
+      this.$refs.keys.classList.add("hidden");
+      this.$refs["try-again"].classList.remove("hidden");
+      this.currentStep = 0;
+      setTimeout(() => {
+        this.startCurrentFracture();
+      }, 1000);
     },
     resetStep() {
       this.isKeyPressed = false;
@@ -261,14 +314,19 @@ export default {
           this.canPressKey = true;
         }, "canPressKey");
     },
+    resetCurrentFractureUI() {
+      this.$refs["try-again"].classList.add("hidden");
+    },
     startCurrentFracture() {
+      this.resetCurrentFractureUI();
       this.startCountdown().then(() => {
         requestAnimationFrame(() => {
           this.sounds[this.currentModel.audio].play();
         });
         setTimeout(() => {
+          this.$refs.keys.classList.remove("hidden");
           this.startKeyPressInterval();
-        }, 1000);
+        }, 2000);
       });
     },
     startCountdown() {
@@ -277,6 +335,9 @@ export default {
         this.countdownSetInterval = setInterval(() => {
           if (this.countdown === 0) {
             clearInterval(this.countdownSetInterval);
+            setTimeout(() => {
+              this.countdown = null;
+            }, 1000);
           } else {
             this.countdown--;
           }
@@ -290,6 +351,26 @@ export default {
   mounted() {
     this.init();
     this.load().then(() => {});
+  },
+  watch: {
+    countdown() {
+      switch (this.countdown) {
+        case 3:
+          this.sounds.countdown_3.play();
+          break;
+        case 2:
+          this.sounds.countdown_2.play();
+          break;
+        case 1:
+          this.sounds.countdown_1.play();
+          break;
+        default:
+          break;
+      }
+    }
+  },
+  components: {
+    Countdown
   }
 };
 </script>
@@ -297,9 +378,11 @@ export default {
 <style lang="scss" scoped>
 @import "~assets/scss/main.scss";
 $border: 3px;
+
 .hidden {
   visibility: hidden;
 }
+
 #kintsugi-minigame {
   height: 85vh;
   width: 100vh;
@@ -310,24 +393,28 @@ $border: 3px;
   position: absolute;
   top: calc(50% - (85vh / 2));
   left: calc(50% - (100vh / 2));
-  //   &::after {
-  //     content: "";
-  //     height: 98%;
-  //     width: 100%;
-  //     top: 1.03%;
-  //     left: 0px;
-  //     // background: red;
-  //     border: 5px solid $black;
-  //     transform: skew(0, -0.98deg);
-  //     position: absolute;
-  //     z-index: 2;
-  //   }
+
+  &::after {
+    content: "";
+    height: 98%;
+    width: 100%;
+    top: 1.03%;
+    left: 0px;
+    // background: red;
+    border: 5px solid $black;
+    transform: skew(0, -0.98deg);
+    position: absolute;
+    z-index: 2;
+    pointer-events: none;
+  }
+
   .ui {
     position: absolute;
     left: 0px;
     top: 0px;
     height: 100%;
     width: 100%;
+
     .debugger {
       position: absolute;
       bottom: 16px;
@@ -335,18 +422,21 @@ $border: 3px;
       display: flex;
       z-index: 5;
     }
+
     .bottom {
       position: absolute;
       bottom: 48px;
       left: 0px;
       width: 100%;
       height: 35%;
+
       .keys {
         position: absolute;
         bottom: calc(50% - (86px / 2));
         left: 0px;
         width: 100%;
       }
+
       .steps {
         position: absolute;
         left: 0px;
@@ -354,20 +444,49 @@ $border: 3px;
         width: 100%;
         display: flex;
       }
+
+      .ready {
+        width: 100%;
+        .ready-container {
+          width: 100%;
+          display: flex;
+          flex-direction: row;
+          justify-content: space-between;
+          > div {
+            padding: 0 32px;
+          }
+        }
+      }
+
+      .countdown {
+        display: flex;
+        position: absolute;
+        bottom: calc(50% - (86px / 2));
+        width: 100%;
+
+        .countdown-container {
+          height: 86px;
+          margin: auto;
+        }
+      }
+
       .try-again {
         width: 100%;
         display: flex;
         position: absolute;
         bottom: calc(50% - (55px / 2));
+
         div {
           margin: auto;
         }
       }
+
       .romo-is-playing {
         display: flex;
         width: 100%;
         position: absolute;
         bottom: calc(50% - (110px / 2));
+
         .romo-is-playing-container {
           margin: auto;
         }
@@ -375,6 +494,7 @@ $border: 3px;
     }
   }
 }
+
 .steps {
   .steps-container {
     margin: auto;
@@ -382,6 +502,7 @@ $border: 3px;
     position: relative;
     flex-direction: row;
     justify-content: center;
+
     .link {
       position: absolute;
       top: calc(50% - 2px);
@@ -394,6 +515,18 @@ $border: 3px;
       margin: 0 24px;
       display: flex;
       position: relative;
+
+      &.checked {
+        .icon {
+          transform: translateY(4px);
+          transition: 0.25s;
+        }
+        .svg {
+          transition: 0.25s;
+          transform: scale(2.2);
+        }
+      }
+
       .border {
         width: 100%;
         height: 100%;
@@ -408,6 +541,7 @@ $border: 3px;
       &:nth-child(2) {
         margin-left: 0;
       }
+
       &:nth-child(7) {
         margin-right: 0;
       }
@@ -456,15 +590,22 @@ $border: 3px;
     }
   }
 }
+
 .keys {
   .keys-container {
     display: flex;
     width: 400px;
     margin: auto;
+
+    &.left {
+      flex-direction: row-reverse;
+    }
+
     .key {
       margin: auto;
       display: flex;
       position: relative;
+
       .circle {
         position: absolute;
         top: 0px;
@@ -473,6 +614,7 @@ $border: 3px;
         height: 100%;
         background-image: url("/ui/kintsugi/mini-game/circle.svg");
       }
+
       .border {
         width: 100%;
         height: 100%;
@@ -484,6 +626,7 @@ $border: 3px;
         border-radius: 100%;
         // transform: scale(1.05);
       }
+
       .letter {
         width: 80px;
         height: 80px;
@@ -498,14 +641,17 @@ $border: 3px;
         box-sizing: content-box;
         font-family: "Jost-Book";
         color: #f3765a;
+
         &.down {
           background: #f3765a;
           color: #fff;
         }
+
         .l {
           text-transform: uppercase;
           margin: auto;
         }
+
         .success {
           position: absolute;
           top: 0px;
@@ -515,6 +661,7 @@ $border: 3px;
           transform: scale(0.9);
           z-index: -1;
         }
+
         .svg1,
         .svg2 {
           position: absolute;
@@ -523,25 +670,30 @@ $border: 3px;
           width: 100%;
           height: 100%;
         }
+
         .svg1 {
           background-image: url("~static/ui/kintsugi/mini-game/keydown1.svg");
           top: -3px;
         }
+
         .svg2 {
           background-image: url("~static/ui/kintsugi/mini-game/keydown2.svg");
           left: 6px;
         }
       }
+
       &.next {
         border: $border $black solid;
         border-radius: 100%;
         background: #fff;
+
         .letter {
           border: none;
           top: 0px;
           font-size: 32px;
           width: 60px;
           height: 60px;
+
           .l {
             color: $black;
           }

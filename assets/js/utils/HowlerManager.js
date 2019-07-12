@@ -1,6 +1,5 @@
 import {
-    Howl,
-    Howler
+    Howl
 } from 'howler';
 
 class HowlerManager {
