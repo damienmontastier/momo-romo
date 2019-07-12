@@ -381,6 +381,8 @@ $border: 3px;
 
 .hidden {
   visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
 }
 
 #kintsugi-minigame {
@@ -594,7 +596,7 @@ $border: 3px;
 .keys {
   .keys-container {
     display: flex;
-    width: 400px;
+    width: 450px;
     margin: auto;
 
     &.left {
