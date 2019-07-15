@@ -5,13 +5,45 @@
 // }
 
 import * as THREE from "three";
+import OBJLoader from './OBJLoader';
+import GLTFLoader from './GLTFLoader';
 
 class AssetsLoader {
   constructor() {
     this.resources = {};
   }
 
-  add() {}
+  add(resources) {
+		let promises = []
+		resources.forEach((resource)=>{
+			if (!Object.keys(this.resources).includes(resource.id)) {
+				switch (resource.type) {
+					case 'texture':
+						promises.push(this.loadTexture(resource))
+						this.resources[resource.id] = {}
+						break;
+					case 'model':
+						promises.push(this.loadModel(resource))
+						this.resources[resource.id] = {}
+						break;
+					default:
+						break;
+				}
+			} else {
+				console.warn(resource.id + ' already exist, not added to Manager')
+			}
+		})
+		return new Promise((resolve,reject)=>{
+			Promise.all(promises)
+			.then((responses)=>{
+				responses.forEach((resource)=>{
+					this.resources[resource.id] = resource
+				})
+				resolve(this.resources)
+			})
+		})
+
+	}
 
   loadTexture(media) {
     return new Promise((resolve, reject) => {
@@ -20,7 +52,8 @@ class AssetsLoader {
         texture => {
           resolve({
             id: media.id,
-            media: texture
+						media: texture,
+						type: 'texture'
           });
         },
         xhr => {
@@ -37,11 +70,11 @@ class AssetsLoader {
 
   loadModel(model) {
     return new Promise((resolve, reject) => {
-      const ext = model.url.split(".").pop();
+			const ext = model.url.split(".").pop();
 
       switch (ext) {
         case "obj": {
-          const loader = new THREE.OBJLoader();
+          const loader = new OBJLoader();
 
           // load a resource
           loader.load(
@@ -58,10 +91,30 @@ class AssetsLoader {
             }
           );
           break;
+				}
+				
+        case 'gltf': {
+          const loader = new GLTFLoader();
+
+          // load a resource
+          loader.load(
+            // resource URL
+            model.url,
+            // Function when resource is loaded
+            object => {
+              resolve({ id: model.id, media: object, type: "gltf" });
+            },
+
+            () => {},
+            () => {
+              reject("An error happened with the model import.");
+            }
+          );
+          break;
         }
 
-        case "gltf": {
-          const loader = new THREE.GLTFLoader();
+        case 'glb': {
+          const loader = new GLTFLoader();
 
           // load a resource
           loader.load(
@@ -81,7 +134,7 @@ class AssetsLoader {
         }
 
         default: {
-          const loader = new THREE.OBJLoader();
+          const loader = new OBJLoader();
 
           // load a resource
           loader.load(

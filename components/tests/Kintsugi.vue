@@ -115,7 +115,6 @@ export default {
       keyPressIntervalTimeline: null,
       isKeyPressed: false,
       isRomoReady: false,
-      webGL: new WebGL(),
       model: [
         {
           fragments: [0, 1],
@@ -159,7 +158,9 @@ export default {
   },
   methods: {
     load() {
-      return new Promise((resolve, reject) => {
+      let promises = [];
+
+      let sounds = new Promise((resolve, reject) => {
         HowlerManager.add([
           {
             id: "momo_minijeu_1",
@@ -190,8 +191,23 @@ export default {
           resolve();
         });
       });
+      promises.push(sounds);
+
+      let webGL = new Promise((resolve, reject) => {
+        this.webGL.load().then(() => {
+          resolve();
+        });
+      });
+      promises.push(webGL);
+
+      return new Promise((resolve, reject) => {
+        Promise.all(promises).then(() => {
+          resolve();
+        });
+      });
     },
     init() {
+      this.webGL = new WebGL(this.$refs.canvas);
       window.addEventListener("keyup", this.onKeyPress.bind(this));
     },
     success() {
@@ -350,7 +366,10 @@ export default {
   },
   mounted() {
     this.init();
-    this.load().then(() => {});
+    this.load().then(() => {
+      console.log("tout est load");
+      this.webGL.addAllElements();
+    });
   },
   watch: {
     countdown() {
@@ -410,12 +429,21 @@ $border: 3px;
     pointer-events: none;
   }
 
+  #canvas {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: 100%;
+  }
+
   .ui {
     position: absolute;
     left: 0px;
     top: 0px;
     height: 100%;
     width: 100%;
+    z-index: 2;
 
     .debugger {
       position: absolute;
@@ -449,13 +477,30 @@ $border: 3px;
 
       .ready {
         width: 100%;
+        bottom: calc(50% - (70px / 2));
+        position: absolute;
+        left: 0px;
         .ready-container {
           width: 100%;
           display: flex;
           flex-direction: row;
           justify-content: space-between;
           > div {
-            padding: 0 32px;
+            // padding: 0 32px;
+            > div {
+              font-size: 4.5vh;
+              text-align: center;
+            }
+          }
+          .momo {
+            > div {
+              width: 24vh;
+            }
+          }
+          .romo {
+            > div {
+              width: 27vh;
+            }
           }
         }
       }
