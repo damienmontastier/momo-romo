@@ -2,6 +2,7 @@ import * as THREE from "three";
 import OrbitControls from "orbit-controls-es6";
 import AssetsLoader from "~/assets/js/utils/AssetsLoader";
 import Sprite from "@/assets/js/objects/Sprite";
+import { TweenMax } from "gsap";
 
 import GroundTexture from "~/static/ui/kintsugi/mini-game/kintsugi_ground_texture_white.png";
 import Rosace from "~/static/ui/kintsugi/mini-game/rosace.png";
@@ -115,6 +116,68 @@ export default class Kintsugi {
     this.renderer.setAnimationLoop(this.render.bind(this));
   }
 
+  bringFragmentsCloser(targets, step) {
+    step = 6 - (step + 1);
+    let ratio = step / 6;
+
+    let target1 = this.fragments[targets[0]];
+    let p1 = target1._maxPosition
+      .clone()
+      .sub(target1._originPosition.clone())
+      .multiplyScalar(ratio)
+      .add(target1._originPosition.clone());
+    TweenMax.to(target1.position, 0.5, { x: p1.x, y: p1.y, z: p1.z });
+
+    let r1 = target1._maxRotation.clone();
+    TweenMax.to(target1.rotation, 0.5, { z: r1.z * ratio });
+
+    if (targets[1]) {
+      let target2 = this.fragments[targets[1]];
+      let p2 = target2._maxPosition
+        .clone()
+        .sub(target2._originPosition.clone())
+        .multiplyScalar(ratio)
+        .add(target2._originPosition.clone());
+      TweenMax.to(target2.position, 0.5, { x: p2.x, y: p2.y, z: p2.z });
+
+      let r2 = target2._maxRotation.clone();
+      TweenMax.to(target2.rotation, 0.5, { z: r2.z * ratio });
+    }
+  }
+
+  spreadFragments(targets) {
+    let target1 = this.fragments[targets[0]];
+    let p1 = target1._maxPosition.clone();
+    TweenMax.to(target1.position, 0.5, { x: p1.x, y: p1.y, z: p1.z });
+
+    let r1 = target1._maxRotation.clone();
+    TweenMax.to(target1.rotation, 0.5, { z: r1.z });
+
+    if (targets[1]) {
+      let target2 = this.fragments[targets[1]];
+      let p2 = target2._maxPosition.clone();
+      TweenMax.to(target2.position, 0.5, { x: p2.x, y: p2.y, z: p2.z });
+
+      let r2 = target2._maxRotation.clone();
+      TweenMax.to(target2.rotation, 0.5, { z: r2.z });
+    }
+  }
+
+  triggerFracturePiece(fractureIndex,pieceIndex) {
+    let fracture = this.fractures[fractureIndex]
+    let piece = fracture.children[pieceIndex]
+    piece.triggered = true;
+    piece.visible = true;
+  }
+
+  resetFracturePieces(fractureIndex) {
+    let fracture = this.fractures[fractureIndex];
+    fracture.children.forEach(piece => {
+      piece.triggered = false;
+      piece.visible = false;
+    });
+  }
+
   addAllElements() {
     this.addFixedElements();
     this.addCharacters();
@@ -133,7 +196,7 @@ export default class Kintsugi {
       c._originPosition = c.getWorldPosition(new THREE.Vector3());
       c._originRotation = c.rotation;
       c._originScale = c.scale;
-      
+
       let ratio = 1;
 
       if (index === 0) {

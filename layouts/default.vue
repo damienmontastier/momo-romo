@@ -1,15 +1,15 @@
 <template>
   <div id="default">
-    <portrait v-if="this.$device.isMobile"/>
+    <portrait v-if="$device.isMobile"/>
     <nuxt/>
-    <!-- <debugger id="debugger" v-if="$route.name != 'editor'"></debugger> -->
+    <debugger id="debugger" v-if="$route.name != 'editor'"></debugger>
   </div>
 </template>
 
 <script>
 import Debugger from "@/components/debugger/Debugger";
 import Portrait from "@/components/Portrait";
-import { mapState } from "vuex";
+import { mapState, mapMutations, mapActions } from "vuex";
 export default {
   components: {
     Debugger,
@@ -22,8 +22,11 @@ export default {
     })
   },
   methods: {
+    ...mapActions({
+      connect: "synchro/connect",
+      disconnect: "synchro/disconnect"
+    }),
     openFullscreen() {
-      console.log("request fullscreen");
       const elem = document.documentElement;
       if (elem.requestFullscreen) {
         elem.requestFullscreen();
@@ -41,9 +44,8 @@ export default {
   },
   watch: {
     socket() {
-      if (this.socket) {
+      if (this.socket && this.$device.isMobile) {
         this.socket.on("router", params => {
-          console.log("router" + params);
           this.$router.replace({ path: params.id });
         });
       }
@@ -58,6 +60,10 @@ export default {
       //   })
       // }
     }
+    this.connect({
+      device: this.$device.isMobileOrTablet,
+      roomID: null
+    });
   },
   created() {
     // console.log = function() {};

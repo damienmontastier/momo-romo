@@ -1,11 +1,10 @@
 <template>
     <div>
         <div>
-            <div>liens</div>
             <nuxt-link to="/">Home</nuxt-link>
             <nuxt-link to="/synchro">synchro</nuxt-link>
             <nuxt-link :to="{name: 'level', params: {level: 'kintsugi'}}">kintsugi</nuxt-link>
-            <nuxt-link :to="{name: 'level', params: {level: 'kanso'}}">kanso</nuxt-link>
+            <nuxt-link :to="{name: 'minigame'}">minigame</nuxt-link>
         </div>
     </div>
 </template>

@@ -2,6 +2,17 @@
   <div id="kintsugi-minigame">
     <canvas id="canvas" ref="canvas" />
     <div class="ui">
+      <div class="top">
+        <div class="intro" ref="intro">
+          <div class="intro-container skew">
+            <div class="title inline-container">
+              <div class="fill-en">hit the keys in time</div>
+            </div>
+            <div class="book">Get the pieces back together</div>
+            <div class="book">So Romo can apply golden glue.</div>
+          </div>
+        </div>
+      </div>
       <div class="bottom">
         <div class="keys hidden" ref="keys">
           <div class="keys-container" :class="{'left':(currentStep%2 === 1)}">
@@ -30,7 +41,7 @@
             </div>
           </div>
         </div>
-        <div class="steps" ref="steps">
+        <div class="steps hidden" ref="steps">
           <div class="steps-container">
             <div class="link"></div>
             <div
@@ -48,6 +59,7 @@
             </div>
           </div>
         </div>
+        <div class="gif"></div>
         <div class="ready">
           <div class="ready-container">
             <div class="momo skew stroke">
@@ -68,16 +80,19 @@
         <div class="try-again hidden" ref="try-again">
           <div class="skew fill-en">try again!</div>
         </div>
-        <div class="romo-is-playing hidden">
+        <div class="romo-is-playing hidden" ref="romo-is-playing">
           <div class="romo-is-playing-container skew">
-            <div class="fill-en">romo is playing</div>
+            <div class="inline-container">
+              <div class="fill-en">romo is playing</div>
+            </div>
             <div class="book">Stay ready for the next step!</div>
           </div>
         </div>
-        <div class="debugger">
-          <button @click="startCurrentFracture">startCurrentFracture</button>
-          <div>countdown: {{ countdown }}</div>
-        </div>
+      </div>
+      <div class="debugger">
+        <button @click="startCurrentFracture">startCurrentFracture</button>
+        <button @click="nextFracture">nextFracture</button>
+        <button @click="redirectRomoToKintsugi">redirectRomoToKintsugi</button>
       </div>
     </div>
   </div>
@@ -94,6 +109,7 @@ import countdown_2 from "~/static/sounds/countdown_2.mp3";
 import countdown_3 from "~/static/sounds/countdown_3.mp3";
 
 import HowlerManager from "~/assets/js/utils/HowlerManager";
+import { mapState } from "vuex";
 import { TweenMax } from "gsap";
 
 import WebGL from "~/assets/js/game/mini-game/Kintsugi";
@@ -135,6 +151,11 @@ export default {
     };
   },
   computed: {
+    ...mapState({
+      socket: state => state.synchro.socket,
+      roomID: state => state.synchro.roomID,
+      keyboard: state => state.keyboard
+    }),
     keys() {
       return ["q", "m", "d", "k", "g", "h"];
     },
@@ -206,11 +227,46 @@ export default {
         });
       });
     },
+    createSocketEvents() {
+      this.socket.on("kintsugi mini-game", params => {
+        switch (params.id) {
+          case "romo is ready":
+            this.isRomoReady = true;
+            break;
+          case "piece triggered":
+            this.webGL.triggerFracturePiece(this.currentFracture, params.index);
+            break;
+          case "next fracture":
+            this.nextFracture();
+            break;
+          case "cancel fracture":
+            this.cancelFracture();
+            break;
+          default:
+            break;
+        }
+      });
+    },
     init() {
       this.webGL = new WebGL(this.$refs.canvas);
       window.addEventListener("keyup", this.onKeyPress.bind(this));
     },
     success() {
+      this.webGL.bringFragmentsCloser(
+        this.currentModel.fragments,
+        this.currentStep
+      );
+      if (this.socket) {
+        this.socket.emit("custom-event", {
+          name: "kintsugi mini-game",
+          in: this.roomID,
+          args: {
+            id: "bring closer",
+            fragments: this.currentModel.fragments,
+            step: this.currentStep
+          }
+        });
+      }
       let tl = new TimelineMax({
         onComplete: () => {
           setTimeout(() => {
@@ -225,9 +281,6 @@ export default {
       tl.add("start", 0)
         .set(this.$refs.success, {
           opacity: 0
-        })
-        .add(() => {
-          // this.$refs.letter.classList.add("down");
         })
         .to(
           this.$refs.letter,
@@ -246,23 +299,23 @@ export default {
           },
           "start"
         );
-      // .to(
-      //     this.$refs.step[this.currentStep],
-      //     0.1, {
-      //         y: 4
-      //     },
-      //     "start"
-      // )
-      // .to(
-      //     this.$refs.svgstep[this.currentStep],
-      //     0.1, {
-      //         scale: 2.2,
-      //         onStart: () => {
-      //             this.$refs.svgstep[this.currentStep].style.opacity = 1;
-      //         }
-      //     },
-      //     "start"
-      // );
+    },
+    fail() {
+      console.log("fail");
+      this.canPressKey = false;
+      this.keyPressIntervalTimeline.kill();
+      this.keyPressIntervalTimeline = null;
+      (this.keyPressInterval = null), (this.isKeyPressed = false);
+      if (this.socket) {
+        this.socket.emit("custom-event", {
+          name: "kintsugi mini-game",
+          in: this.roomID,
+          args: {
+            id: "cancel fracture",
+            fragments: this.currentModel.fragments
+          }
+        });
+      }
     },
     nextStep() {
       this.resetStep();
@@ -270,18 +323,25 @@ export default {
       if (this.currentKey) {
         this.startKeyPressInterval();
       } else {
-        console.log("à romo de jouer");
+        this.romoIsPlaying();
       }
     },
-    fail() {
-      console.log("fail");
-      this.sounds[this.currentModel.audio].stop();
-      this.$refs.keys.classList.add("hidden");
-      this.$refs["try-again"].classList.remove("hidden");
-      this.currentStep = 0;
-      setTimeout(() => {
-        this.startCurrentFracture();
-      }, 1000);
+    romoIsPlaying() {
+      console.log("à romo de jouer");
+      this.$refs["romo-is-playing"].classList.remove("hidden");
+      this.$refs["steps"].classList.add("hidden");
+      this.$refs["keys"].classList.add("hidden");
+      if (this.socket) {
+        this.socket.emit("custom-event", {
+          name: "kintsugi mini-game",
+          in: this.roomID,
+          args: {
+            id: "launch fracture",
+            fracture: this.currentFracture,
+            fragments: this.currentModel.fragments
+          }
+        });
+      }
     },
     resetStep() {
       this.isKeyPressed = false;
@@ -294,6 +354,8 @@ export default {
         if (this.canPressKey) {
           if (e.key === this.currentKey) {
             this.keyPressed();
+          } else {
+            this.fail();
           }
         } else {
           this.fail();
@@ -332,6 +394,8 @@ export default {
     },
     resetCurrentFractureUI() {
       this.$refs["try-again"].classList.add("hidden");
+      this.$refs["romo-is-playing"].classList.add("hidden");
+      this.$refs["steps"].classList.remove("hidden");
     },
     startCurrentFracture() {
       this.resetCurrentFractureUI();
@@ -340,14 +404,34 @@ export default {
           this.sounds[this.currentModel.audio].play();
         });
         setTimeout(() => {
-          this.$refs.keys.classList.remove("hidden");
+          this.$refs["keys"].classList.remove("hidden");
           this.startKeyPressInterval();
         }, 2000);
       });
     },
+    nextFracture() {
+      this.currentFracture++;
+      this.currentStep = 0;
+      this.startCurrentFracture();
+    },
+    cancelFracture() {
+      this.webGL.spreadFragments(this.currentModel.fragments);
+      this.sounds[this.currentModel.audio].stop();
+      this.$refs["keys"].classList.add("hidden");
+      this.$refs["romo-is-playing"].classList.add("hidden");
+      this.$refs["try-again"].classList.remove("hidden");
+      this.currentStep = 0;
+      this.webGL.resetFracturePieces(this.currentFracture);
+      setTimeout(() => {
+        this.startCurrentFracture();
+      }, 1000);
+    },
     startCountdown() {
       return new Promise((resolve, reject) => {
         this.countdown = 3;
+        if (this.countdownSetInterval) {
+          clearInterval(this.countdownSetInterval);
+        }
         this.countdownSetInterval = setInterval(() => {
           if (this.countdown === 0) {
             clearInterval(this.countdownSetInterval);
@@ -361,6 +445,15 @@ export default {
             resolve();
           }
         }, 1000);
+      });
+    },
+    redirectRomoToKintsugi() {
+      this.socket.emit("custom-event", {
+        name: "router",
+        in: this.roomID,
+        args: {
+          id: "kintsugi"
+        }
       });
     }
   },
@@ -386,6 +479,14 @@ export default {
         default:
           break;
       }
+    },
+    socket: {
+      handler: function() {
+        if (this.socket) {
+          this.createSocketEvents();
+        }
+      },
+      immediate: true
     }
   },
   components: {
@@ -402,6 +503,10 @@ $border: 3px;
   visibility: hidden;
   opacity: 0;
   pointer-events: none;
+}
+
+.inline-container {
+  display: flex;
 }
 
 #kintsugi-minigame {
@@ -447,10 +552,29 @@ $border: 3px;
 
     .debugger {
       position: absolute;
-      bottom: 16px;
+      top: 32px;
       left: 0px;
       display: flex;
       z-index: 5;
+    }
+
+    .top {
+      position: absolute;
+      top:48px;
+      left: 0px;
+      height: 45%;
+      width: 100%;
+
+      .intro {
+        position: absolute;
+        left: 0px;
+        bottom: 0px;
+        display: flex;
+        width: 100%;
+        .intro-container {
+          margin: auto;
+        }
+      }
     }
 
     .bottom {
@@ -536,6 +660,9 @@ $border: 3px;
 
         .romo-is-playing-container {
           margin: auto;
+          align-items: center;
+          display: flex;
+          flex-direction: column;
         }
       }
     }

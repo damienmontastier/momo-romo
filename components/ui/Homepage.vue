@@ -72,10 +72,10 @@ export default {
     })
   },
   mounted() {
-    this.connect({
-      device: this.$device.isMobileOrTablet,
-      roomID: null
-    });
+    // this.connect({
+    //   device: this.$device.isMobileOrTablet,
+    //   roomID: null
+    // });
 
     this.left = this.$refs.left;
     this.backgrounds = [
@@ -87,9 +87,9 @@ export default {
     window.addEventListener("mousemove", this.handleMouseMove);
   },
   watch: {
-    roomID() {
-      this.generateQRCode();
-    }
+    // roomID() {
+    //   this.generateQRCode();
+    // }
   },
   methods: {
     ...mapActions({
