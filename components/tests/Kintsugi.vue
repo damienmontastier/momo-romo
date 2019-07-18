@@ -3,7 +3,7 @@
     <canvas id="canvas" ref="canvas" />
     <div class="ui">
       <div class="top">
-        <div class="intro" ref="intro">
+        <div class="intro hidden" ref="intro">
           <div class="intro-container skew">
             <div class="title inline-container">
               <div class="fill-en">hit the keys in time</div>
@@ -59,8 +59,11 @@
             </div>
           </div>
         </div>
-        <div class="gif"></div>
-        <div class="ready">
+        <div class="launch-button hidden" ref="launch-button">
+          <button-circle-red jpn="スタート" en="LAUNCH GAME" letter="E" v-on:triggered="startCurrentFracture"/>
+        </div>
+        <div class="gif hidden" ref="gif" v-if="!isRomoReady"></div>
+        <div class="ready hidden" ref="ready">
           <div class="ready-container">
             <div class="momo skew stroke">
               <div v-if="isRomoReady">go?</div>
@@ -93,6 +96,10 @@
         <button @click="startCurrentFracture">startCurrentFracture</button>
         <button @click="nextFracture">nextFracture</button>
         <button @click="redirectRomoToKintsugi">redirectRomoToKintsugi</button>
+        <!-- <button @click="()=>{webGL.titleAnimation()}">titleAnimation</button>
+        <button @click="appearIntro">appearIntro</button> -->
+        <button @click="()=>{isRomoReady = true}">Romo ready</button>
+        <button @click="appear">appear</button>
       </div>
     </div>
   </div>
@@ -100,13 +107,19 @@
 
 <script>
 import SoundsTimecode from "~/static/ui/kintsugi/mini-game/sounds1.js";
+
+import background_level from "~/static/sounds/background_level.mp3";
+import transition_windows from "~/static/sounds/transition_windows.mp3";
+import cta_ready from "~/static/sounds/cta_ready.mp3";
+import countdown_3 from "~/static/sounds/countdown_3.mp3";
+import countdown_2 from "~/static/sounds/countdown_2.mp3";
+import countdown_1 from "~/static/sounds/countdown_1.mp3";
+import cta_activated from "~/static/sounds/cta_activated.mp3";
 import momo_minijeu_1 from "~/static/sounds/momo_minijeu_1.mp3";
 import momo_minijeu_2 from "~/static/sounds/momo_minijeu_2.mp3";
 import momo_minijeu_3 from "~/static/sounds/momo_minijeu_3.mp3";
-
-import countdown_1 from "~/static/sounds/countdown_1.mp3";
-import countdown_2 from "~/static/sounds/countdown_2.mp3";
-import countdown_3 from "~/static/sounds/countdown_3.mp3";
+import voice_bowl_repaired from "~/static/sounds/voice_bowl_repaired.mp3";
+import romo_playing from "~/static/sounds/romo_playing.mp3";
 
 import HowlerManager from "~/assets/js/utils/HowlerManager";
 import { mapState } from "vuex";
@@ -114,6 +127,7 @@ import { TweenMax } from "gsap";
 
 import WebGL from "~/assets/js/game/mini-game/Kintsugi";
 import Countdown from "@/components/mini-game/Kintsugi/Countdown";
+import ButtonCircleRed from "@/components/svg/button-circle-red";
 
 Number.prototype.map = function(in_min, in_max, out_min, out_max) {
   return ((this - in_min) * (out_max - out_min)) / (in_max - in_min) + out_min;
@@ -184,16 +198,24 @@ export default {
       let sounds = new Promise((resolve, reject) => {
         HowlerManager.add([
           {
-            id: "momo_minijeu_1",
-            src: momo_minijeu_1
+            id: "voice_bowl_repaired",
+            src: voice_bowl_repaired
           },
           {
-            id: "momo_minijeu_2",
-            src: momo_minijeu_2
+            id: "transition_windows",
+            src: transition_windows
           },
           {
-            id: "momo_minijeu_3",
-            src: momo_minijeu_3
+            id: "cta_ready",
+            src: cta_ready
+          },
+          {
+            id: "background_level",
+            src: background_level
+          },
+          {
+            id: "cta_activated",
+            src: cta_activated
           },
           {
             id: "countdown_1",
@@ -206,6 +228,22 @@ export default {
           {
             id: "countdown_3",
             src: countdown_3
+          },
+          {
+            id: "momo_minijeu_1",
+            src: momo_minijeu_1
+          },
+          {
+            id: "momo_minijeu_2",
+            src: momo_minijeu_2
+          },
+          {
+            id: "momo_minijeu_3",
+            src: momo_minijeu_3
+          },
+          {
+            id: "romo_playing",
+            src: romo_playing
           }
         ]).then(sounds => {
           this.sounds = sounds;
@@ -323,11 +361,19 @@ export default {
       if (this.currentKey) {
         this.startKeyPressInterval();
       } else {
-        this.romoIsPlaying();
+        setTimeout(() => {
+          this.romoIsPlaying();
+        }, 1000);
       }
     },
     romoIsPlaying() {
       console.log("à romo de jouer");
+      this.sounds[this.currentModel.audio].fade(1.0,0.0,1000)
+      setTimeout(() => {
+        this.sounds['romo_playing'].play()
+        this.sounds['romo_playing'].fade(0.0,1.0,1000)
+      }, 1000);      
+      
       this.$refs["romo-is-playing"].classList.remove("hidden");
       this.$refs["steps"].classList.add("hidden");
       this.$refs["keys"].classList.add("hidden");
@@ -342,6 +388,19 @@ export default {
           }
         });
       }
+    },
+    appear() {
+      this.appearWindow()
+      this.webGL.titleAnimation()
+      .then(this.appearIntro)
+    },
+    appearWindow() {
+
+    },
+    appearIntro() {
+      this.$refs["intro"].classList.remove('hidden')
+      this.$refs["gif"].classList.remove('hidden')
+      this.$refs["ready"].classList.remove('hidden')
     },
     resetStep() {
       this.isKeyPressed = false;
@@ -398,6 +457,11 @@ export default {
       this.$refs["steps"].classList.remove("hidden");
     },
     startCurrentFracture() {
+      this.$refs['launch-button'].classList.add('hidden')
+      this.$refs['ready'].classList.add('hidden')
+      this.$refs['intro'].classList.add('hidden')
+      this.webGL.bowl.visible = true
+      this.webGL.bowl.position.y = 4
       this.resetCurrentFractureUI();
       this.startCountdown().then(() => {
         requestAnimationFrame(() => {
@@ -410,11 +474,13 @@ export default {
       });
     },
     nextFracture() {
+      this.sounds['romo_playing'].fade(1.0,0.0,1000)
       this.currentFracture++;
       this.currentStep = 0;
       this.startCurrentFracture();
     },
     cancelFracture() {
+      this.sounds['romo_playing'].fade(1.0,0.0,1000)
       this.webGL.spreadFragments(this.currentModel.fragments);
       this.sounds[this.currentModel.audio].stop();
       this.$refs["keys"].classList.add("hidden");
@@ -465,6 +531,11 @@ export default {
     });
   },
   watch: {
+    isRomoReady() {
+      if(this.isRomoReady === true) {
+        this.$refs['launch-button'].classList.remove('hidden')
+      }
+    },
     countdown() {
       switch (this.countdown) {
         case 3:
@@ -490,7 +561,8 @@ export default {
     }
   },
   components: {
-    Countdown
+    Countdown,
+    ButtonCircleRed
   }
 };
 </script>
@@ -599,11 +671,23 @@ $border: 3px;
         display: flex;
       }
 
+    .gif {
+      width: 160px;
+      height: 160px;
+      // background: $black;
+      position: absolute;
+      bottom: calc(50% - (160px / 2));
+      left: calc(50% - 80px);
+      background: url("~static/ui/kintsugi/mini-game/tuto-touche.gif");
+      background-size: cover;
+    }
+
       .ready {
         width: 100%;
         bottom: calc(50% - (70px / 2));
         position: absolute;
         left: 0px;
+        pointer-events: none;
         .ready-container {
           width: 100%;
           display: flex;
@@ -629,11 +713,24 @@ $border: 3px;
         }
       }
 
+      .launch-button {
+        height: 200px;
+        width: 100%;
+        position: absolute;
+        left: 0px;
+        bottom: calc(50% - (200px / 2));
+        display: flex;
+        svg {
+          margin: auto;
+        }
+      }
+
       .countdown {
         display: flex;
         position: absolute;
         bottom: calc(50% - (86px / 2));
         width: 100%;
+        pointer-events: none;
 
         .countdown-container {
           height: 86px;

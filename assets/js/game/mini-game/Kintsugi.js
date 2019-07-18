@@ -163,9 +163,9 @@ export default class Kintsugi {
     }
   }
 
-  triggerFracturePiece(fractureIndex,pieceIndex) {
-    let fracture = this.fractures[fractureIndex]
-    let piece = fracture.children[pieceIndex]
+  triggerFracturePiece(fractureIndex, pieceIndex) {
+    let fracture = this.fractures[fractureIndex];
+    let piece = fracture.children[pieceIndex];
     piece.triggered = true;
     piece.visible = true;
   }
@@ -202,11 +202,7 @@ export default class Kintsugi {
       if (index === 0) {
         let position = new THREE.Vector3(-5.697, -9.13, 0);
         c.position.add(position.multiplyScalar(ratio));
-        let euler = new THREE.Euler(
-          0,
-          0,
-          THREE.Math.degToRad(29.7) * ratio
-        );
+        let euler = new THREE.Euler(0, 0, THREE.Math.degToRad(29.7) * ratio);
         c.rotation.copy(euler);
       } else if (index === 1) {
         let position = new THREE.Vector3(8.308, 3.16, 0);
@@ -247,6 +243,11 @@ export default class Kintsugi {
         piece.material.color.set(0xffff00);
       });
     });
+
+    this.bowl.visible = false;
+    this.bowl._originScale = new THREE.Vector3(1.2, 1.2, 1.2);
+    this.bowl.scale.copy(this.bowl._originScale);
+    this.bowl.position.y = -5;
 
     this.scene.add(this.bowl);
   }
@@ -302,6 +303,8 @@ export default class Kintsugi {
     this.title = new THREE.Mesh(titleGeometry, titleMaterial);
     this.titleGroup.add(this.title);
     this.title.position.z = 1;
+
+    this.titleGroup.visible = false;
 
     this.scene.add(this.titleGroup);
   }
@@ -390,6 +393,127 @@ export default class Kintsugi {
     this.fixedElementsGroup.add(groundMesh);
 
     this.scene.add(this.fixedElementsGroup);
+  }
+
+  titleAnimation() {
+    this.titleGroup.visible = true;
+    this.bowl.visible = true;
+
+    this.tweeningScalar = 1.1;
+
+    let tl = new TimelineMax();
+
+    return new Promise((resolve,reject)=>{
+      tl.add("titleAppear", 0)
+      .add("titleDisappear", 2)
+      .from(
+        [this.title.material,this.rosace.material,this.gradient.material],
+        0.5,
+        {
+          ease: Back.easeOut.config(1.4),
+          opacity: 0,
+          onUpdate:()=>{
+            this.bowl.traverse((mesh)=>{
+              if(mesh.material){
+                mesh.material.opacity = this.title.material.opacity
+              }
+            })
+          }
+        },
+        "titleAppear"
+      )
+      .from(
+        [this.rosace.scale, this.gradient.scale,this.bowl.scale],
+        0.5,
+        {
+          ease: Back.easeOut.config(1.4),
+          x: 0.01,
+          y: 0.01,
+          z: 0.01
+        },
+        "titleAppear"
+      )
+      .from(
+        this.title.scale,
+        0.5,
+        {
+          ease: Back.easeOut.config(1.4),
+          delay: 0.2,
+          x: 0.01,
+          y: 0.01,
+          z: 0.01
+        },
+        "titleAppear"
+      )
+      .to(
+        this,
+        3,
+        {
+          ease: Power4.easeOut,
+          tweeningScalar: 1.25,
+          onUpdate: () => {
+            this.fragments.forEach(fragment => {
+              let o = new THREE.Vector3().copy(fragment._maxPosition);
+              let rotationZ = fragment._maxRotation.z;
+              fragment.position.copy(o.multiplyScalar(this.tweeningScalar));
+              fragment.rotation.z = rotationZ * this.tweeningScalar;
+            });
+          }
+        },
+        "titleAppear"
+      )
+      .to(
+        [this.title.scale,this.rosace.scale,this.gradient.scale,this.bowl.scale],
+        0.5,
+        {
+          ease: Back.easeIn.config(1.4),
+          x: 0.01,
+          y:0.01,
+          z:0.01,
+          onComplete:()=>{
+            this.titleGroup.visible = false;
+            this.bowl.visible = false;
+            this.bowl.scale.copy(this.bowl._originScale);
+            this.title.scale.set(1,1,1)
+            this.rosace.scale.set(1,1,1)
+            this.gradient.scale.set(1,1,1)
+          }
+        },
+        "titleDisappear"
+      )
+      .to(
+        [this.title.material,this.rosace.material,this.gradient.material],
+        0.5,
+        {
+          ease: Back.easeIn.config(1.4),
+          opacity: 0,
+          onUpdate:()=>{
+            this.bowl.traverse((mesh)=>{
+              if(mesh.material){
+                mesh.material.opacity = this.title.material.opacity
+              }
+            })
+          },
+          onComplete:()=>{
+            this.title.material.opacity = 1;
+            this.rosace.material.opacity = 1;
+            this.gradient.material.opacity = 1;
+          }
+        },
+        "titleDisappear"
+      )
+      .eventCallback("onComplete", () => {
+        this.gradient.position.z = 0.15;
+        this.fragments.forEach(fragment => {
+          let o = new THREE.Vector3().copy(fragment._maxPosition);
+          let rotationZ = fragment._maxRotation.z;
+          fragment.position.copy(o);
+          fragment.rotation.z = rotationZ;
+        });
+        resolve()
+      });
+    })
+
   }
 
   onWindowResize() {
